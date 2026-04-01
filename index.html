@@ -996,6 +996,44 @@
 </div>
 
 <!-- ══════════════════════
+     COMPLETAR PERFIL
+══════════════════════ -->
+<div id="screen-profile" class="screen">
+  <button class="volver-btn" onclick="showScreen('screen-join');loadJoinList();">← Volver</button>
+  <div class="cab-interior" style="margin-top:8px;">
+    <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
+    <div class="cab-flecos"></div>
+    <div class="cab-texto">
+      <div class="cab-titulo" id="profile-title">¡Hola!</div>
+      <div class="cab-subtitulo">Completa tu ficha</div>
+    </div>
+  </div>
+  <div class="azulejos"></div>
+  <div class="panel" style="margin-top:16px;">
+    <div class="panel-cuerpo">
+      <div class="campo">
+        <label class="campo-label">Nombre de tu tapa</label>
+        <input type="text" id="profile-tapa-name" placeholder="Croquetas de jamón..." autocomplete="off"/>
+      </div>
+      <div class="separador"></div>
+      <div class="campo">
+        <label class="campo-label">Foto de tu tapa</label>
+        <div class="foto-zona photo-upload" onclick="document.getElementById('profile-photo').click()">
+          <input type="file" id="profile-photo" accept="image/*"/>
+          <span class="foto-zona-icono">📷</span>
+          <div class="foto-zona-texto">Toca para añadir una foto</div>
+        </div>
+        <img id="profile-preview" class="foto-preview"/>
+      </div>
+    </div>
+  </div>
+  <div class="boton-zona" style="margin-top:14px;">
+    <button class="btn btn-rojo" onclick="submitProfile()">Listo, entrar →</button>
+  </div>
+  <div class="esp"></div>
+</div>
+
+<!-- ══════════════════════
      LOBBY PROYECTABLE (pantalla completa)
 ══════════════════════ -->
 <div id="screen-lobby">
