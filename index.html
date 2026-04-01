@@ -564,7 +564,7 @@ async function renderSeleccion(){
     ul.innerHTML = ps.map(p=>{
       const listo = !!p.tapaName;
       const soyYo = p.id === miId;
-      return `<li style="cursor:${listo&&!soyYo?'default':'pointer'}" onclick="${listo&&!soyYo?'':"seleccionar('"+p.id+"','"+p.name.replace(/'/g,"\\'")+"',"+listo+")"}">
+      return `<li style="cursor:pointer" onclick="seleccionar('${p.id}','${p.name.replace(/'/g,"\\'")}',${listo})">
         <div class="inicial">${p.name[0].toUpperCase()}</div>
         <div class="li-info" style="flex:1">
           <div class="li-nombre">${p.name}</div>
@@ -577,11 +577,11 @@ async function renderSeleccion(){
 }
 
 async function seleccionar(pid, pname, listo){
-  // Si ya está listo y no soy yo, no hacer nada
-  if(listo && pid !== miId){ return; }
-
-  // Si soy yo y ya estoy listo → reconectar
-  if(listo && pid === miId){
+  // Si está listo → reconectar a ese participante (pueden ser ellos mismos desde otro dispositivo)
+  if(listo){
+    miId = pid; miNombre = pname;
+    sessionStorage.setItem('tf_id', miId);
+    sessionStorage.setItem('tf_nombre', miNombre);
     const snap = await db.ref('game').once('value');
     const game = snap.val()||{};
     navegarSegunFase(game);
