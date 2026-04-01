@@ -264,6 +264,9 @@ input[type=range]{width:100%;height:4px;accent-color:var(--rojo);cursor:pointer;
     <p style="font-size:13px;font-style:italic;color:var(--tinta2);margin-top:8px" id="sel-msg">Esperando...</p>
     <ul class="lista" id="lista-seleccion" style="margin-top:10px"></ul>
   </div>
+  <div class="boton-zona" style="margin-top:6px">
+    <button class="btn btn-peligro" onclick="resetear()">Borrar partida y empezar de nuevo</button>
+  </div>
   <div class="esp"></div>
 </div>
 
@@ -564,7 +567,10 @@ async function renderSeleccion(){
     // Progreso
     document.getElementById('sel-progreso').textContent = listos+' de '+total;
     document.getElementById('sel-barra').style.width = (total ? Math.round(listos/total*100) : 0)+'%';
+    const fase = game.phase || 'lobby';
     document.getElementById('sel-msg').textContent =
+      fase === 'voting'  ? 'Votación en curso — toca tu nombre para votar' :
+      fase === 'results' ? 'Concurso finalizado — toca tu nombre para ver resultados' :
       listos===total && total>=2 ? '¡Todos listos! Arrancando votación...' :
       total-listos === 1 ? 'Falta 1 persona por completar su ficha' :
       'Faltan '+(total-listos)+' personas por completar su ficha';
@@ -587,7 +593,7 @@ async function renderSeleccion(){
 }
 
 async function seleccionar(pid, pname, listo){
-  // Si está listo → reconectar a ese participante (pueden ser ellos mismos desde otro dispositivo)
+  // Si está listo → reconectar
   if(listo){
     miId = pid; miNombre = pname;
     sessionStorage.setItem('tf_id', miId);
@@ -595,6 +601,7 @@ async function seleccionar(pid, pname, listo){
     const snap = await db.ref('game').once('value');
     const game = snap.val()||{};
     navegarSegunFase(game);
+    suscribir();
     return;
   }
 
@@ -1229,8 +1236,14 @@ function exportarPDF(){
       return;
     }
 
-    // Si hay participantes registrados pero yo no tengo sesión → selección
-    if(ps.length > 0 && game.phase !== 'results'){
+    // Si hay partida en curso, ir a selección para que toquen su nombre
+    if(ps.length > 0){
+      if(game.phase === 'results'){
+        // Resultados ya disponibles — mostrar selección para que entren
+        ir('s-seleccion');
+        renderSeleccion();
+        return;
+      }
       ir('s-seleccion');
       renderSeleccion();
       suscribir();
