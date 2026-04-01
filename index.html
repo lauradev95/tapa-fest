@@ -927,109 +927,70 @@
 <div id="toast"></div>
 
 <!-- ══════════════════════
-     UNIRSE — selección de participante
+     REGISTRO — el organizador añade nombres
 ══════════════════════ -->
-<div id="screen-join" class="screen active">
-
+<div id="screen-registro" class="screen active">
   <div class="cabecera">
-    <div class="toldo">
-      <div class="toldo-label">✦ &nbsp; Concurso Gastronómico &nbsp; ✦</div>
-    </div>
+    <div class="toldo"><div class="toldo-label">✦ &nbsp; Concurso Gastronómico &nbsp; ✦</div></div>
     <div class="toldo-flecos"></div>
     <div class="cabecera-interior">
       <div class="linea-oro-doble"></div>
-      <div class="titulo-marco">
-        <span class="titulo-principal">TAPA FEST</span>
-      </div>
+      <div class="titulo-marco"><span class="titulo-principal">TAPA FEST</span></div>
       <div class="linea-oro-doble"></div>
     </div>
     <div class="mostrador"></div>
     <div class="azulejos"></div>
   </div>
 
-  <!-- Añadir participante (organizador) -->
   <div class="panel" style="margin-top:16px;">
     <div class="panel-cuerpo">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
-        <div class="panel-titulo" style="margin-bottom:0;">Apuntar a alguien</div>
-
-      </div>
-      <div style="display:flex;gap:8px;align-items:flex-start;">
-        <input type="text" id="join-add-name" placeholder="Nombre..." autocomplete="off"
+      <div class="panel-titulo">Añadir participantes</div>
+      <p style="font-size:15px;font-style:italic;color:var(--tinta2);margin-bottom:14px;">Escribe todos los nombres y pulsa "Listo" cuando estén todos.</p>
+      <div style="display:flex;gap:8px;">
+        <input type="text" id="reg-name-input" placeholder="Nombre..." autocomplete="off"
                style="flex:1;margin-bottom:0;"
-               onkeydown="if(event.key==='Enter') quickAddParticipant()"/>
-        <button class="btn btn-rojo" onclick="quickAddParticipant()"
-                style="width:auto;padding:10px 16px;margin-top:0;white-space:nowrap;">+ Añadir</button>
+               onkeydown="if(event.key==='Enter') regAddName()"/>
+        <button class="btn btn-madera" onclick="regAddName()"
+                style="width:auto;padding:10px 14px;margin-top:0;white-space:nowrap;">+ Añadir</button>
       </div>
+      <ul class="lista" id="reg-list" style="margin-top:14px;"></ul>
     </div>
   </div>
 
-  <!-- Aviso partida activa -->
-  <div class="panel" id="panel-partida-activa" style="display:none;border-left:4px solid var(--rojo);">
-    <div class="panel-cuerpo">
-      <div class="panel-titulo" style="color:var(--rojo);">Partida en curso</div>
-      <p style="font-size:15px;font-style:italic;color:var(--tinta2);margin-bottom:12px;">Hay una votación activa. ¿Quieres empezar una nueva?</p>
-      <button class="btn btn-peligro" style="margin-top:0;" onclick="resetGame()">Borrar partida y empezar de nuevo</button>
-    </div>
+  <div class="boton-zona" style="margin-top:14px;">
+    <button class="btn btn-rojo" id="reg-submit-btn" onclick="regSubmit()" disabled style="opacity:.4;">
+      Listo — empezar →
+    </button>
   </div>
 
-  <!-- Lista de participantes registrados -->
-  <div class="panel">
-    <div class="panel-cuerpo">
-      <div class="panel-titulo">¿Cuál eres tú?</div>
-      <p style="font-size:15px;font-style:italic;color:var(--tinta2);margin-bottom:14px;">Toca tu nombre para completar tu inscripción</p>
-      <ul class="lista" id="join-participants-list">
-        <li class="vacio" style="padding:1rem 0;">Añade los nombres arriba para empezar</li>
-      </ul>
-    </div>
-  </div>
-
-  <!-- Historial -->
-  <div class="panel">
-    <div class="panel-cuerpo" style="padding-top:12px;padding-bottom:12px;">
+  <div class="panel" style="margin-top:8px;">
+    <div class="panel-cuerpo" style="padding:12px;">
       <button class="btn btn-contorno" style="margin-top:0;" onclick="showHistory()">Historial de concursos</button>
     </div>
   </div>
-
   <div class="esp"></div>
 </div>
 
 <!-- ══════════════════════
-     COMPLETAR PERFIL (nombre tapa + foto)
+     SELECCIÓN — cada uno toca su nombre
 ══════════════════════ -->
-<div id="screen-profile" class="screen">
-  <button class="volver-btn" onclick="showScreen('screen-join');loadJoinList();">← Volver</button>
-  <div class="cab-interior" style="margin-top:8px;">
+<div id="screen-join" class="screen">
+  <div class="cab-interior">
     <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
     <div class="cab-flecos"></div>
     <div class="cab-texto">
-      <div class="cab-titulo" id="profile-title">¡Hola!</div>
-      <div class="cab-subtitulo">Completa tu ficha</div>
+      <div class="cab-titulo">¿Cuál eres tú?</div>
+      <div class="cab-subtitulo">Toca tu nombre para apuntarte</div>
     </div>
   </div>
   <div class="azulejos"></div>
 
-  <div class="panel" style="margin-top:16px;">
-    <div class="panel-cuerpo">
-      <div class="campo">
-        <label class="campo-label">Nombre de tu tapa</label>
-        <input type="text" id="profile-tapa-name" placeholder="Croquetas de jamón..." autocomplete="off"/>
-      </div>
-      <div class="separador"></div>
-      <div class="campo">
-        <label class="campo-label">Foto de tu tapa</label>
-        <div class="foto-zona photo-upload" onclick="document.getElementById('profile-photo').click()">
-          <input type="file" id="profile-photo" accept="image/*"/>
-          <span class="foto-zona-icono">📷</span>
-          <div class="foto-zona-texto">Toca para añadir una foto</div>
-        </div>
-        <img id="profile-preview" class="foto-preview"/>
-      </div>
-
+  <div class="tarjeta" style="margin-top:14px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+      <div class="tarjeta-titulo" style="margin-bottom:0;">Participantes</div>
+      <span class="etiqueta et-dorado" id="join-ready-count">0 de 0</span>
     </div>
-  </div>
-  <div class="boton-zona" style="margin-top:14px;">
-    <button class="btn btn-rojo" onclick="submitProfile()">Listo, entrar →</button>
+    <ul class="lista" id="join-participants-list"></ul>
   </div>
   <div class="esp"></div>
 </div>
@@ -1284,14 +1245,17 @@ function compressImage(file){
   });
 }
 
-document.getElementById('profile-photo').addEventListener('change',async function(){
-  const f=this.files[0]; if(!f) return;
-  showLoading('Comprimiendo foto...');
-  window._photo=await compressImage(f);
-  hideLoading();
-  const img=document.getElementById('profile-preview');
-  img.src=window._photo; img.style.display='block';
-  document.querySelector('.photo-upload').style.display='none';
+document.addEventListener('DOMContentLoaded',function(){
+  const _photoInput=document.getElementById('profile-photo');
+  if(_photoInput) _photoInput.addEventListener('change',async function(){
+    const f=this.files[0]; if(!f) return;
+    showLoading('Comprimiendo foto...');
+    window._photo=await compressImage(f);
+    hideLoading();
+    const img=document.getElementById('profile-preview');
+    img.src=window._photo; img.style.display='block';
+    document.querySelector('.photo-upload').style.display='none';
+  });
 });
 
 function openLightbox(src){
@@ -1300,349 +1264,186 @@ function openLightbox(src){
 }
 function closeLightbox(){ document.getElementById('lightbox').style.display='none'; }
 
-/* ── Carga la lista de participantes en la pantalla de inicio ── */
+/* ══════════════════════════════════════════════════════
+   REGISTRO — pantalla inicial donde se añaden nombres
+══════════════════════════════════════════════════════ */
+
+// Lista local de nombres antes de guardar en Firebase
+window._regNames = [];
+
+function regAddName(){
+  const input = document.getElementById('reg-name-input');
+  const name  = input.value.trim();
+  if(!name){ toast('Escribe un nombre'); return; }
+  const dup = window._regNames.find(n=>n.toLowerCase()===name.toLowerCase());
+  if(dup){ toast('Ese nombre ya está en la lista'); return; }
+  window._regNames.push(name);
+  input.value = '';
+  input.focus();
+  regRenderList();
+}
+
+function regRenderList(){
+  const ul  = document.getElementById('reg-list');
+  const btn = document.getElementById('reg-submit-btn');
+  ul.innerHTML = window._regNames.map((name,i)=>`
+    <li>
+      <div class="inicial">${name[0].toUpperCase()}</div>
+      <div class="li-info"><div class="li-nombre">${name}</div></div>
+      <button onclick="regRemoveName(${i})" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--tinta3);padding:0 4px;">✕</button>
+    </li>`).join('') || '<li class="vacio" style="padding:.8rem 0;">Ningún participante añadido</li>';
+  btn.disabled = window._regNames.length < 2;
+  btn.style.opacity = window._regNames.length < 2 ? '.4' : '1';
+}
+
+function regRemoveName(i){
+  window._regNames.splice(i,1);
+  regRenderList();
+}
+
+async function regSubmit(){
+  if(window._regNames.length < 2){ toast('Necesitas al menos 2 participantes'); return; }
+  showLoading('Creando partida...');
+  try{
+    // Limpiar Firebase y crear participantes nuevos
+    await db.ref('game').remove();
+    const updates = {};
+    window._regNames.forEach(name=>{
+      const uid = 'p_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
+      updates['game/participants/'+uid] = {id:uid, name, tapaName:null, photo:null};
+    });
+    await db.ref().update(updates);
+    hideLoading();
+    // Ir a pantalla de selección
+    loadJoinList();
+    showScreen('screen-join');
+    subscribeToGame();
+  }catch(e){
+    hideLoading();
+    console.error('regSubmit error:', e);
+    toast('Error al crear partida: '+String(e.message||e).slice(0,50));
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   SELECCIÓN — cada participante toca su nombre
+══════════════════════════════════════════════════════ */
+
 async function loadJoinList(){
   try{
-    const snap=await db.ref('game').once('value');
-    const game=snap.val()||{};
-    const parts=Object.values(game.participants||{});
-    const ul=document.getElementById('join-participants-list');
+    const snap = await db.ref('game').once('value');
+    const game = snap.val()||{};
+    const parts = Object.values(game.participants||{}).filter(p=>p&&p.id&&p.name);
+    const ul = document.getElementById('join-participants-list');
+    const countEl = document.getElementById('join-ready-count');
 
-    // Si la partida ya terminó, ir directo a resultados
+    // Si ya están todos listos y en votación, ir a votar
+    if(game.phase==='voting'){
+      if(myId){
+        const g = snap.val();
+        (g.votes&&g.votes[myId]) ? showVotedScreen(g) : renderVoteScreen(g);
+      }
+      return;
+    }
     if(game.phase==='results'){
       renderResults(game); showScreen('screen-results'); return;
     }
-    // Mostrar aviso si hay partida activa en votación
-    const avisoEl=document.getElementById('panel-partida-activa');
-    if(avisoEl) avisoEl.style.display=(game.phase==='voting')?'block':'none';
 
-    if(!parts.length){
-      ul.innerHTML='<li class="vacio" style="padding:1rem 0;">El organizador aún no ha añadido participantes</li>';
-      return;
-    }
+    const ready = parts.filter(p=>p.tapaName).length;
+    if(countEl) countEl.textContent = ready+' de '+parts.length+' listos';
 
-    // Limpiar nodos corruptos (sin name o id) de Firebase
-    const corrupts=parts.filter(p=>!p||!p.name||!p.id);
-    for(const bad of corrupts){
-      const badKey=Object.keys(game.participants||{}).find(k=>game.participants[k]===bad);
-      if(badKey) db.ref('game/participants/'+badKey).remove();
-    }
-    const cleanParts=parts.filter(p=>p&&p.name&&p.id);
-
-    // Mostrar la lista; cada nombre es clicable
-    ul.innerHTML=cleanParts.map(p=>{
-      const ready=p.tapaName?true:false;
-      const isMine=p.id===myId;
-      const safeName=p.name.replace(/'/g,"\\'");
-      return `<li style="cursor:${!ready||isMine?'pointer':'default'};">
-        <div class="inicial" onclick="selectParticipant('${p.id}','${safeName}',${ready})">${p.name[0].toUpperCase()}</div>
-        <div class="li-info" onclick="selectParticipant('${p.id}','${safeName}',${ready})" style="flex:1;cursor:inherit;">
+    ul.innerHTML = parts.map(p=>{
+      const isReady = !!p.tapaName;
+      const isMine  = p.id === myId;
+      const safe    = p.name.replace(/'/g, "&apos;");
+      return `<li style="cursor:pointer;" onclick="selectParticipant('${p.id}','${safe}',${isReady})">
+        <div class="inicial">${p.name[0].toUpperCase()}</div>
+        <div class="li-info" style="flex:1;">
           <div class="li-nombre">${p.name}</div>
-          ${ready?`<div class="li-tapa">🍽️ ${p.tapaName}</div>`:'<div class="li-tapa" style="color:var(--dorado);">Toca aquí para apuntarte →</div>'}
+          ${isReady
+            ? `<div class="li-tapa">🍽️ ${p.tapaName}</div>`
+            : `<div class="li-tapa" style="color:var(--dorado);">Toca para completar tu ficha →</div>`}
         </div>
         <div style="display:flex;align-items:center;gap:6px;">
-          ${isMine?'<span class="etiqueta et-verde">Tú ✓</span>':(ready?'<span class="etiqueta et-dorado">Listo</span>':'')}
-          <button onclick="event.stopPropagation();removeParticipant('${p.id}')" style="background:none;border:none;cursor:pointer;font-size:16px;color:var(--tinta3);padding:2px 6px;" title="Eliminar">✕</button>
+          ${isMine ? '<span class="etiqueta et-verde">Tú ✓</span>' : (isReady ? '<span class="etiqueta et-dorado">Listo</span>' : '')}
         </div>
       </li>`;
-    }).join('');
-  }catch(e){ console.error(e); }
+    }).join('') || '<li class="vacio">Sin participantes</li>';
+
+  }catch(e){ console.error('loadJoinList error:', e); }
 }
 
-/* ── El participante toca su nombre ── */
 async function selectParticipant(pid, pname, alreadyReady){
-  // Si ya completó su ficha, intentar reconectarle directamente
-  if(alreadyReady){
-    const snap=await db.ref('game').once('value');
-    const game=snap.val()||{};
-    const part=Object.values(game.participants||{}).find(p=>p.id===pid);
-    if(!part){ toast('Participante no encontrado'); return; }
-    myId=pid; myName=pname;
-    sessionStorage.setItem('tapafest_id',myId);
-    sessionStorage.setItem('tapafest_name',myName);
-    if(game.phase==='results'){ renderResults(game); showScreen('screen-results'); }
-    else if(game.phase==='voting'){ (game.votes&&game.votes[myId])?showVotedScreen(game):renderVoteScreen(game); }
-    else{ showScreen('screen-waiting'); subscribeToGame(); }
+  if(alreadyReady && pid !== myId){
+    toast('Este participante ya ha completado su ficha');
     return;
   }
-  // Aún no completó — ir a pantalla de perfil
-  myId=pid; myName=pname;
-  sessionStorage.setItem('tapafest_id',myId);
-  sessionStorage.setItem('tapafest_name',myName);
-  window._photo=null;
-  document.getElementById('profile-title').textContent='¡Hola, '+pname+'!';
-  document.getElementById('profile-tapa-name').value='';
-  document.getElementById('profile-preview').style.display='none';
-  document.querySelector('.photo-upload').style.display='block';
+  // Si ya es el mío y está listo, reconectar
+  if(alreadyReady && pid === myId){
+    const snap = await db.ref('game').once('value');
+    const game = snap.val()||{};
+    if(game.phase==='voting'){ (game.votes&&game.votes[myId])?showVotedScreen(game):renderVoteScreen(game); return; }
+    if(game.phase==='results'){ renderResults(game); showScreen('screen-results'); return; }
+    showScreen('screen-waiting'); subscribeToGame(); return;
+  }
+  // Ir a completar ficha
+  myId = pid; myName = pname;
+  sessionStorage.setItem('tapafest_id', myId);
+  sessionStorage.setItem('tapafest_name', myName);
+  window._photo = null;
+  document.getElementById('profile-title').textContent = '¡Hola, '+pname+'!';
+  document.getElementById('profile-tapa-name').value = '';
+  document.getElementById('profile-preview').style.display = 'none';
+  document.querySelector('.photo-upload').style.display = 'block';
   showScreen('screen-profile');
 }
 
-/* ── El participante envía nombre de tapa + foto ── */
+/* ══════════════════════════════════════════════════════
+   PERFIL — rellenar tapa y foto
+══════════════════════════════════════════════════════ */
+
 async function submitProfile(){
-  const tapaName=document.getElementById('profile-tapa-name').value.trim();
+  const tapaName = document.getElementById('profile-tapa-name').value.trim();
   if(!tapaName){ toast('🍽️ Escribe el nombre de tu tapa'); return; }
   showLoading('Guardando...');
   try{
-    // 1. Guardar tapa y foto del participante
+    // Guardar tapa y foto
     await db.ref('game/participants/'+myId).update({
       tapaName,
       photo: window._photo||null
     });
 
-    // 2. Leer el estado ACTUAL del juego (ya con mi tapa guardada)
-    const snap=await db.ref('game').once('value');
-    const game=snap.val()||{};
+    // Leer estado actual (ya con mi tapa)
+    const snap = await db.ref('game').once('value');
+    const game = snap.val()||{};
     hideLoading();
 
-    // 3. Si ya estaba en otra fase, ir directamente
     if(game.phase==='results'){ renderResults(game); showScreen('screen-results'); return; }
-    if(game.phase==='voting'){ (game.votes&&game.votes[myId])?showVotedScreen(game):renderVoteScreen(game); return; }
+    if(game.phase==='voting'){
+      (game.votes&&game.votes[myId]) ? showVotedScreen(game) : renderVoteScreen(game);
+      return;
+    }
 
-    // 4. Comprobar si TODOS tienen tapa (usando el snapshot fresco que ya incluye el mío)
-    const allParts=Object.values(game.participants||{});
-    const allReady=allParts.length>=2 && allParts.every(p=>p.tapaName);
+    // Ver si todos tienen tapa
+    const allParts = Object.values(game.participants||{}).filter(p=>p&&p.id);
+    const allReady = allParts.length >= 2 && allParts.every(p=>p.tapaName);
 
     if(allReady){
-      // Arrancar votación — si ya la arrancó otro, simplemente ir a votar
-      await db.ref('game').update({phase:'voting'});
-      const snap2=await db.ref('game').once('value');
-      const game2=snap2.val()||{};
+      await db.ref('game/phase').set('voting');
+      const snap2 = await db.ref('game').once('value');
       toast('¡Todos listos! Empieza la votación 🗳️');
-      renderVoteScreen(game2);
+      renderVoteScreen(snap2.val()||{});
     } else {
-      showScreen('screen-waiting'); subscribeToGame();
+      showScreen('screen-waiting');
+      subscribeToGame();
     }
-  }catch(e){ hideLoading(); toast('Error de conexión'); console.error(e); }
-}
-
-/* ── Añadir participante rápido desde la pantalla principal ── */
-async function quickAddParticipant(){
-  const input=document.getElementById('join-add-name');
-  const name=input.value.trim();
-  if(!name){ toast('✎ Escribe un nombre'); return; }
-  showLoading('Añadiendo...');
-  try{
-    const gameSnap=await db.ref('game').once('value');
-    const game=gameSnap.val()||{};
-    const parts=Object.values(game.participants||{}).filter(p=>p&&p.name);
-    const dup=parts.find(p=>p.name.toLowerCase()===name.toLowerCase());
-    if(dup){ hideLoading(); toast('Ya existe ese nombre'); return; }
-    const uid='p_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
-    await db.ref('game/participants/'+uid).set({id:uid,name,tapaName:null,photo:null});
+  }catch(e){
     hideLoading();
-    input.value='';
-    input.focus();
-    toast('✓ '+name+' añadido');
-  }catch(e){ hideLoading(); toast('Error de conexión'); console.error(e); }
-}
-
-/* ── Admin añade un participante (solo nombre) ── */
-async function addParticipantByAdmin(){
-  const name=document.getElementById('admin-new-name').value.trim();
-  if(!name){ toast('✎ Escribe un nombre'); return; }
-  showLoading('Añadiendo...');
-  try{
-    const snap=await db.ref('game/participants').once('value');
-    const parts=Object.values(snap.val()||{}).filter(p=>p&&p.name);
-    const dup=parts.find(p=>p.name.toLowerCase()===name.toLowerCase());
-    if(dup){ hideLoading(); toast('Ya existe un participante con ese nombre'); return; }
-    const uid='p_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
-    await db.ref('game/participants/'+uid).set({id:uid, name, tapaName:null, photo:null});
-    hideLoading();
-    document.getElementById('admin-new-name').value='';
-    toast('✓ '+name+' añadido');
-  }catch(e){ hideLoading(); toast('Error de conexión'); console.error(e); }
-}
-
-/* ── Admin elimina un participante ── */
-async function removeParticipant(pid){
-  if(!confirm('¿Eliminar este participante?')) return;
-  await db.ref('game/participants/'+pid).remove();
-  // Si se borra a sí mismo, limpiar sesión
-  if(pid===myId){
-    myId=null; myName=null; window._photo=null;
-    sessionStorage.removeItem('tapafest_id');
-    sessionStorage.removeItem('tapafest_name');
-  }
-  toast('Participante eliminado');
-}
-
-function goAdmin(){
-  showScreen('screen-admin');
-  subscribeToGame();
-}
-
-
-/* ══════════════════════════════════════════════════════
-   LOBBY PROYECTABLE
-══════════════════════════════════════════════════════ */
-function openLobby(){
-  document.getElementById('screen-lobby').classList.add('active');
-  renderLobby();
-  // Suscribirse para actualizar en tiempo real
-  if(!window._lobbyUnsub){
-    const r=db.ref('game');
-    const h=snap=>{ if(document.getElementById('screen-lobby').classList.contains('active')) renderLobby(snap.val()||{}); };
-    r.on('value',h);
-    window._lobbyUnsub=()=>r.off('value',h);
+    console.error('submitProfile error:', e);
+    toast('Error al guardar: '+String(e.message||e).slice(0,60));
   }
 }
 
-function closeLobby(){
-  document.getElementById('screen-lobby').classList.remove('active');
-  if(window._lobbyUnsub){ window._lobbyUnsub(); window._lobbyUnsub=null; }
-}
-
-async function renderLobby(game){
-  if(!game){
-    const snap=await db.ref('game').once('value');
-    game=snap.val()||{};
-  }
-  const parts=Object.values(game.participants||{});
-  const phase=game.phase||'lobby';
-  const votes=game.votes||{};
-  const grid=document.getElementById('lobby-grid');
-  const count=document.getElementById('lobby-count');
-
-  count.textContent=parts.length+' participante'+(parts.length!==1?'s':'');
-
-  // Botones de control
-  const btnOpen=document.getElementById('lobby-btn-open');
-  const btnReveal=document.getElementById('lobby-btn-reveal');
-  if(phase==='lobby'){ btnOpen.style.display='block'; btnReveal.style.display='none'; }
-  else{ btnOpen.style.display='none'; btnReveal.style.display='block'; }
-
-  // Tarjetas de participantes
-  if(!parts.length){
-    grid.innerHTML=`<div style="grid-column:1/-1;text-align:center;padding:40px 20px;font-family:'EB Garamond',serif;font-size:18px;font-style:italic;color:rgba(245,240,232,.4);">Esperando participantes...</div>`;
-    return;
-  }
-
-  // Mantener tarjetas existentes y animar solo las nuevas
-  const existingIds=new Set([...grid.querySelectorAll('.lobby-card')].map(el=>el.dataset.id));
-  parts.forEach(p=>{
-    const ready=!!p.tapaName;
-    const voted=!!votes[p.id];
-    let card=grid.querySelector(`[data-id="${p.id}"]`);
-    if(!card){
-      card=document.createElement('div');
-      card.className='lobby-card'+(ready?' listo':'');
-      card.dataset.id=p.id;
-      grid.appendChild(card);
-    } else {
-      card.className='lobby-card'+(ready?' listo':'');
-    }
-    card.innerHTML=`
-      ${ready&&p.photo?`<img class="lobby-card-foto" src="${p.photo}"/>`:''}
-      <div class="lobby-card-nombre">${p.name}</div>
-      ${ready?`<div class="lobby-card-tapa">🍽️ ${p.tapaName}</div>`:'<div class="lobby-card-tapa" style="color:rgba(245,240,232,.4);">Pendiente...</div>'}
-      ${ready?'<div class="lobby-card-badge">✓</div>':''}
-      ${phase==='voting'&&voted?'<div class="lobby-card-badge" style="background:var(--dorado);">★</div>':''}
-    `;
-  });
-  // Eliminar tarjetas de participantes que ya no existen
-  grid.querySelectorAll('.lobby-card').forEach(el=>{
-    if(!parts.find(p=>p.id===el.dataset.id)) el.remove();
-  });
-}
-
-/* ══════════════════════════════════════════════════════
-   REVELACIÓN DRAMÁTICA
-══════════════════════════════════════════════════════ */
-function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
-
-function lanzarConfetti(){
-  const container=document.getElementById('confetti-container');
-  const colors=['#C8940A','#E8B020','#F5CC50','#B82018','#F5F0E8','#1E4020'];
-  for(let i=0;i<80;i++){
-    const el=document.createElement('div');
-    el.className='confetti-piece';
-    el.style.cssText=`
-      left:${Math.random()*100}vw;
-      background:${colors[Math.floor(Math.random()*colors.length)]};
-      width:${6+Math.random()*6}px;
-      height:${8+Math.random()*10}px;
-      border-radius:${Math.random()>0.5?'50%':'2px'};
-      animation-duration:${2.5+Math.random()*2}s;
-      animation-delay:${Math.random()*0.8}s;
-      transform:rotate(${Math.random()*360}deg);
-    `;
-    container.appendChild(el);
-  }
-  setTimeout(()=>container.innerHTML='', 5000);
-}
-
-async function animateReveal(game){
-  const ranked=calcRanked(game); window._ranked=ranked;
-  // Preparar la pantalla de resultados en background
-  const podiumEl=document.getElementById('podium');
-  const allResultsEl=document.getElementById('all-results');
-  const allCommentsEl=document.getElementById('all-comments');
-  podiumEl.innerHTML=''; allResultsEl.innerHTML=''; allCommentsEl.innerHTML='';
-
-  const overlay=document.getElementById('reveal-overlay');
-  const content=document.getElementById('reveal-content');
-  overlay.classList.add('active');
-
-  // Revelar de último a primero (excluir top3, luego 3º, 2º, 1º)
-  const revelarOrden=[...ranked].reverse(); // último → ganador
-
-  for(let i=0;i<revelarOrden.length;i++){
-    const p=revelarOrden[i];
-    const posicion=ranked.indexOf(p); // 0=ganador
-    const esGanador=posicion===0;
-    const es2=posicion===1;
-    const es3=posicion===2;
-
-    // ── Cuenta atrás de suspenso (solo antes del top 3) ──────────
-    if(i>0 && posicion<=2){
-      content.innerHTML='<div class="reveal-suspense">Y el siguiente es...</div>';
-      await sleep(800);
-      for(const n of [3,2,1]){
-        content.innerHTML=`<div class="reveal-countdown">${n}</div>`;
-        if(navigator.vibrate) navigator.vibrate(60);
-        await sleep(900);
-      }
-    } else if(i>0){
-      await sleep(600);
-    }
-
-    // ── Mostrar participante ──────────────────────────────────────
-    const posLabel=posicion===0?'🏆 1er lugar':
-                   posicion===1?'🥈 2º lugar':
-                   posicion===2?'🥉 3er lugar':
-                   `#${posicion+1}`;
-    content.innerHTML=`
-      <div class="reveal-pos">${posLabel}</div>
-      ${p.photo?`<img class="reveal-foto" src="${p.photo}"/>`:'<div style="font-size:80px;margin-bottom:16px;">🍽️</div>'}
-      <div class="reveal-tapa">${p.tapaName}</div>
-      <div class="reveal-autor">de ${p.name}</div>
-      <div class="reveal-nota">${p.avg.toFixed(1)}</div>
-    `;
-
-    if(esGanador){
-      if(navigator.vibrate) navigator.vibrate([100,50,100,50,300]);
-      lanzarConfetti();
-      await sleep(3500);
-    } else {
-      await sleep(2200);
-    }
-
-    // Añadir al podio en background mientras se muestra
-    const medals=['🥇','🥈','🥉'], cls=['first','second','third'];
-    if(posicion<3){
-      const card=document.createElement('div');
-      card.className='podium-card '+cls[posicion];
-      card.innerHTML=`<div class="medalla">${medals[posicion]}</div>${p.photo?`<img class="podio-foto" src="${p.photo}" onclick="openLightbox('${p.photo}')" style="cursor:zoom-in;"/>`:`<div class="podio-sin-foto">🍽️</div>`}<div class="podio-info"><div class="podio-nombre">${p.tapaName}</div><div class="podio-autor">de ${p.name}</div><div class="podio-nota">${p.avg.toFixed(1)}</div></div>`;
-      if(posicion===0) podiumEl.prepend(card); else podiumEl.appendChild(card);
-    }
-  }
-
-  // Cerrar overlay y mostrar resultados
-  overlay.classList.remove('active');
-  allResultsEl.innerHTML=ranked.map((p,i)=>`<li><span class="rk-pos">#${i+1}</span><span style="flex:1;margin:0 10px"><span>${p.tapaName}</span><div class="rk-votos">de ${p.name} · ${p.voteCount} voto${p.voteCount!==1?'s':''}</div></span><span class="rk-nota">${p.avg.toFixed(1)}</span></li>`).join('');
-  renderComments(ranked,'all-comments');
-}
 
 function subscribeToGame(){
   if(unsub) unsub();
@@ -1650,24 +1451,25 @@ function subscribeToGame(){
   const handler=snap=>{
     const game=snap.val()||{};
     const cur=document.querySelector('.screen.active')?.id;
-    if(cur==='screen-join') loadJoinList();
+    if(cur==='screen-join'){
+      loadJoinList();
+    }
     if(cur==='screen-waiting'){
       renderWaitingList(game);
       if(game.phase==='voting'){
         if(myId&&game.votes&&game.votes[myId]) showVotedScreen(game);
         else if(myId) renderVoteScreen(game);
       }
-      // Auto-arranque si todos completaron (caso en que otro fue el último en completar)
+      // Auto-arranque si todos listos y yo no he votado aún
       if(game.phase==='lobby'){
-        const parts=Object.values(game.participants||{});
+        const parts=Object.values(game.participants||{}).filter(p=>p&&p.id);
         if(parts.length>=2 && parts.every(p=>p.tapaName)){
-          db.ref('game').update({phase:'voting'});
+          db.ref('game/phase').set('voting');
         }
       }
     }
     if(cur==='screen-voted'){
       renderVotedStatus(game.participants||{},game.votes||{});
-      renderAdminPanelInScreen('voted', game);
       if(game.phase==='results'){ renderResults(game); showScreen('screen-results'); }
     }
     if(cur==='screen-admin') renderAdmin(game);
@@ -1677,34 +1479,60 @@ function subscribeToGame(){
 }
 
 function renderWaitingList(game){
-  const p=game.participants||{};
-  const v=Object.values(p);
-  const ready=v.filter(x=>x.tapaName).length;
-  const total=v.length;
-  // Barra de progreso
+  const parts=Object.values(game.participants||{}).filter(p=>p&&p.id&&p.name);
+  const ready=parts.filter(p=>p.tapaName).length;
+  const total=parts.length;
   const countEl=document.getElementById('waiting-ready-count');
   const barEl=document.getElementById('waiting-ready-bar');
   const msgEl=document.getElementById('waiting-ready-msg');
   if(countEl) countEl.textContent=ready+' de '+total+' listos';
   if(barEl) barEl.style.width=(total?Math.round(ready/total*100):0)+'%';
   if(msgEl){
-    if(total===0) msgEl.textContent='Añade participantes desde la pantalla principal.';
-    else if(ready===total && total>=2) msgEl.textContent='¡Todos listos! Arrancando la votación...';
-    else if(ready===total && total===1) msgEl.textContent='Necesitas al menos 2 participantes.';
-    else msgEl.textContent='Esperando que '+(total-ready)+' persona'+(total-ready!==1?'s':'')+'  complete'+(total-ready===1?'':'n')+' su ficha...';
+    if(ready===total&&total>=2) msgEl.textContent='¡Todos listos! Arrancando votación...';
+    else msgEl.textContent='Esperando que '+(total-ready)+' persona'+(total-ready!==1?'s':'')+(total-ready===1?' complete':' completen')+' su ficha...';
   }
-  // Lista participantes
-  document.getElementById('waiting-count').textContent=total+' inscrito'+(total!==1?'s':'');
-  document.getElementById('waiting-list').innerHTML=v.map(x=>`<li><div class="inicial">${x.name[0].toUpperCase()}</div><div class="li-info"><div class="li-nombre">${x.name}</div>${x.tapaName?`<div class="li-tapa">🍽️ ${x.tapaName}</div>`:''}</div>${x.tapaName?'<span class="etiqueta et-verde">Listo ✓</span>':'<span class="etiqueta et-dorado">Pendiente</span>'}</li>`).join('')||'<li class="vacio">Nadie aún...</li>';
+  const wCount=document.getElementById('waiting-count');
+  const wList=document.getElementById('waiting-list');
+  if(wCount) wCount.textContent=total+' inscrito'+(total!==1?'s':'');
+  if(wList) wList.innerHTML=parts.map(p=>`
+    <li>
+      <div class="inicial">${p.name[0].toUpperCase()}</div>
+      <div class="li-info"><div class="li-nombre">${p.name}</div>
+        ${p.tapaName?`<div class="li-tapa">🍽️ ${p.tapaName}</div>`:''}
+      </div>
+      ${p.tapaName?'<span class="etiqueta et-verde">Listo ✓</span>':'<span class="etiqueta et-dorado">Pendiente</span>'}
+    </li>`).join('')||'<li class="vacio">Nadie aún...</li>';
 }
 
-/* Muestra el mini-panel de admin dentro de waiting o voted si el usuario es admin */
-
-
-function updateProgress(total){
-  let changed=0;
-  for(let i=0;i<total;i++){ const el=document.getElementById('sc-'+i); if(el&&parseInt(el.value)!==5) changed++; }
-  document.getElementById('vote-progress').style.width=Math.round((changed/total)*100)+'%';
+function renderVoteScreen(game){
+  if(game.votes&&game.votes[myId]){ showVotedScreen(game); return; }
+  const others = Object.values(game.participants||{}).filter(p=>p&&p.id&&p.id!==myId);
+  if(!others.length){ toast('No hay otras tapas para votar'); return; }
+  showScreen('screen-vote');
+  document.getElementById('vote-subtitle').textContent='Puntúa las '+others.length+' tapas';
+  document.getElementById('vote-cards').innerHTML = others.map((p,i)=>`
+    <div class="voto-tarjeta">
+      ${p.photo?`<img class="voto-img" src="${p.photo}" onclick="openLightbox('${p.photo}')" style="cursor:zoom-in;"/>`:`<div class="voto-sin-img">🍽️</div>`}
+      <div class="voto-cuerpo">
+        <div class="voto-nombre">${p.tapaName}</div>
+        <div class="nota-fila"><span class="nota-label">Tu nota</span><span class="nota-num" id="sv-${i}">5</span></div>
+        <input type="range" min="1" max="10" value="5" step="1" id="sc-${i}"
+               oninput="document.getElementById('sv-${i}').textContent=this.value;updateProgress(${others.length})"/>
+        <div class="tics">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<span>${n}</span>`).join('')}</div>
+        <div class="comentario-seccion">
+          <span class="comentario-label cl-priv">🔒 Nota privada</span>
+          <span class="cl-desc">Solo la ves tú</span>
+          <textarea id="priv-${i}" rows="2" placeholder="Tu opinión personal (no se publica)..."></textarea>
+        </div>
+        <div class="comentario-seccion" style="margin-top:10px">
+          <span class="comentario-label cl-pub">💬 Comentario público</span>
+          <span class="cl-desc">Se publicará anónimamente</span>
+          <textarea id="pub-${i}" rows="2" placeholder="Algo para el grupo..."></textarea>
+        </div>
+      </div>
+    </div>`).join('');
+  window._others = others;
+  subscribeToGame();
 }
 
 async function submitVotes(){
@@ -2259,8 +2087,30 @@ async function resetGame(){
 }
 
 // Arranque: cargar la lista en la pantalla inicial y suscribirse a cambios
-loadJoinList();
-subscribeToGame();
+// Arranque: comprobar estado de la partida
+document.addEventListener('DOMContentLoaded', function(){
+  window._regNames = window._regNames || [];
+});
+(async function(){
+  try{
+    const snap=await db.ref('game').once('value');
+    const game=snap.val()||{};
+    if(game.phase==='results'){ renderResults(game); showScreen('screen-results'); return; }
+    if(game.phase==='voting'){
+      // Hay votación activa — ir a selección para que la gente entre
+      loadJoinList(); showScreen('screen-join'); subscribeToGame(); return;
+    }
+    // Hay participantes registrados → ir a selección
+    const parts=Object.values(game.participants||{}).filter(p=>p&&p.id&&p.name);
+    if(parts.length>0){
+      loadJoinList(); showScreen('screen-join'); subscribeToGame(); return;
+    }
+    // Sin partida → pantalla de registro
+    showScreen('screen-registro');
+  }catch(e){
+    showScreen('screen-registro');
+  }
+})();
 </script>
 </body>
 </html>
