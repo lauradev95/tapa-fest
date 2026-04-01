@@ -1,939 +1,216 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-  <title>Tapa Fest</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,400;1,700&family=EB+Garamond:ital,wght@0,400;0,600;1,400;1,600&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet"/>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<title>Tapa Fest</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 
-    :root {
-      --crema: #f5f0e8;
-      --crema2: #ede8de;
-      --crema3: #e2dcd0;
-      --madera: #2c1a0e;
-      --madera2: #4a2c14;
-      --madera3: #7a4820;
-      --rojo: #b82018;
-      --rojo2: #d42820;
-      --dorado: #c8940a;
-      --dorado2: #e8b020;
-      --dorado3: #f5cc50;
-      --tinta: #1c1408;
-      --tinta2: rgba(28, 20, 8, 0.55);
-      --tinta3: rgba(28, 20, 8, 0.28);
-      --verde: #1e4020;
-      --azul: #1a3a6a;
-    }
+:root{
+  --crema:#f5f0e8;--crema2:#ede8de;--crema3:#e2dcd0;
+  --madera:#2c1a0e;--madera2:#4a2c14;--madera3:#7a4820;
+  --rojo:#b82018;--rojo2:#d42820;
+  --dorado:#c8940a;--dorado2:#e8b020;--dorado3:#f5cc50;
+  --verde:#1e4020;
+  --tinta:#1c1408;--tinta2:rgba(28,20,8,.55);--tinta3:rgba(28,20,8,.28);
+}
 
-    html, body {
-      background: var(--crema);
-      min-height: 100dvh;
-    }
+html,body{background:var(--crema);min-height:100dvh;font-family:'EB Garamond',serif;color:var(--tinta);overflow-x:hidden}
+body{padding-bottom:4rem}
 
-    body {
-      font-family: 'EB Garamond', serif;
-      color: var(--tinta);
-      padding-bottom: 5rem;
-      overflow-x: hidden;
-    }
+/* ── Pantallas ── */
+.screen{display:none;max-width:460px;margin:0 auto}
+.screen.activa{display:block}
 
-    .screen { display: none; max-width: 460px; margin: 0 auto; }
-    .screen.active { display: block; }
+/* ── Loading / Toast ── */
+#loading{position:fixed;inset:0;background:rgba(28,20,8,.95);display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:999}
+.spinner{width:34px;height:34px;border:2px solid rgba(200,148,10,.2);border-top-color:var(--dorado2);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#loading p{font-family:'Playfair Display',serif;font-size:18px;font-style:italic;color:var(--dorado2)}
+#toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--madera);border:1px solid var(--dorado);color:var(--dorado2);padding:10px 22px;font-family:'EB Garamond',serif;font-size:17px;font-style:italic;z-index:1000;transition:transform .3s;white-space:nowrap;box-shadow:3px 3px 0 rgba(0,0,0,.3)}
+#toast.show{transform:translateX(-50%) translateY(0)}
 
-    /* ─────────────────────────────
-       CABECERA PRINCIPAL
-    ───────────────────────────── */
-    .cabecera {
-      background: var(--madera);
-      position: relative;
-    }
+/* ── Cabecera principal ── */
+.cabecera{background:var(--madera)}
+.toldo{background:var(--rojo);padding:7px 0 0}
+.toldo-label{font-family:'Oswald',sans-serif;font-size:10px;font-weight:600;letter-spacing:5px;color:rgba(245,204,80,.65);text-align:center;text-transform:uppercase;padding-bottom:5px}
+.toldo-flecos{height:16px;background:var(--rojo);clip-path:polygon(0% 0%,4% 0%,6% 100%,8% 0%,12% 0%,14% 100%,16% 0%,20% 0%,22% 100%,24% 0%,28% 0%,30% 100%,32% 0%,36% 0%,38% 100%,40% 0%,44% 0%,46% 100%,48% 0%,52% 0%,54% 100%,56% 0%,60% 0%,62% 100%,64% 0%,68% 0%,70% 100%,72% 0%,76% 0%,78% 100%,80% 0%,84% 0%,86% 100%,88% 0%,92% 0%,94% 100%,96% 0%,100% 0%)}
+.cab-interior{padding:22px 20px 18px;text-align:center}
+.titulo-marco{border:1px solid var(--dorado);padding:14px 20px 12px;margin:12px 0;display:inline-block;width:100%;position:relative}
+.titulo-marco::before,.titulo-marco::after{content:'◆';position:absolute;font-size:9px;color:var(--dorado2);top:-6px}
+.titulo-marco::before{left:12px;background:var(--madera);padding:0 4px}
+.titulo-marco::after{right:12px;background:var(--madera);padding:0 4px}
+.titulo-principal{font-family:'Playfair Display',serif;font-size:52px;font-weight:900;letter-spacing:4px;color:var(--dorado2);display:block;line-height:1;text-shadow:2px 2px 0 rgba(0,0,0,.6)}
+.linea-oro-doble{border-top:1px solid rgba(200,148,10,.4);border-bottom:1px solid rgba(200,148,10,.4);height:4px;margin:0 30px}
+.mostrador{height:8px;background:linear-gradient(180deg,var(--madera3) 0%,var(--madera2) 50%,var(--madera) 100%);box-shadow:0 3px 8px rgba(0,0,0,.4)}
+.azulejos{height:10px;background:repeating-linear-gradient(90deg,var(--rojo) 0,var(--rojo) 10px,var(--madera) 10px,var(--madera) 11px,var(--dorado) 11px,var(--dorado) 21px,var(--madera) 21px,var(--madera) 22px,#1e4020 22px,#1e4020 32px,var(--madera) 32px,var(--madera) 33px,#1a3a6a 33px,#1a3a6a 43px,var(--madera) 43px,var(--madera) 44px);opacity:.85}
 
-    /* Toldo rojo */
-    .toldo {
-      background: var(--rojo);
-      padding: 7px 0 0;
-      position: relative;
-    }
-    .toldo-label {
-      font-family: 'Oswald', sans-serif;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 5px;
-      color: rgba(245, 204, 80, 0.65);
-      text-align: center;
-      text-transform: uppercase;
-      padding-bottom: 5px;
-    }
-    /* Flecos del toldo */
-    .toldo-flecos {
-      height: 16px;
-      background: var(--rojo);
-      clip-path: polygon(
-        0% 0%, 4% 0%, 6% 100%, 8% 0%, 12% 0%, 14% 100%, 16% 0%,
-        20% 0%, 22% 100%, 24% 0%, 28% 0%, 30% 100%, 32% 0%,
-        36% 0%, 38% 100%, 40% 0%, 44% 0%, 46% 100%, 48% 0%,
-        52% 0%, 54% 100%, 56% 0%, 60% 0%, 62% 100%, 64% 0%,
-        68% 0%, 70% 100%, 72% 0%, 76% 0%, 78% 100%, 80% 0%,
-        84% 0%, 86% 100%, 88% 0%, 92% 0%, 94% 100%, 96% 0%,
-        100% 0%, 100% 0%
-      );
-    }
+/* ── Cabecera interior ── */
+.cab-int{background:var(--madera);border-bottom:3px solid var(--rojo)}
+.cab-tira{background:var(--rojo);padding:4px 0 3px;font-family:'Oswald',sans-serif;font-size:9px;font-weight:600;letter-spacing:5px;color:rgba(245,204,80,.55);text-align:center;text-transform:uppercase}
+.cab-flecos{height:10px;background:var(--rojo);clip-path:polygon(0% 0%,5% 0%,7.5% 100%,10% 0%,15% 0%,17.5% 100%,20% 0%,25% 0%,27.5% 100%,30% 0%,35% 0%,37.5% 100%,40% 0%,45% 0%,47.5% 100%,50% 0%,55% 0%,57.5% 100%,60% 0%,65% 0%,67.5% 100%,70% 0%,75% 0%,77.5% 100%,80% 0%,85% 0%,87.5% 100%,90% 0%,95% 0%,97.5% 100%,100% 0%)}
+.cab-texto{padding:14px 16px 12px;text-align:center}
+.cab-titulo{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--dorado2);text-shadow:2px 2px 0 rgba(0,0,0,.5);line-height:1}
+.cab-subtitulo{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:rgba(232,176,32,.55);margin-top:4px}
+.volver-btn{background:none;border:none;cursor:pointer;font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--tinta2);padding:14px 14px 0;display:flex;align-items:center;gap:5px}
+.volver-btn:hover{color:var(--tinta)}
 
-    /* Interior madera con nombre */
-    .cabecera-interior {
-      padding: 22px 20px 18px;
-      position: relative;
-      text-align: center;
-    }
+/* ── Panel (tarjeta carta) ── */
+.panel{background:var(--crema);border:2px solid var(--madera2);margin:14px 14px 0;position:relative;box-shadow:3px 3px 0 rgba(0,0,0,.12)}
+.panel::after{content:'';position:absolute;inset:4px;border:1px solid rgba(28,20,8,.12);pointer-events:none}
+.panel-cuerpo{padding:18px 16px 16px}
+.panel-titulo{font-family:'Playfair Display',serif;font-size:18px;font-style:italic;color:var(--rojo);text-align:center;padding-bottom:10px;margin-bottom:14px;border-bottom:1px solid rgba(184,32,24,.15)}
 
-    /* Línea ornamental dorada */
-    .linea-oro {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, var(--dorado) 25%, var(--dorado2) 50%, var(--dorado) 75%, transparent);
-      margin: 0 20px;
-    }
-    .linea-oro-doble {
-      border-top: 1px solid rgba(200, 148, 10, 0.4);
-      border-bottom: 1px solid rgba(200, 148, 10, 0.4);
-      height: 4px;
-      margin: 0 30px;
-    }
+/* ── Tarjeta ── */
+.tarjeta{background:var(--crema);border:1px solid rgba(28,20,8,.12);border-left:4px solid var(--rojo);margin:14px 14px 0;padding:1rem;box-shadow:2px 2px 0 rgba(0,0,0,.06)}
+.tarjeta-titulo{font-family:'Playfair Display',serif;font-size:17px;font-style:italic;color:var(--rojo);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid rgba(28,20,8,.07)}
 
-    /* Marco dorado alrededor del título */
-    .titulo-marco {
-      border: 1px solid var(--dorado);
-      padding: 14px 20px 12px;
-      margin: 12px 0;
-      position: relative;
-      display: inline-block;
-      width: 100%;
-    }
-    .titulo-marco::before,
-    .titulo-marco::after {
-      content: '◆';
-      position: absolute;
-      font-size: 9px;
-      color: var(--dorado2);
-      top: -6px;
-    }
-    .titulo-marco::before { left: 12px; background: var(--madera); padding: 0 4px; }
-    .titulo-marco::after  { right: 12px; background: var(--madera); padding: 0 4px; }
+/* ── Formulario ── */
+.campo{margin-bottom:14px}
+.campo-label{font-family:'Oswald',sans-serif;font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--tinta2);display:block;margin-bottom:5px}
+input[type=text],textarea{width:100%;background:var(--crema2);border:1px solid var(--crema3);border-bottom:2px solid var(--madera2);color:var(--tinta);font-family:'EB Garamond',serif;font-size:18px;padding:9px 11px;outline:none;caret-color:var(--rojo);transition:border-color .2s,background .2s}
+input[type=text]:focus{background:var(--crema);border-bottom-color:var(--rojo)}
+input[type=text]::placeholder{color:var(--tinta3);font-style:italic}
+textarea{font-size:16px;resize:none;border:1px solid var(--crema3);border-left:3px solid var(--madera2);padding:8px 11px;margin-top:5px}
+textarea:focus{border-left-color:var(--dorado);outline:none}
+textarea::placeholder{color:var(--tinta3);font-style:italic}
+.separador{height:1px;background:rgba(28,20,8,.08);margin:10px 0}
 
-    .titulo-principal {
-      font-family: 'Playfair Display', serif;
-      font-size: 52px;
-      font-weight: 900;
-      letter-spacing: 4px;
-      color: var(--dorado2);
-      display: block;
-      line-height: 1;
-      text-shadow: 2px 2px 0 rgba(0,0,0,0.6);
-    }
+/* ── Foto ── */
+.foto-zona{border:2px dashed var(--crema3);padding:1.2rem;text-align:center;cursor:pointer;background:var(--crema2);transition:all .2s;margin-top:5px}
+.foto-zona:hover{border-color:var(--rojo);background:var(--crema)}
+.foto-zona input{display:none}
+.foto-zona-icono{font-size:24px;display:block;margin-bottom:5px}
+.foto-zona-texto{font-size:14px;font-style:italic;color:var(--tinta2)}
+.foto-preview{width:100%;height:180px;object-fit:cover;display:none;margin-top:10px;border:2px solid var(--madera2)}
 
-    /* Borde mostrador */
-    .mostrador {
-      height: 8px;
-      background: linear-gradient(180deg, var(--madera3) 0%, var(--madera2) 50%, var(--madera) 100%);
-      box-shadow: 0 3px 8px rgba(0,0,0,0.4);
-    }
+/* ── Botones ── */
+.boton-zona{padding:0 14px;margin-top:12px}
+.btn{display:block;width:100%;padding:12px 18px;text-align:center;cursor:pointer;border:2px solid;font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:2px;text-transform:uppercase;font-size:15px;transition:all .12s;margin-top:8px}
+.btn:active{transform:translateY(1px)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-rojo{background:var(--rojo);border-color:var(--madera);color:var(--crema);box-shadow:3px 3px 0 var(--madera);text-shadow:1px 1px 0 rgba(0,0,0,.3)}
+.btn-rojo:active{box-shadow:1px 1px 0 var(--madera);transform:translateY(2px)}
+.btn-rojo:hover:not(:disabled){background:var(--rojo2)}
+.btn-madera{background:var(--madera);border-color:var(--dorado);color:var(--dorado2);box-shadow:3px 3px 0 rgba(0,0,0,.3)}
+.btn-madera:active{box-shadow:1px 1px 0 rgba(0,0,0,.3);transform:translateY(2px)}
+.btn-contorno{background:var(--crema);border-color:rgba(28,20,8,.2);color:var(--tinta);font-family:'EB Garamond',serif;font-size:17px;font-style:italic;letter-spacing:0;text-transform:none;box-shadow:2px 2px 0 rgba(0,0,0,.08)}
+.btn-contorno:hover{border-color:var(--madera2)}
+.btn-pdf{background:var(--verde);border-color:var(--madera);color:var(--crema);box-shadow:3px 3px 0 var(--madera)}
+.btn-peligro{background:transparent;border-color:rgba(184,32,24,.2);color:rgba(184,32,24,.7);font-family:'EB Garamond',serif;font-size:15px;font-style:italic;letter-spacing:0;text-transform:none}
 
-    /* Franja azulejo */
-    .azulejos {
-      height: 10px;
-      background: repeating-linear-gradient(
-        90deg,
-        var(--rojo) 0, var(--rojo) 10px,
-        var(--madera) 10px, var(--madera) 11px,
-        var(--dorado) 11px, var(--dorado) 21px,
-        var(--madera) 21px, var(--madera) 22px,
-        var(--verde) 22px, var(--verde) 32px,
-        var(--madera) 32px, var(--madera) 33px,
-        var(--azul) 33px, var(--azul) 43px,
-        var(--madera) 43px, var(--madera) 44px
-      );
-      opacity: 0.85;
-    }
+/* ── Lista de participantes ── */
+.lista{list-style:none}
+.lista li{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(28,20,8,.06);font-size:16px}
+.lista li:last-child{border-bottom:none}
+.inicial{width:32px;height:32px;background:var(--madera);color:var(--dorado2);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;flex-shrink:0}
+.li-info{flex:1;min-width:0}
+.li-nombre{font-weight:600;font-size:16px}
+.li-tapa{font-size:13px;font-style:italic;color:var(--tinta2);margin-top:1px}
+.etiqueta{font-family:'Oswald',sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border:1px solid;display:inline-block;white-space:nowrap}
+.et-verde{background:rgba(30,64,32,.06);border-color:var(--verde);color:var(--verde)}
+.et-dorado{background:rgba(200,148,10,.06);border-color:var(--dorado);color:var(--dorado)}
+.vacio{text-align:center;color:var(--tinta2);font-size:16px;font-style:italic;padding:1.5rem 0}
 
-    /* ─────────────────────────────
-       PANELES — carta del restaurante
-    ───────────────────────────── */
-    .panel {
-      background: var(--crema);
-      border: 2px solid var(--madera2);
-      margin: 16px 14px 0;
-      position: relative;
-      box-shadow: 3px 3px 0 rgba(0,0,0,0.12);
-    }
-    /* Doble marco interior */
-    .panel::after {
-      content: '';
-      position: absolute;
-      inset: 4px;
-      border: 1px solid rgba(28, 20, 8, 0.12);
-      pointer-events: none;
-    }
-    .panel-cuerpo {
-      padding: 18px 16px 16px;
-    }
-    .panel-titulo {
-      font-family: 'Playfair Display', serif;
-      font-size: 18px;
-      font-style: italic;
-      color: var(--rojo);
-      text-align: center;
-      padding-bottom: 10px;
-      margin-bottom: 14px;
-      border-bottom: 1px solid rgba(184, 32, 24, 0.15);
-    }
+/* ── Barra de progreso ── */
+.barra-wrap{height:4px;background:rgba(28,20,8,.08);border-radius:2px;margin-top:8px}
+.barra-fill{height:100%;background:var(--dorado);border-radius:2px;width:0%;transition:width .5s}
 
-    /* ─────────────────────────────
-       FORMULARIO
-    ───────────────────────────── */
-    .campo { margin-bottom: 14px; }
-    .campo:last-child { margin-bottom: 0; }
-    .campo-label {
-      font-family: 'Oswald', sans-serif;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      color: var(--tinta2);
-      display: block;
-      margin-bottom: 5px;
-    }
+/* ── Votación ── */
+.voto-tarjeta{background:var(--crema);border:1px solid rgba(28,20,8,.12);border-top:4px solid var(--rojo);margin:0 14px 1.5rem;box-shadow:2px 2px 0 rgba(0,0,0,.07)}
+.voto-img{width:100%;height:200px;object-fit:cover;display:block}
+.voto-sin-img{width:100%;height:160px;background:var(--crema2);display:flex;align-items:center;justify-content:center;font-size:44px}
+.voto-cuerpo{padding:1rem}
+.voto-nombre{font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:var(--tinta);margin-bottom:12px;line-height:1.2}
+.nota-fila{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
+.nota-label{font-family:'Oswald',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--tinta2)}
+.nota-num{font-family:'Playfair Display',serif;font-size:48px;font-weight:700;line-height:1;color:var(--rojo)}
+input[type=range]{width:100%;height:4px;accent-color:var(--rojo);cursor:pointer;margin-bottom:4px}
+.tics{display:flex;justify-content:space-between}
+.tics span{font-family:'Oswald',sans-serif;font-size:10px;color:var(--tinta3)}
+.comentario-seccion{margin-top:13px}
+.comentario-label{font-family:'Oswald',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:2px 8px;border:1px solid;display:inline-block;margin-bottom:5px}
+.cl-priv{color:#1a3a6a;border-color:rgba(26,58,106,.3);background:rgba(26,58,106,.04)}
+.cl-pub{color:var(--dorado);border-color:rgba(200,148,10,.3);background:rgba(200,148,10,.04)}
+.cl-desc{font-size:12px;font-style:italic;color:var(--tinta2);display:block;margin-bottom:4px}
+.progreso{height:3px;background:rgba(28,20,8,.08);margin:0 14px 10px}
+.progreso-fill{height:100%;background:var(--rojo);transition:width .3s}
 
-    input[type=text], textarea {
-      width: 100%;
-      background: var(--crema2);
-      border: 1px solid var(--crema3);
-      border-bottom: 2px solid var(--madera2);
-      color: var(--tinta);
-      font-family: 'EB Garamond', serif;
-      font-size: 18px;
-      padding: 9px 11px;
-      outline: none;
-      caret-color: var(--rojo);
-      transition: border-color .2s, background .2s;
-    }
-    input[type=text]:focus {
-      background: var(--crema);
-      border-bottom-color: var(--rojo);
-    }
-    input[type=text]::placeholder { color: var(--tinta3); font-style: italic; }
-    textarea {
-      font-size: 16px;
-      resize: none;
-      border: 1px solid var(--crema3);
-      border-left: 3px solid var(--madera2);
-      padding: 8px 11px;
-      margin-top: 5px;
-    }
-    textarea:focus { border-left-color: var(--dorado); outline: none; }
-    textarea::placeholder { color: var(--tinta3); font-style: italic; }
+/* ── Podio ── */
+#podium{display:flex;justify-content:center;align-items:flex-end;gap:8px;padding:0 10px 8px}
+.podium-card{display:flex;flex-direction:column;align-items:center;text-align:center;flex:1;max-width:130px;position:relative}
+.podium-card::after{content:'';display:block;width:100%;border-radius:2px 2px 0 0;margin-top:6px}
+.podium-card.first::after{height:54px;background:var(--dorado)}
+.podium-card.second::after{height:36px;background:var(--madera3)}
+.podium-card.third::after{height:24px;background:var(--madera2)}
+.medalla{font-size:28px;margin-bottom:4px}
+.podio-foto{width:72px;height:72px;object-fit:cover;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.18);border-radius:2px;cursor:zoom-in}
+.podium-card.first .podio-foto{width:88px;height:88px;border-color:var(--dorado2)}
+.podio-sin-foto{width:72px;height:72px;background:var(--crema2);display:flex;align-items:center;justify-content:center;font-size:26px;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.18)}
+.podium-card.first .podio-sin-foto{width:88px;height:88px}
+.podio-info{margin-top:6px;width:100%}
+.podio-nombre{font-family:'Playfair Display',serif;font-size:13px;font-style:italic;color:var(--tinta);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.2}
+.podium-card.first .podio-nombre{font-size:15px}
+.podio-autor{font-size:11px;color:var(--tinta2);margin-top:2px;font-style:italic}
+.podio-nota{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--rojo);margin-top:3px}
+.podium-card.first .podio-nota{font-size:28px;color:var(--dorado)}
+.podium-card.second .podio-nota,.podium-card.third .podio-nota{font-size:18px;color:var(--tinta2)}
+.ranking{list-style:none}
+.ranking li{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(28,20,8,.06);font-family:'EB Garamond',serif;font-size:16px}
+.ranking li:last-child{border-bottom:none}
+.rk-pos{font-family:'Oswald',sans-serif;font-size:13px;font-weight:600;color:var(--tinta2);min-width:24px}
+.rk-nota{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--rojo)}
+.rk-votos{font-size:12px;font-style:italic;color:var(--tinta2);margin-top:1px}
+.sec-titulo{font-family:'Oswald',sans-serif;font-size:10px;font-weight:600;color:var(--tinta2);letter-spacing:5px;text-transform:uppercase;text-align:center;margin:20px 14px 10px;display:flex;align-items:center;gap:10px}
+.sec-titulo::before,.sec-titulo::after{content:'';flex:1;height:1px;background:rgba(28,20,8,.12)}
 
-    .separador {
-      height: 1px;
-      background: rgba(28, 20, 8, 0.08);
-      margin: 10px 0;
-    }
+/* ── Comentarios ── */
+.comentario-grupo{margin-bottom:18px}
+.comentario-grupo-tapa{font-family:'Oswald',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--dorado);margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid rgba(200,148,10,.2)}
+.comentario-burbujas{display:flex;flex-wrap:wrap;gap:7px}
+.comentario-burbuja{background:var(--crema2);border:1px solid var(--crema3);border-left:3px solid var(--dorado);padding:6px 12px;font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--tinta);line-height:1.3;border-radius:0 4px 4px 0}
 
-    /* Foto */
-    .foto-zona {
-      border: 2px dashed var(--crema3);
-      padding: 1.2rem;
-      text-align: center;
-      cursor: pointer;
-      background: var(--crema2);
-      transition: all .2s;
-      margin-top: 5px;
-    }
-    .foto-zona:hover { border-color: var(--rojo); background: var(--crema); }
-    .foto-zona input { display: none; }
-    .foto-zona-icono { font-size: 24px; display: block; margin-bottom: 5px; }
-    .foto-zona-texto { font-size: 14px; font-style: italic; color: var(--tinta2); }
-    .foto-preview {
-      width: 100%; height: 180px; object-fit: cover;
-      display: none; margin-top: 10px;
-      border: 2px solid var(--madera2);
-    }
+/* ── Lightbox ── */
+#lightbox{display:none;position:fixed;inset:0;background:rgba(28,20,8,.96);z-index:800;align-items:center;justify-content:center;cursor:zoom-out}
+#lightbox img{max-width:95vw;max-height:90vh;object-fit:contain;border:2px solid var(--dorado)}
 
-    /* ─────────────────────────────
-       BOTONES
-    ───────────────────────────── */
-    .boton-zona { padding: 0 14px; margin-top: 12px; }
+/* ── Revelación dramática ── */
+#reveal-overlay{position:fixed;inset:0;z-index:900;background:var(--madera);display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px}
+#reveal-overlay.activa{display:flex}
+.reveal-pos{font-family:'Oswald',sans-serif;font-size:14px;font-weight:600;letter-spacing:8px;text-transform:uppercase;color:var(--tinta2);margin-bottom:8px}
+.reveal-tapa{font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--dorado2);text-align:center;padding:0 24px;text-shadow:3px 3px 0 rgba(0,0,0,.4);line-height:1.1;animation:revealIn .6s cubic-bezier(.34,1.56,.64,1)}
+.reveal-autor{font-family:'EB Garamond',serif;font-size:20px;font-style:italic;color:var(--tinta2);margin-top:8px}
+.reveal-nota{font-family:'Playfair Display',serif;font-size:72px;font-weight:900;color:var(--rojo);line-height:1;margin-top:12px;animation:revealIn .5s cubic-bezier(.34,1.56,.64,1)}
+.reveal-foto{width:160px;height:160px;object-fit:cover;border:4px solid var(--dorado);box-shadow:0 8px 32px rgba(0,0,0,.5);margin-bottom:16px;animation:revealIn .5s cubic-bezier(.34,1.56,.64,1)}
+.reveal-countdown{font-family:'Playfair Display',serif;font-size:120px;font-weight:900;color:var(--dorado2);text-shadow:4px 4px 0 rgba(0,0,0,.5);animation:countPulse .8s ease}
+.reveal-suspense{font-family:'Oswald',sans-serif;font-size:16px;letter-spacing:6px;color:var(--tinta2);text-transform:uppercase}
+@keyframes revealIn{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
+@keyframes countPulse{0%{transform:scale(1.4);opacity:0}50%{transform:scale(1);opacity:1}100%{transform:scale(.95);opacity:.8}}
+.confetti-container{position:fixed;inset:0;pointer-events:none;z-index:950;overflow:hidden}
+.confetti-piece{position:absolute;top:-10px;animation:confettiFall linear forwards}
+@keyframes confettiFall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
 
-    .btn {
-      display: block;
-      width: 100%;
-      padding: 12px 18px;
-      text-align: center;
-      cursor: pointer;
-      border: 2px solid;
-      font-family: 'Oswald', sans-serif;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      font-size: 15px;
-      transition: all .12s;
-      margin-top: 8px;
-    }
-    .btn:active { transform: translateY(1px); }
-    .btn:disabled { opacity: .4; cursor: not-allowed; }
-
-    .btn-rojo {
-      background: var(--rojo);
-      border-color: var(--madera);
-      color: var(--crema);
-      box-shadow: 3px 3px 0 var(--madera);
-      text-shadow: 1px 1px 0 rgba(0,0,0,.3);
-    }
-    .btn-rojo:active { box-shadow: 1px 1px 0 var(--madera); transform: translateY(2px); }
-    .btn-rojo:hover { background: var(--rojo2); }
-
-    .btn-madera {
-      background: var(--madera);
-      border-color: var(--dorado);
-      color: var(--dorado2);
-      box-shadow: 3px 3px 0 rgba(0,0,0,.3);
-    }
-    .btn-madera:active { box-shadow: 1px 1px 0 rgba(0,0,0,.3); transform: translateY(2px); }
-    .btn-madera:hover { background: var(--madera2); }
-
-    .btn-contorno {
-      background: var(--crema);
-      border-color: rgba(28, 20, 8, 0.2);
-      color: var(--tinta);
-      font-family: 'EB Garamond', serif;
-      font-size: 17px;
-      font-style: italic;
-      letter-spacing: 0;
-      text-transform: none;
-      box-shadow: 2px 2px 0 rgba(0,0,0,.08);
-    }
-    .btn-contorno:hover { border-color: var(--madera2); }
-
-    .btn-verde {
-      background: var(--crema);
-      border-color: var(--verde);
-      color: var(--verde);
-      font-family: 'EB Garamond', serif;
-      font-size: 17px;
-      font-style: italic;
-      letter-spacing: 0;
-      text-transform: none;
-      box-shadow: 2px 2px 0 rgba(0,0,0,.08);
-    }
-
-    .btn-pdf {
-      background: var(--verde);
-      border-color: var(--madera);
-      color: var(--crema);
-      box-shadow: 3px 3px 0 var(--madera);
-    }
-    .btn-pdf:active { box-shadow: 1px 1px 0 var(--madera); transform: translateY(2px); }
-
-    .btn-peligro {
-      background: transparent;
-      border-color: rgba(184,32,24,.2);
-      color: rgba(184,32,24,.7);
-      font-family: 'EB Garamond', serif;
-      font-size: 15px;
-      font-style: italic;
-      letter-spacing: 0;
-      text-transform: none;
-    }
-
-    /* ─────────────────────────────
-       CABECERA PANTALLAS INTERIORES
-    ───────────────────────────── */
-    .cab-interior {
-      background: var(--madera);
-      border-bottom: 3px solid var(--rojo);
-    }
-    .cab-tira {
-      background: var(--rojo);
-      padding: 4px 0 3px;
-      font-family: 'Oswald', sans-serif;
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: 5px;
-      color: rgba(245, 204, 80, 0.55);
-      text-align: center;
-      text-transform: uppercase;
-    }
-    .cab-flecos {
-      height: 10px;
-      background: var(--rojo);
-      clip-path: polygon(
-        0% 0%, 5% 0%, 7.5% 100%, 10% 0%, 15% 0%, 17.5% 100%, 20% 0%,
-        25% 0%, 27.5% 100%, 30% 0%, 35% 0%, 37.5% 100%, 40% 0%,
-        45% 0%, 47.5% 100%, 50% 0%, 55% 0%, 57.5% 100%, 60% 0%,
-        65% 0%, 67.5% 100%, 70% 0%, 75% 0%, 77.5% 100%, 80% 0%,
-        85% 0%, 87.5% 100%, 90% 0%, 95% 0%, 97.5% 100%, 100% 0%
-      );
-    }
-    .cab-texto {
-      padding: 14px 16px 12px;
-      text-align: center;
-    }
-    .cab-titulo {
-      font-family: 'Playfair Display', serif;
-      font-size: 30px;
-      font-weight: 700;
-      color: var(--dorado2);
-      text-shadow: 2px 2px 0 rgba(0,0,0,.5);
-      line-height: 1;
-    }
-    .cab-subtitulo {
-      font-family: 'EB Garamond', serif;
-      font-size: 16px;
-      font-style: italic;
-      color: rgba(232, 176, 32, 0.55);
-      margin-top: 4px;
-    }
-
-    /* ─────────────────────────────
-       TARJETAS CONTENIDO
-    ───────────────────────────── */
-    .tarjeta {
-      background: var(--crema);
-      border: 1px solid rgba(28,20,8,.12);
-      border-left: 4px solid var(--rojo);
-      margin: 14px 14px 0;
-      padding: 1rem 1rem;
-      box-shadow: 2px 2px 0 rgba(0,0,0,.06);
-    }
-    .tarjeta-titulo {
-      font-family: 'Playfair Display', serif;
-      font-size: 17px;
-      font-style: italic;
-      color: var(--rojo);
-      margin-bottom: 10px;
-      padding-bottom: 7px;
-      border-bottom: 1px solid rgba(28,20,8,.07);
-    }
-
-    /* ─────────────────────────────
-       LISTA PARTICIPANTES
-    ───────────────────────────── */
-    .lista { list-style: none; }
-    .lista li {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px 0;
-      border-bottom: 1px solid rgba(28,20,8,.06);
-      font-size: 16px;
-      font-family: 'EB Garamond', serif;
-    }
-    .lista li:last-child { border-bottom: none; }
-    .inicial {
-      width: 32px; height: 32px;
-      background: var(--madera);
-      color: var(--dorado2);
-      display: flex; align-items: center; justify-content: center;
-      font-family: 'Playfair Display', serif;
-      font-size: 14px; font-weight: 700;
-      flex-shrink: 0;
-    }
-    .li-info { flex: 1; }
-    .li-nombre { font-weight: 600; font-size: 16px; }
-    .li-tapa { font-size: 13px; font-style: italic; color: var(--tinta2); }
-
-    .etiqueta {
-      font-family: 'Oswald', sans-serif;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      padding: 2px 7px;
-      border: 1px solid;
-      display: inline-block;
-      white-space: nowrap;
-    }
-    .et-verde { background: rgba(30,64,32,.06); border-color: var(--verde); color: var(--verde); }
-    .et-dorado { background: rgba(200,148,10,.06); border-color: var(--dorado); color: var(--dorado); }
-
-    /* ─────────────────────────────
-       TARJETAS VOTACIÓN
-    ───────────────────────────── */
-    .voto-tarjeta {
-      background: var(--crema);
-      border: 1px solid rgba(28,20,8,.12);
-      border-top: 4px solid var(--rojo);
-      margin: 0 14px 1.5rem;
-      box-shadow: 2px 2px 0 rgba(0,0,0,.07);
-    }
-    .voto-img { width: 100%; height: 200px; object-fit: cover; display: block; }
-    .voto-sin-img {
-      width: 100%; height: 160px;
-      background: var(--crema2);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 44px;
-    }
-    .voto-cuerpo { padding: 1rem; }
-    .voto-nombre {
-      font-family: 'Playfair Display', serif;
-      font-size: 22px;
-      font-style: italic;
-      color: var(--tinta);
-      margin-bottom: 12px;
-      line-height: 1.2;
-    }
-
-    .nota-fila { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 7px; }
-    .nota-label {
-      font-family: 'Oswald', sans-serif;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--tinta2);
-    }
-    .nota-num {
-      font-family: 'Playfair Display', serif;
-      font-size: 48px;
-      font-weight: 700;
-      line-height: 1;
-      color: var(--rojo);
-    }
-    input[type=range] {
-      width: 100%;
-      height: 4px;
-      accent-color: var(--rojo);
-      cursor: pointer;
-      margin-bottom: 4px;
-    }
-    .tics { display: flex; justify-content: space-between; }
-    .tics span {
-      font-family: 'Oswald', sans-serif;
-      font-size: 10px;
-      color: var(--tinta3);
-    }
-
-    .comentario-seccion { margin-top: 13px; }
-    .comentario-label {
-      font-family: 'Oswald', sans-serif;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      padding: 2px 8px;
-      border: 1px solid;
-      display: inline-block;
-      margin-bottom: 5px;
-    }
-    .cl-priv { color: var(--azul); border-color: rgba(26,58,106,.3); background: rgba(26,58,106,.04); }
-    .cl-pub  { color: var(--dorado); border-color: rgba(200,148,10,.3); background: rgba(200,148,10,.04); }
-    .cl-desc { font-size: 12px; font-style: italic; color: var(--tinta2); display: block; margin-bottom: 4px; }
-
-    /* ─────────────────────────────
-       BARRA PROGRESO
-    ───────────────────────────── */
-    .progreso { height: 3px; background: rgba(28,20,8,.08); margin: 0 14px 10px; }
-    .progreso-fill { height: 100%; background: var(--rojo); transition: width .3s; }
-
-    /* ─────────────────────────────
-       RESULTADOS — PODIO
-    ───────────────────────────── */
-    #podium {
-      display: flex;
-      justify-content: center;
-      align-items: flex-end;
-      gap: 8px;
-      padding: 0 10px 8px;
-    }
-    .podium-card {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
-      flex: 1;
-      max-width: 130px;
-      position: relative;
-    }
-    /* The platform bar under each card */
-    .podium-card::after {
-      content: '';
-      display: block;
-      width: 100%;
-      border-radius: 2px 2px 0 0;
-      background: var(--madera2);
-      margin-top: 6px;
-    }
-    .podium-card.first::after  { height: 54px; background: var(--dorado); }
-    .podium-card.second::after { height: 36px; background: var(--madera3); }
-    .podium-card.third::after  { height: 24px; background: var(--madera2); }
-
-    .medalla { font-size: 28px; margin-bottom: 4px; }
-    .podio-foto {
-      width: 72px; height: 72px;
-      object-fit: cover;
-      border: 3px solid white;
-      box-shadow: 0 2px 8px rgba(0,0,0,.18);
-      border-radius: 2px;
-      cursor: zoom-in;
-    }
-    .podium-card.first .podio-foto { width: 88px; height: 88px; border-color: var(--dorado2); }
-    .podio-sin-foto {
-      width: 72px; height: 72px;
-      background: var(--crema2);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 26px;
-      border: 3px solid white;
-      box-shadow: 0 2px 8px rgba(0,0,0,.18);
-    }
-    .podium-card.first .podio-sin-foto { width: 88px; height: 88px; }
-    .podio-info { margin-top: 6px; width: 100%; }
-    .podio-nombre {
-      font-family: 'Playfair Display', serif;
-      font-size: 13px; font-style: italic;
-      color: var(--tinta);
-      overflow: hidden; text-overflow: ellipsis;
-      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-      line-height: 1.2;
-    }
-    .podium-card.first .podio-nombre { font-size: 15px; }
-    .podio-autor { font-size: 11px; color: var(--tinta2); margin-top: 2px; font-style: italic; }
-    .podio-nota {
-      font-family: 'Playfair Display', serif;
-      font-size: 22px; font-weight: 700;
-      color: var(--rojo); margin-top: 3px;
-    }
-    .podium-card.first .podio-nota { font-size: 28px; color: var(--dorado); }
-    .podium-card.second .podio-nota, .podium-card.third .podio-nota { font-size: 18px; color: var(--tinta2); }
-
-    .ranking { list-style: none; }
-    .ranking li {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 8px 0; border-bottom: 1px solid rgba(28,20,8,.06);
-      font-family: 'EB Garamond', serif; font-size: 16px;
-    }
-    .ranking li:last-child { border-bottom: none; }
-    .rk-pos {
-      font-family: 'Oswald', sans-serif;
-      font-size: 13px; font-weight: 600;
-      color: var(--tinta2); min-width: 24px;
-    }
-    .rk-nota {
-      font-family: 'Playfair Display', serif;
-      font-size: 19px; font-weight: 700;
-      color: var(--rojo);
-    }
-    .rk-votos { font-size: 12px; font-style: italic; color: var(--tinta2); margin-top: 1px; }
-
-    .comentario-pub {
-      padding: 8px 0 8px 13px;
-      border-left: 3px solid var(--dorado);
-      margin-bottom: 10px;
-      font-family: 'EB Garamond', serif;
-      font-size: 17px; font-style: italic;
-      line-height: 1.5; color: var(--tinta);
-    }
-    .comentario-pub-tapa {
-      font-style: normal;
-      font-family: 'Oswald', sans-serif;
-      font-size: 10px; font-weight: 600;
-      color: var(--dorado); margin-bottom: 3px;
-      letter-spacing: 2px; text-transform: uppercase;
-    }
-
-    .sec-titulo {
-      font-family: 'Oswald', sans-serif;
-      font-size: 10px; font-weight: 600;
-      color: var(--tinta2); letter-spacing: 5px;
-      text-transform: uppercase;
-      text-align: center;
-      margin: 20px 14px 10px;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .sec-titulo::before, .sec-titulo::after {
-      content: ''; flex: 1; height: 1px;
-      background: rgba(28,20,8,.12);
-    }
-
-    /* ─────────────────────────────
-       LOADING / TOAST
-    ───────────────────────────── */
-    #loading {
-      position: fixed; inset: 0;
-      background: rgba(28,20,8,.96);
-      display: none; align-items: center; justify-content: center;
-      flex-direction: column; gap: 14px; z-index: 500;
-    }
-    .spinner {
-      width: 34px; height: 34px;
-      border: 2px solid rgba(200,148,10,.2);
-      border-top-color: var(--dorado2);
-      border-radius: 50%;
-      animation: spin .7s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    #loading p {
-      font-family: 'Playfair Display', serif;
-      font-size: 19px; font-style: italic;
-      color: var(--dorado2);
-    }
-
-    #toast {
-      position: fixed; bottom: 1.5rem; left: 50%;
-      transform: translateX(-50%) translateY(100px);
-      background: var(--madera);
-      border: 1px solid var(--dorado);
-      color: var(--dorado2);
-      padding: 10px 22px;
-      font-family: 'EB Garamond', serif;
-      font-size: 17px; font-style: italic;
-      z-index: 600; transition: transform .3s;
-      white-space: nowrap;
-      box-shadow: 3px 3px 0 rgba(0,0,0,.3);
-    }
-    #toast.show { transform: translateX(-50%) translateY(0); }
-
-    .vacio { text-align: center; color: var(--tinta2); font-size: 16px; font-style: italic; padding: 1.5rem 0; }
-    .volver-btn {
-      background: none; border: none; cursor: pointer;
-      font-family: 'EB Garamond', serif;
-      font-size: 16px; font-style: italic;
-      color: var(--tinta2);
-      padding: 14px 14px 0;
-      display: flex; align-items: center; gap: 5px;
-    }
-    .volver-btn:hover { color: var(--tinta); }
-    .esp { height: 14px; }
-
-    /* ─── SALA PROYECTABLE ─── */
-    #screen-lobby {
-      position: fixed; inset: 0; z-index: 900;
-      background: var(--madera);
-      display: none; flex-direction: column;
-      max-width: 100%;
-    }
-    #screen-lobby.active { display: flex; }
-    .lobby-header {
-      background: var(--rojo);
-      padding: 20px 24px 16px;
-      text-align: center;
-      flex-shrink: 0;
-    }
-    .lobby-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 36px; font-weight: 900;
-      color: var(--dorado2);
-      text-shadow: 2px 2px 0 rgba(0,0,0,.4);
-      letter-spacing: 4px;
-    }
-    .lobby-subtitle {
-      font-family: 'Oswald', sans-serif;
-      font-size: 11px; letter-spacing: 4px;
-      color: rgba(245,204,80,.7);
-      text-transform: uppercase;
-      margin-top: 4px;
-    }
-    .lobby-flecos {
-      height: 14px; background: var(--rojo);
-      clip-path: polygon(
-        0% 0%, 3.5% 0%, 5% 100%, 7% 0%, 10.5% 0%, 12% 100%, 14% 0%,
-        17.5% 0%, 19% 100%, 21% 0%, 24.5% 0%, 26% 100%, 28% 0%,
-        31.5% 0%, 33% 100%, 35% 0%, 38.5% 0%, 40% 100%, 42% 0%,
-        45.5% 0%, 47% 100%, 49% 0%, 52.5% 0%, 54% 100%, 56% 0%,
-        59.5% 0%, 61% 100%, 63% 0%, 66.5% 0%, 68% 100%, 70% 0%,
-        73.5% 0%, 75% 100%, 77% 0%, 80.5% 0%, 82% 100%, 84% 0%,
-        87.5% 0%, 89% 100%, 91% 0%, 94.5% 0%, 96% 100%, 98% 0%,
-        100% 0%
-      );
-      flex-shrink: 0;
-    }
-    .lobby-grid {
-      flex: 1; overflow-y: auto;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-      gap: 12px;
-      padding: 20px;
-      align-content: start;
-    }
-    .lobby-card {
-      background: var(--crema);
-      border: 2px solid var(--madera2);
-      padding: 14px 12px;
-      text-align: center;
-      position: relative;
-      transition: all .3s;
-      animation: lobbyPop .4s ease;
-    }
-    @keyframes lobbyPop {
-      from { opacity:0; transform:scale(.8) translateY(10px); }
-      to   { opacity:1; transform:scale(1) translateY(0); }
-    }
-    .lobby-card.listo {
-      border-color: var(--verde);
-      background: rgba(30,64,32,.06);
-    }
-    .lobby-card-nombre {
-      font-family: 'Playfair Display', serif;
-      font-size: 18px; font-weight: 700;
-      color: var(--tinta);
-      margin-bottom: 6px;
-    }
-    .lobby-card-tapa {
-      font-family: 'EB Garamond', serif;
-      font-size: 13px; font-style: italic;
-      color: var(--tinta2);
-    }
-    .lobby-card-foto {
-      width: 64px; height: 64px; object-fit: cover;
-      border-radius: 2px; margin: 0 auto 8px;
-      display: block; border: 2px solid var(--madera2);
-    }
-    .lobby-card-badge {
-      position: absolute; top: -8px; right: -8px;
-      background: var(--verde); color: white;
-      font-size: 14px; width: 24px; height: 24px;
-      border-radius: 50%; display: flex;
-      align-items: center; justify-content: center;
-    }
-    .lobby-footer {
-      background: var(--madera2); padding: 12px 20px;
-      display: flex; justify-content: space-between; align-items: center;
-      flex-shrink: 0; gap: 10px;
-    }
-    .lobby-count {
-      font-family: 'Oswald', sans-serif;
-      font-size: 13px; font-weight: 600;
-      color: var(--dorado2); letter-spacing: 2px;
-    }
-
-    /* ─── REVELACIÓN DRAMÁTICA ─── */
-    #reveal-overlay {
-      position: fixed; inset: 0; z-index: 800;
-      background: var(--madera);
-      display: none; align-items: center; justify-content: center;
-      flex-direction: column;
-    }
-    #reveal-overlay.active { display: flex; }
-    .reveal-pos {
-      font-family: 'Oswald', sans-serif;
-      font-size: 14px; font-weight: 600;
-      letter-spacing: 8px; text-transform: uppercase;
-      color: var(--tinta2); margin-bottom: 8px;
-    }
-    .reveal-tapa {
-      font-family: 'Playfair Display', serif;
-      font-size: 40px; font-weight: 900;
-      color: var(--dorado2);
-      text-align: center; padding: 0 24px;
-      text-shadow: 3px 3px 0 rgba(0,0,0,.4);
-      line-height: 1.1;
-      animation: revealIn .6s cubic-bezier(.34,1.56,.64,1);
-    }
-    .reveal-autor {
-      font-family: 'EB Garamond', serif;
-      font-size: 20px; font-style: italic;
-      color: var(--tinta2); margin-top: 8px;
-    }
-    .reveal-nota {
-      font-family: 'Playfair Display', serif;
-      font-size: 72px; font-weight: 900;
-      color: var(--rojo); line-height: 1;
-      margin-top: 12px;
-      animation: revealIn .5s cubic-bezier(.34,1.56,.64,1);
-    }
-    .reveal-foto {
-      width: 160px; height: 160px; object-fit: cover;
-      border: 4px solid var(--dorado);
-      box-shadow: 0 8px 32px rgba(0,0,0,.5);
-      margin-bottom: 16px;
-      animation: revealIn .5s cubic-bezier(.34,1.56,.64,1);
-    }
-    .reveal-medal { font-size: 64px; margin-bottom: 8px; }
-    @keyframes revealIn {
-      from { opacity:0; transform:scale(.6); }
-      to   { opacity:1; transform:scale(1); }
-    }
-    .reveal-countdown {
-      font-family: 'Playfair Display', serif;
-      font-size: 120px; font-weight: 900;
-      color: var(--dorado2);
-      text-shadow: 4px 4px 0 rgba(0,0,0,.5);
-      animation: countPulse .8s ease;
-    }
-    @keyframes countPulse {
-      0%   { transform:scale(1.4); opacity:0; }
-      50%  { transform:scale(1);   opacity:1; }
-      100% { transform:scale(.95); opacity:.8; }
-    }
-    .reveal-suspense {
-      font-family: 'Oswald', sans-serif;
-      font-size: 16px; letter-spacing: 6px;
-      color: var(--tinta2); text-transform: uppercase;
-    }
-    .confetti-container {
-      position: fixed; inset: 0; pointer-events: none; z-index: 850;
-      overflow: hidden;
-    }
-    .confetti-piece {
-      position: absolute; top: -10px;
-      width: 8px; height: 12px;
-      animation: confettiFall linear forwards;
-    }
-    @keyframes confettiFall {
-      to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-    }
-
-
-    /* ─────────────────────────────
-       COMENTARIOS AGRUPADOS POR TAPA
-    ───────────────────────────── */
-    .comentario-grupo {
-      margin-bottom: 18px;
-    }
-    .comentario-grupo-tapa {
-      font-family: 'Oswald', sans-serif;
-      font-size: 10px;
-      font-weight: 600;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--dorado);
-      margin-bottom: 8px;
-      padding-bottom: 4px;
-      border-bottom: 1px solid rgba(200,148,10,.2);
-    }
-    .comentario-burbujas {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 7px;
-    }
-    .comentario-burbuja {
-      background: var(--crema2);
-      border: 1px solid var(--crema3);
-      border-left: 3px solid var(--dorado);
-      padding: 6px 12px;
-      font-family: 'EB Garamond', serif;
-      font-size: 16px;
-      font-style: italic;
-      color: var(--tinta);
-      line-height: 1.3;
-      border-radius: 0 4px 4px 0;
-    }
-
-  </style>
+.esp{height:14px}
+</style>
 </head>
 <body>
 
-<div id="loading"><div class="spinner"></div><p id="loading-text">Un momento...</p></div>
+<!-- Loading -->
+<div id="loading"><div class="spinner"></div><p id="loading-txt">Un momento...</p></div>
 <div id="toast"></div>
+<div id="lightbox" onclick="closeLightbox()"><img id="lightbox-img"/></div>
+<div id="reveal-overlay"><div id="reveal-content"></div></div>
+<div class="confetti-container" id="confetti"></div>
 
-<!-- ══════════════════════
-     REGISTRO — el organizador añade nombres
-══════════════════════ -->
-<div id="screen-registro" class="screen active">
+<!-- ══ PANTALLA 1: REGISTRO ══ -->
+<div id="s-registro" class="screen activa">
   <div class="cabecera">
     <div class="toldo"><div class="toldo-label">✦ &nbsp; Concurso Gastronómico &nbsp; ✦</div></div>
     <div class="toldo-flecos"></div>
-    <div class="cabecera-interior">
+    <div class="cab-interior">
       <div class="linea-oro-doble"></div>
       <div class="titulo-marco"><span class="titulo-principal">TAPA FEST</span></div>
       <div class="linea-oro-doble"></div>
@@ -942,40 +219,33 @@
     <div class="azulejos"></div>
   </div>
 
-  <div class="panel" style="margin-top:16px;">
+  <div class="panel" style="margin-top:16px">
     <div class="panel-cuerpo">
       <div class="panel-titulo">Añadir participantes</div>
-      <p style="font-size:15px;font-style:italic;color:var(--tinta2);margin-bottom:14px;">Escribe todos los nombres y pulsa "Listo" cuando estén todos.</p>
-      <div style="display:flex;gap:8px;">
-        <input type="text" id="reg-name-input" placeholder="Nombre..." autocomplete="off"
-               style="flex:1;margin-bottom:0;"
-               onkeydown="if(event.key==='Enter') regAddName()"/>
-        <button class="btn btn-madera" onclick="regAddName()"
-                style="width:auto;padding:10px 14px;margin-top:0;white-space:nowrap;">+ Añadir</button>
+      <p style="font-size:15px;font-style:italic;color:var(--tinta2);margin-bottom:14px">Escribe todos los nombres y cuando estén todos pulsa "Empezar".</p>
+      <div style="display:flex;gap:8px">
+        <input type="text" id="inp-nombre" placeholder="Nombre..." autocomplete="off" style="flex:1;margin-bottom:0"/>
+        <button class="btn btn-madera" onclick="addNombre()" style="width:auto;padding:10px 14px;margin-top:0;white-space:nowrap">+ Añadir</button>
       </div>
-      <ul class="lista" id="reg-list" style="margin-top:14px;"></ul>
+      <ul class="lista" id="lista-registro" style="margin-top:14px"></ul>
     </div>
   </div>
 
-  <div class="boton-zona" style="margin-top:14px;">
-    <button class="btn btn-rojo" id="reg-submit-btn" onclick="regSubmit()" disabled style="opacity:.4;">
-      Listo — empezar →
-    </button>
+  <div class="boton-zona" style="margin-top:14px">
+    <button class="btn btn-rojo" id="btn-empezar" onclick="empezar()" disabled>Empezar →</button>
   </div>
 
-  <div class="panel" style="margin-top:8px;">
-    <div class="panel-cuerpo" style="padding:12px;">
-      <button class="btn btn-contorno" style="margin-top:0;" onclick="showHistory()">Historial de concursos</button>
+  <div class="panel" style="margin-top:8px">
+    <div class="panel-cuerpo" style="padding:12px">
+      <button class="btn btn-contorno" style="margin-top:0" onclick="verHistorial()">Historial de concursos</button>
     </div>
   </div>
   <div class="esp"></div>
 </div>
 
-<!-- ══════════════════════
-     SELECCIÓN — cada uno toca su nombre
-══════════════════════ -->
-<div id="screen-join" class="screen">
-  <div class="cab-interior">
+<!-- ══ PANTALLA 2: SELECCIÓN ══ -->
+<div id="s-seleccion" class="screen">
+  <div class="cab-int">
     <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
     <div class="cab-flecos"></div>
     <div class="cab-texto">
@@ -985,172 +255,125 @@
   </div>
   <div class="azulejos"></div>
 
-  <div class="tarjeta" style="margin-top:14px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <div class="tarjeta-titulo" style="margin-bottom:0;">Participantes</div>
-      <span class="etiqueta et-dorado" id="join-ready-count">0 de 0</span>
+  <div class="tarjeta" style="margin-top:14px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <div class="tarjeta-titulo" style="margin-bottom:0">Participantes</div>
+      <span class="etiqueta et-dorado" id="sel-progreso">0 de 0</span>
     </div>
-    <ul class="lista" id="join-participants-list"></ul>
+    <div class="barra-wrap"><div class="barra-fill" id="sel-barra"></div></div>
+    <p style="font-size:13px;font-style:italic;color:var(--tinta2);margin-top:8px" id="sel-msg">Esperando...</p>
+    <ul class="lista" id="lista-seleccion" style="margin-top:10px"></ul>
   </div>
   <div class="esp"></div>
 </div>
 
-<!-- ══════════════════════
-     COMPLETAR PERFIL
-══════════════════════ -->
-<div id="screen-profile" class="screen">
-  <button class="volver-btn" onclick="showScreen('screen-join');loadJoinList();">← Volver</button>
-  <div class="cab-interior" style="margin-top:8px;">
+<!-- ══ PANTALLA 3: PERFIL ══ -->
+<div id="s-perfil" class="screen">
+  <button class="volver-btn" onclick="ir('s-seleccion');renderSeleccion()">← Volver</button>
+  <div class="cab-int" style="margin-top:8px">
     <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
     <div class="cab-flecos"></div>
     <div class="cab-texto">
-      <div class="cab-titulo" id="profile-title">¡Hola!</div>
+      <div class="cab-titulo" id="perfil-titulo">¡Hola!</div>
       <div class="cab-subtitulo">Completa tu ficha</div>
     </div>
   </div>
   <div class="azulejos"></div>
-  <div class="panel" style="margin-top:16px;">
+
+  <div class="panel" style="margin-top:16px">
     <div class="panel-cuerpo">
       <div class="campo">
         <label class="campo-label">Nombre de tu tapa</label>
-        <input type="text" id="profile-tapa-name" placeholder="Croquetas de jamón..." autocomplete="off"/>
+        <input type="text" id="perfil-tapa" placeholder="Croquetas de jamón..." autocomplete="off"/>
       </div>
       <div class="separador"></div>
       <div class="campo">
         <label class="campo-label">Foto de tu tapa</label>
-        <div class="foto-zona photo-upload" onclick="document.getElementById('profile-photo').click()">
-          <input type="file" id="profile-photo" accept="image/*"/>
+        <div class="foto-zona" id="foto-zona" onclick="document.getElementById('perfil-foto-input').click()">
+          <input type="file" id="perfil-foto-input" accept="image/*" style="display:none"/>
           <span class="foto-zona-icono">📷</span>
           <div class="foto-zona-texto">Toca para añadir una foto</div>
         </div>
-        <img id="profile-preview" class="foto-preview"/>
+        <img id="perfil-foto-preview" class="foto-preview"/>
       </div>
     </div>
   </div>
-  <div class="boton-zona" style="margin-top:14px;">
-    <button class="btn btn-rojo" onclick="submitProfile()">Listo, entrar →</button>
+  <div class="boton-zona" style="margin-top:14px">
+    <button class="btn btn-rojo" onclick="guardarPerfil()">Listo, entrar →</button>
   </div>
   <div class="esp"></div>
 </div>
 
-<!-- ══════════════════════
-     LOBBY PROYECTABLE (pantalla completa)
-══════════════════════ -->
-<div id="screen-lobby">
-  <div class="lobby-header">
-    <div class="lobby-title">TAPA FEST</div>
-    <div class="lobby-subtitle">✦ &nbsp; Concurso Gastronómico &nbsp; ✦</div>
-  </div>
-  <div class="lobby-flecos"></div>
-  <div class="lobby-grid" id="lobby-grid"></div>
-  <div class="lobby-footer">
-    <span class="lobby-count" id="lobby-count">0 participantes</span>
-    <div style="display:flex;gap:8px;">
-      <button class="btn btn-contorno" onclick="closeLobby()" style="margin-top:0;font-size:13px;padding:8px 14px;">✕ Cerrar</button>
-      <button class="btn btn-madera" id="lobby-btn-reveal" onclick="revealResults()" style="display:none;margin-top:0;font-size:13px;padding:8px 14px;">Revelar ★</button>
-    </div>
-  </div>
-</div>
-
-<!-- Overlay revelación dramática -->
-<div id="reveal-overlay">
-  <div id="reveal-content" style="text-align:center;padding:20px;"></div>
-</div>
-<div class="confetti-container" id="confetti-container"></div>
-
-<!-- ══════════════════════
-     SALA DE ESPERA
-══════════════════════ -->
-<div id="screen-waiting" class="screen">
-  <div class="cab-interior">
+<!-- ══ PANTALLA 4: SALA DE ESPERA ══ -->
+<div id="s-espera" class="screen">
+  <div class="cab-int">
     <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
     <div class="cab-flecos"></div>
     <div class="cab-texto">
       <div class="cab-titulo">Sala de Espera</div>
-      <div class="cab-subtitulo" id="waiting-subtitulo">el organizador abrirá la votación</div>
+      <div class="cab-subtitulo">Esperando que todos se apunten...</div>
     </div>
   </div>
   <div class="azulejos"></div>
 
-  <!-- Panel organizador embebido (solo visible si es admin) -->
-  <div class="tarjeta" style="margin-top:14px;border-left-color:var(--dorado);">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <div class="tarjeta-titulo" style="margin-bottom:0;color:var(--dorado);">Preparación</div>
-      <span class="etiqueta et-dorado" id="waiting-ready-count">0 de 0 listos</span>
+  <div class="tarjeta" style="margin-top:14px;border-left-color:var(--dorado)">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <div class="tarjeta-titulo" style="margin-bottom:0;color:var(--dorado)">Preparación</div>
+      <span class="etiqueta et-dorado" id="espera-count">0 de 0</span>
     </div>
-    <div style="height:4px;background:rgba(28,20,8,.08);border-radius:2px;">
-      <div id="waiting-ready-bar" style="height:100%;background:var(--dorado);border-radius:2px;width:0%;transition:width .5s;"></div>
-    </div>
-    <p style="font-size:13px;font-style:italic;color:var(--tinta2);margin-top:8px;" id="waiting-ready-msg">Esperando que todos completen su ficha...</p>
+    <div class="barra-wrap"><div class="barra-fill" id="espera-barra"></div></div>
+    <p style="font-size:13px;font-style:italic;color:var(--tinta2);margin-top:8px" id="espera-msg">Esperando...</p>
   </div>
 
-  <div class="tarjeta" style="margin-top:14px;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-      <div class="tarjeta-titulo" style="margin-bottom:0;">Participantes</div>
-      <span class="etiqueta et-dorado" id="waiting-count">0 inscritos</span>
-    </div>
-    <ul class="lista" id="waiting-list"></ul>
+  <div class="tarjeta" style="margin-top:14px">
+    <ul class="lista" id="espera-lista"></ul>
   </div>
-  <p style="font-size:14px;font-style:italic;color:var(--tinta2);text-align:center;padding:10px 14px 0;">Comparte el enlace con tus amigos</p>
 </div>
 
-<!-- ══════════════════════
-     VOTACIÓN
-══════════════════════ -->
-<div id="screen-vote" class="screen">
-  <div class="cab-interior">
+<!-- ══ PANTALLA 5: VOTACIÓN ══ -->
+<div id="s-voto" class="screen">
+  <div class="cab-int">
     <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
     <div class="cab-flecos"></div>
     <div class="cab-texto">
       <div class="cab-titulo">¡A Votar!</div>
-      <div class="cab-subtitulo" id="vote-subtitle">puntúa todas las tapas</div>
+      <div class="cab-subtitulo" id="voto-subtitulo">puntúa todas las tapas</div>
     </div>
   </div>
   <div class="azulejos"></div>
-  <div class="progreso" style="margin-top:10px;"><div class="progreso-fill" id="vote-progress" style="width:0%"></div></div>
-  <div style="margin:0 14px 12px;display:flex;gap:7px;flex-wrap:wrap;">
+  <div class="progreso" style="margin-top:10px"><div class="progreso-fill" id="voto-progreso" style="width:0%"></div></div>
+  <div style="margin:0 14px 12px;display:flex;gap:7px;flex-wrap:wrap">
     <span class="comentario-label cl-priv">🔒 Privado — solo tú lo ves</span>
     <span class="comentario-label cl-pub">💬 Público — anónimo al final</span>
   </div>
-  <div id="vote-cards"></div>
-  <div class="boton-zona"><button class="btn btn-rojo" onclick="submitVotes()">Enviar mis votos →</button></div>
+  <div id="voto-tarjetas"></div>
+  <div class="boton-zona"><button class="btn btn-rojo" onclick="enviarVotos()">Enviar mis votos →</button></div>
 </div>
 
-<!-- ══════════════════════
-     VOTOS ENVIADOS
-══════════════════════ -->
-<div id="screen-voted" class="screen">
-  <div class="cab-interior">
+<!-- ══ PANTALLA 6: VOTOS ENVIADOS ══ -->
+<div id="s-votado" class="screen">
+  <div class="cab-int">
     <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
     <div class="cab-flecos"></div>
     <div class="cab-texto">
-      <div class="cab-titulo" style="color:var(--dorado3);">¡Enviado!</div>
+      <div class="cab-titulo" style="color:var(--dorado3)">¡Enviado!</div>
       <div class="cab-subtitulo">esperando a los demás...</div>
     </div>
   </div>
   <div class="azulejos"></div>
 
-  <!-- Panel organizador embebido en voted (solo si es admin) -->
-  <div id="voted-admin-panel" style="display:none;">
-    <div class="tarjeta" style="margin-top:14px;border-left-color:var(--dorado);">
-      <div class="tarjeta-titulo" style="color:var(--dorado);">⚙ Panel del organizador</div>
-      <div id="voted-admin-votes-status"></div>
-      <div style="height:8px;"></div>
-      <button class="btn btn-madera" id="voted-btn-reveal" onclick="revealResults()" style="margin-top:0;">Revelar resultados ★</button>
-    </div>
-  </div>
-
-  <div class="tarjeta" style="margin-top:14px;">
-    <div class="tarjeta-titulo">Estado de votación</div>
-    <ul class="lista" id="voted-status-list"></ul>
+  <!-- Panel revelar resultados (visible para todos) -->
+  <div class="tarjeta" style="margin-top:14px;border-left-color:var(--dorado)">
+    <div class="tarjeta-titulo" style="color:var(--dorado)">Estado de votación</div>
+    <ul class="lista" id="votado-lista"></ul>
+    <div style="height:10px"></div>
+    <button class="btn btn-madera" id="btn-revelar" onclick="revelarResultados()" style="display:none;margin-top:0">Revelar resultados ★</button>
   </div>
 </div>
 
-<!-- ══════════════════════
-     RESULTADOS
-══════════════════════ -->
-<div id="screen-results" class="screen">
-  <div class="cab-interior">
+<!-- ══ PANTALLA 7: RESULTADOS ══ -->
+<div id="s-resultados" class="screen">
+  <div class="cab-int">
     <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
     <div class="cab-flecos"></div>
     <div class="cab-texto">
@@ -1162,64 +385,18 @@
   <div class="sec-titulo">Top 3</div>
   <div id="podium"></div>
   <div class="sec-titulo">Clasificación</div>
-  <div class="tarjeta"><ul class="ranking" id="all-results"></ul></div>
+  <div class="tarjeta"><ul class="ranking" id="ranking-lista"></ul></div>
   <div class="sec-titulo">Comentarios</div>
-  <div style="margin:0 14px;" id="all-comments"></div>
+  <div style="margin:0 14px" id="comentarios-lista"></div>
   <div class="esp"></div>
-  <div class="boton-zona"><button class="btn btn-pdf" onclick="exportPDF()">Guardar en PDF</button></div>
-  <div class="boton-zona"><button class="btn btn-contorno" onclick="resetGame()">Nueva partida</button></div>
+  <div class="boton-zona"><button class="btn btn-pdf" onclick="exportarPDF()">Guardar en PDF</button></div>
+  <div class="boton-zona"><button class="btn btn-contorno" onclick="resetear()">Nueva partida</button></div>
 </div>
 
-<!-- ══════════════════════
-     ADMIN
-══════════════════════ -->
-<div id="screen-admin" class="screen">
-  <button class="volver-btn" onclick="showScreen('screen-join');loadJoinList();">← Volver</button>
-  <div class="cab-interior" style="margin-top:8px;">
-    <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
-    <div class="cab-flecos"></div>
-    <div class="cab-texto">
-      <div class="cab-titulo">Organizador</div>
-    </div>
-  </div>
-  <div class="azulejos"></div>
-
-  <!-- Añadir participante -->
-  <div class="tarjeta" style="margin-top:14px;">
-    <div class="tarjeta-titulo">Añadir participante</div>
-    <div class="campo">
-      <label class="campo-label">Nombre del participante</label>
-      <input type="text" id="admin-new-name" placeholder="Pepita García..." autocomplete="off"
-             onkeydown="if(event.key==='Enter') addParticipantByAdmin()"/>
-    </div>
-    <div style="height:10px;"></div>
-    <button class="btn btn-rojo" style="margin-top:0;" onclick="addParticipantByAdmin()">Añadir →</button>
-  </div>
-
-  <!-- Lista participantes -->
-  <div class="tarjeta">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
-      <div class="tarjeta-titulo" style="margin-bottom:0;">Participantes</div>
-      <span class="etiqueta et-dorado" id="admin-count">0</span>
-    </div>
-    <ul class="lista" id="admin-participants"></ul>
-    <div class="vacio" id="admin-empty" style="display:none;">Nadie añadido aún</div>
-  </div>
-
-
-  <div class="boton-zona"><button class="btn btn-madera" id="btn-reveal" onclick="revealResults()" style="display:none;">Revelar resultados ★</button></div>
-  <div class="sec-titulo" id="admin-votes-label" style="display:none;">Estado de votos</div>
-  <ul class="lista" style="margin:0 14px;" id="admin-vote-status"></ul>
-  <div style="height:20px;"></div>
-  <div class="boton-zona"><button class="btn btn-peligro" onclick="resetGame()">Borrar partida y empezar de nuevo</button></div>
-</div>
-
-<!-- ══════════════════════
-     HISTORIAL
-══════════════════════ -->
-<div id="screen-history" class="screen">
-  <button class="volver-btn" onclick="showScreen('screen-join')">← Volver</button>
-  <div class="cab-interior" style="margin-top:8px;">
+<!-- ══ HISTORIAL ══ -->
+<div id="s-historial" class="screen">
+  <button class="volver-btn" onclick="ir('s-registro')">← Volver</button>
+  <div class="cab-int" style="margin-top:8px">
     <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
     <div class="cab-flecos"></div>
     <div class="cab-texto">
@@ -1228,43 +405,56 @@
     </div>
   </div>
   <div class="azulejos"></div>
-  <div id="history-content" style="margin:14px 14px 0;"></div>
+  <div id="historial-contenido" style="margin:14px 14px 0"></div>
 </div>
 
-<!-- Lightbox -->
-<div id="lightbox" onclick="closeLightbox()" style="display:none;position:fixed;inset:0;background:rgba(28,20,8,.96);z-index:800;align-items:center;justify-content:center;cursor:zoom-out;">
-  <img id="lightbox-img" style="max-width:95vw;max-height:90vh;object-fit:contain;border:2px solid var(--dorado);"/>
-</div>
-
-<!-- Firebase v8 compat — carga desde gstatic que sí está permitido -->
+<!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>
 firebase.initializeApp({
-  apiKey: "AIzaSyDcEJ62lYa9t0gcypzP6HO6yk0DitkRyFQ",
-  authDomain: "tapa-fest.firebaseapp.com",
-  databaseURL: "https://tapa-fest-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "tapa-fest",
-  storageBucket: "tapa-fest.firebasestorage.app",
-  messagingSenderId: "996685690250",
-  appId: "1:996685690250:web:ab33f016c1764792438473"
+  apiKey:"AIzaSyDcEJ62lYa9t0gcypzP6HO6yk0DitkRyFQ",
+  authDomain:"tapa-fest.firebaseapp.com",
+  databaseURL:"https://tapa-fest-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId:"tapa-fest",
+  storageBucket:"tapa-fest.firebasestorage.app",
+  messagingSenderId:"996685690250",
+  appId:"1:996685690250:web:ab33f016c1764792438473"
 });
 const db = firebase.database();
 
-let myId = sessionStorage.getItem('tapafest_id') || null;
-let myName = null, unsub = null;
+// Estado global
+let miId   = sessionStorage.getItem('tf_id')   || null;
+let miNombre = sessionStorage.getItem('tf_nombre') || null;
+let miFoto = null;
+let _otros = [];
+let _ranked = [];
+let unsub = null;
 
-function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+// ══ UTILIDADES ══════════════════════════════════════════
+function ir(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('activa'));
+  document.getElementById(id).classList.add('activa');
   window.scrollTo(0,0);
 }
-function showLoading(msg){ document.getElementById('loading-text').textContent=msg||'Cargando...'; document.getElementById('loading').style.display='flex'; }
-function hideLoading(){ document.getElementById('loading').style.display='none'; }
-function toast(msg){ const t=document.getElementById('toast'); t.textContent=msg; t.classList.add('show'); setTimeout(()=>t.classList.remove('show'),2500); }
+function cargando(msg){
+  document.getElementById('loading-txt').textContent = msg||'Un momento...';
+  document.getElementById('loading').style.display = 'flex';
+}
+function sinCarga(){ document.getElementById('loading').style.display = 'none'; }
+function aviso(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2500);
+}
+function openLightbox(src){
+  document.getElementById('lightbox-img').src=src;
+  document.getElementById('lightbox').style.display='flex';
+}
+function closeLightbox(){ document.getElementById('lightbox').style.display='none'; }
 
-function compressImage(file){
-  return new Promise(resolve=>{
+function comprimirImagen(file){
+  return new Promise(res=>{
     const reader=new FileReader();
     reader.onload=e=>{
       const img=new Image();
@@ -1272,10 +462,10 @@ function compressImage(file){
         const MAX=600; let w=img.width,h=img.height;
         if(w>h&&w>MAX){h=Math.round(h*MAX/w);w=MAX;}
         else if(h>MAX){w=Math.round(w*MAX/h);h=MAX;}
-        const canvas=document.createElement('canvas');
-        canvas.width=w; canvas.height=h;
-        canvas.getContext('2d').drawImage(img,0,0,w,h);
-        resolve(canvas.toDataURL('image/jpeg',0.6));
+        const cv=document.createElement('canvas');
+        cv.width=w; cv.height=h;
+        cv.getContext('2d').drawImage(img,0,0,w,h);
+        res(cv.toDataURL('image/jpeg',0.6));
       };
       img.src=e.target.result;
     };
@@ -1283,279 +473,222 @@ function compressImage(file){
   });
 }
 
-document.addEventListener('DOMContentLoaded',function(){
-  const _photoInput=document.getElementById('profile-photo');
-  if(_photoInput) _photoInput.addEventListener('change',async function(){
-    const f=this.files[0]; if(!f) return;
-    showLoading('Comprimiendo foto...');
-    window._photo=await compressImage(f);
-    hideLoading();
-    const img=document.getElementById('profile-preview');
-    img.src=window._photo; img.style.display='block';
-    document.querySelector('.photo-upload').style.display='none';
-  });
+function partes(game){
+  return Object.values(game.participants||{}).filter(p=>p&&p.id&&p.name);
+}
+
+// ══ PANTALLA 1: REGISTRO ════════════════════════════════
+let nombresReg = [];
+
+function addNombre(){
+  const inp = document.getElementById('inp-nombre');
+  const n = inp.value.trim();
+  if(!n){ aviso('Escribe un nombre'); return; }
+  if(nombresReg.find(x=>x.toLowerCase()===n.toLowerCase())){ aviso('Ese nombre ya está'); return; }
+  nombresReg.push(n);
+  inp.value = '';
+  inp.focus();
+  renderReg();
+}
+
+// Permitir Enter en el input de nombre
+document.getElementById('inp-nombre').addEventListener('keydown', function(e){
+  if(e.key==='Enter') addNombre();
 });
 
-function openLightbox(src){
-  document.getElementById('lightbox-img').src=src;
-  document.getElementById('lightbox').style.display='flex';
-}
-function closeLightbox(){ document.getElementById('lightbox').style.display='none'; }
-
-/* ══════════════════════════════════════════════════════
-   REGISTRO — pantalla inicial donde se añaden nombres
-══════════════════════════════════════════════════════ */
-
-// Lista local de nombres antes de guardar en Firebase
-window._regNames = [];
-
-function regAddName(){
-  const input = document.getElementById('reg-name-input');
-  const name  = input.value.trim();
-  if(!name){ toast('Escribe un nombre'); return; }
-  const dup = window._regNames.find(n=>n.toLowerCase()===name.toLowerCase());
-  if(dup){ toast('Ese nombre ya está en la lista'); return; }
-  window._regNames.push(name);
-  input.value = '';
-  input.focus();
-  regRenderList();
+function quitarNombre(i){
+  nombresReg.splice(i,1);
+  renderReg();
 }
 
-function regRenderList(){
-  const ul  = document.getElementById('reg-list');
-  const btn = document.getElementById('reg-submit-btn');
-  ul.innerHTML = window._regNames.map((name,i)=>`
+function renderReg(){
+  const ul  = document.getElementById('lista-registro');
+  const btn = document.getElementById('btn-empezar');
+  ul.innerHTML = nombresReg.map((n,i)=>`
     <li>
-      <div class="inicial">${name[0].toUpperCase()}</div>
-      <div class="li-info"><div class="li-nombre">${name}</div></div>
-      <button onclick="regRemoveName(${i})" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--tinta3);padding:0 4px;">✕</button>
-    </li>`).join('') || '<li class="vacio" style="padding:.8rem 0;">Ningún participante añadido</li>';
-  btn.disabled = window._regNames.length < 2;
-  btn.style.opacity = window._regNames.length < 2 ? '.4' : '1';
+      <div class="inicial">${n[0].toUpperCase()}</div>
+      <div class="li-info"><div class="li-nombre">${n}</div></div>
+      <button onclick="quitarNombre(${i})" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--tinta3);padding:0 4px">✕</button>
+    </li>`).join('') || '<li><p class="vacio" style="padding:.8rem 0">Ningún participante añadido</p></li>';
+  btn.disabled = nombresReg.length < 2;
 }
 
-function regRemoveName(i){
-  window._regNames.splice(i,1);
-  regRenderList();
-}
-
-async function regSubmit(){
-  if(window._regNames.length < 2){ toast('Necesitas al menos 2 participantes'); return; }
-  showLoading('Creando partida...');
+async function empezar(){
+  if(nombresReg.length < 2){ aviso('Necesitas al menos 2 participantes'); return; }
+  cargando('Creando partida...');
   try{
-    // Limpiar Firebase y crear participantes nuevos
+    // Borrar partida anterior y crear participantes
     await db.ref('game').remove();
     const updates = {};
-    window._regNames.forEach(name=>{
-      const uid = 'p_'+Date.now()+'_'+Math.random().toString(36).slice(2,7);
-      updates['game/participants/'+uid] = {id:uid, name, tapaName:null, photo:null};
+    nombresReg.forEach(nombre=>{
+      const uid = 'p_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
+      updates['game/participants/'+uid] = {id:uid, name:nombre, tapaName:null, photo:null};
     });
     await db.ref().update(updates);
-    hideLoading();
-    // Ir a pantalla de selección
-    loadJoinList();
-    showScreen('screen-join');
-    subscribeToGame();
+    sinCarga();
+    nombresReg = [];
+    renderReg();
+    // Limpiar sesión propia
+    miId = null; miNombre = null; miFoto = null;
+    sessionStorage.removeItem('tf_id');
+    sessionStorage.removeItem('tf_nombre');
+    ir('s-seleccion');
+    await renderSeleccion();
+    suscribir();
   }catch(e){
-    hideLoading();
-    console.error('regSubmit error:', e);
-    toast('Error al crear partida: '+String(e.message||e).slice(0,50));
+    sinCarga();
+    console.error(e);
+    aviso('Error al crear partida: '+e.message);
   }
 }
 
-/* ══════════════════════════════════════════════════════
-   SELECCIÓN — cada participante toca su nombre
-══════════════════════════════════════════════════════ */
-
-async function loadJoinList(){
+// ══ PANTALLA 2: SELECCIÓN ═══════════════════════════════
+async function renderSeleccion(){
   try{
     const snap = await db.ref('game').once('value');
     const game = snap.val()||{};
-    const parts = Object.values(game.participants||{}).filter(p=>p&&p.id&&p.name);
-    const ul = document.getElementById('join-participants-list');
-    const countEl = document.getElementById('join-ready-count');
+    const ps   = partes(game);
+    const listos = ps.filter(p=>p.tapaName).length;
+    const total  = ps.length;
 
-    // Si ya están todos listos y en votación, ir a votar
-    if(game.phase==='voting'){
-      if(myId){
-        const g = snap.val();
-        (g.votes&&g.votes[myId]) ? showVotedScreen(g) : renderVoteScreen(g);
-      }
-      return;
-    }
-    if(game.phase==='results'){
-      renderResults(game); showScreen('screen-results'); return;
-    }
+    // Progreso
+    document.getElementById('sel-progreso').textContent = listos+' de '+total;
+    document.getElementById('sel-barra').style.width = (total ? Math.round(listos/total*100) : 0)+'%';
+    document.getElementById('sel-msg').textContent =
+      listos===total && total>=2 ? '¡Todos listos! Arrancando votación...' :
+      total-listos === 1 ? 'Falta 1 persona por completar su ficha' :
+      'Faltan '+(total-listos)+' personas por completar su ficha';
 
-    const ready = parts.filter(p=>p.tapaName).length;
-    if(countEl) countEl.textContent = ready+' de '+parts.length+' listos';
-
-    ul.innerHTML = parts.map(p=>{
-      const isReady = !!p.tapaName;
-      const isMine  = p.id === myId;
-      const safe    = p.name.replace(/'/g, "&apos;");
-      return `<li style="cursor:pointer;" onclick="selectParticipant('${p.id}','${safe}',${isReady})">
+    // Lista
+    const ul = document.getElementById('lista-seleccion');
+    ul.innerHTML = ps.map(p=>{
+      const listo = !!p.tapaName;
+      const soyYo = p.id === miId;
+      return `<li style="cursor:${listo&&!soyYo?'default':'pointer'}" onclick="${listo&&!soyYo?'':"seleccionar('"+p.id+"','"+p.name.replace(/'/g,"\\'")+"',"+listo+")"}">
         <div class="inicial">${p.name[0].toUpperCase()}</div>
-        <div class="li-info" style="flex:1;">
+        <div class="li-info" style="flex:1">
           <div class="li-nombre">${p.name}</div>
-          ${isReady
-            ? `<div class="li-tapa">🍽️ ${p.tapaName}</div>`
-            : `<div class="li-tapa" style="color:var(--dorado);">Toca para completar tu ficha →</div>`}
+          ${listo ? `<div class="li-tapa">🍽️ ${p.tapaName}</div>` : '<div class="li-tapa" style="color:var(--dorado)">Toca para apuntarte →</div>'}
         </div>
-        <div style="display:flex;align-items:center;gap:6px;">
-          ${isMine ? '<span class="etiqueta et-verde">Tú ✓</span>' : (isReady ? '<span class="etiqueta et-dorado">Listo</span>' : '')}
-        </div>
+        ${soyYo ? '<span class="etiqueta et-verde">Tú ✓</span>' : (listo ? '<span class="etiqueta et-dorado">Listo</span>' : '')}
       </li>`;
     }).join('') || '<li class="vacio">Sin participantes</li>';
-
-  }catch(e){ console.error('loadJoinList error:', e); }
+  }catch(e){ console.error('renderSeleccion:', e); }
 }
 
-async function selectParticipant(pid, pname, alreadyReady){
-  if(alreadyReady && pid !== myId){
-    toast('Este participante ya ha completado su ficha');
+async function seleccionar(pid, pname, listo){
+  // Si ya está listo y no soy yo, no hacer nada
+  if(listo && pid !== miId){ return; }
+
+  // Si soy yo y ya estoy listo → reconectar
+  if(listo && pid === miId){
+    const snap = await db.ref('game').once('value');
+    const game = snap.val()||{};
+    navegarSegunFase(game);
     return;
   }
-  // Si ya es el mío y está listo, reconectar
-  if(alreadyReady && pid === myId){
-    const snap = await db.ref('game').once('value');
-    const game = snap.val()||{};
-    if(game.phase==='voting'){ (game.votes&&game.votes[myId])?showVotedScreen(game):renderVoteScreen(game); return; }
-    if(game.phase==='results'){ renderResults(game); showScreen('screen-results'); return; }
-    showScreen('screen-waiting'); subscribeToGame(); return;
-  }
-  // Ir a completar ficha
-  myId = pid; myName = pname;
-  sessionStorage.setItem('tapafest_id', myId);
-  sessionStorage.setItem('tapafest_name', myName);
-  window._photo = null;
-  document.getElementById('profile-title').textContent = '¡Hola, '+pname+'!';
-  document.getElementById('profile-tapa-name').value = '';
-  document.getElementById('profile-preview').style.display = 'none';
-  document.querySelector('.photo-upload').style.display = 'block';
-  showScreen('screen-profile');
+
+  // Ir a completar perfil
+  miId = pid; miNombre = pname; miFoto = null;
+  sessionStorage.setItem('tf_id', miId);
+  sessionStorage.setItem('tf_nombre', miNombre);
+
+  document.getElementById('perfil-titulo').textContent = '¡Hola, '+pname+'!';
+  document.getElementById('perfil-tapa').value = '';
+  document.getElementById('perfil-foto-preview').style.display = 'none';
+  document.getElementById('foto-zona').style.display = 'block';
+  ir('s-perfil');
 }
 
-/* ══════════════════════════════════════════════════════
-   PERFIL — rellenar tapa y foto
-══════════════════════════════════════════════════════ */
+// ══ PANTALLA 3: PERFIL ══════════════════════════════════
+document.getElementById('perfil-foto-input').addEventListener('change', async function(){
+  const f = this.files[0]; if(!f) return;
+  cargando('Comprimiendo foto...');
+  miFoto = await comprimirImagen(f);
+  sinCarga();
+  const prev = document.getElementById('perfil-foto-preview');
+  prev.src = miFoto; prev.style.display = 'block';
+  document.getElementById('foto-zona').style.display = 'none';
+});
 
-async function submitProfile(){
-  const tapaName = document.getElementById('profile-tapa-name').value.trim();
-  if(!tapaName){ toast('🍽️ Escribe el nombre de tu tapa'); return; }
-  showLoading('Guardando...');
+async function guardarPerfil(){
+  const tapa = document.getElementById('perfil-tapa').value.trim();
+  if(!tapa){ aviso('🍽️ Escribe el nombre de tu tapa'); return; }
+  cargando('Guardando...');
   try{
-    // Guardar tapa y foto
-    await db.ref('game/participants/'+myId).update({
-      tapaName,
-      photo: window._photo||null
+    // Guardar en Firebase
+    await db.ref('game/participants/'+miId).update({
+      tapaName: tapa,
+      photo: miFoto || null
     });
-
-    // Leer estado actual (ya con mi tapa)
+    // Leer estado actualizado
     const snap = await db.ref('game').once('value');
     const game = snap.val()||{};
-    hideLoading();
+    sinCarga();
 
-    if(game.phase==='results'){ renderResults(game); showScreen('screen-results'); return; }
+    // Ver si todos están listos
+    const ps = partes(game);
+    const todosListos = ps.length >= 2 && ps.every(p=>p.tapaName);
+
     if(game.phase==='voting'){
-      (game.votes&&game.votes[myId]) ? showVotedScreen(game) : renderVoteScreen(game);
-      return;
+      navegarSegunFase(game); return;
+    }
+    if(game.phase==='results'){
+      navegarSegunFase(game); return;
     }
 
-    // Ver si todos tienen tapa
-    const allParts = Object.values(game.participants||{}).filter(p=>p&&p.id);
-    const allReady = allParts.length >= 2 && allParts.every(p=>p.tapaName);
-
-    if(allReady){
+    if(todosListos){
+      // Arrancar votación
       await db.ref('game/phase').set('voting');
       const snap2 = await db.ref('game').once('value');
-      toast('¡Todos listos! Empieza la votación 🗳️');
-      renderVoteScreen(snap2.val()||{});
+      aviso('¡Todos listos! Empieza la votación 🗳️');
+      renderVotacion(snap2.val()||{});
     } else {
-      showScreen('screen-waiting');
-      subscribeToGame();
+      ir('s-espera');
+      suscribir();
     }
   }catch(e){
-    hideLoading();
-    console.error('submitProfile error:', e);
-    toast('Error al guardar: '+String(e.message||e).slice(0,60));
+    sinCarga();
+    console.error('guardarPerfil:', e);
+    aviso('Error al guardar: '+(e.message||e));
   }
 }
 
+// ══ PANTALLA 4: ESPERA ══════════════════════════════════
+function renderEspera(game){
+  const ps    = partes(game);
+  const listos = ps.filter(p=>p.tapaName).length;
+  const total  = ps.length;
 
-function subscribeToGame(){
-  if(unsub) unsub();
-  const r=db.ref('game');
-  const handler=snap=>{
-    const game=snap.val()||{};
-    const cur=document.querySelector('.screen.active')?.id;
-    if(cur==='screen-join'){
-      loadJoinList();
-    }
-    if(cur==='screen-waiting'){
-      renderWaitingList(game);
-      if(game.phase==='voting'){
-        if(myId&&game.votes&&game.votes[myId]) showVotedScreen(game);
-        else if(myId) renderVoteScreen(game);
-      }
-      // Auto-arranque si todos listos y yo no he votado aún
-      if(game.phase==='lobby'){
-        const parts=Object.values(game.participants||{}).filter(p=>p&&p.id);
-        if(parts.length>=2 && parts.every(p=>p.tapaName)){
-          db.ref('game/phase').set('voting');
-        }
-      }
-    }
-    if(cur==='screen-voted'){
-      renderVotedStatus(game.participants||{},game.votes||{});
-      if(game.phase==='results'){ renderResults(game); showScreen('screen-results'); }
-    }
-    if(cur==='screen-admin') renderAdmin(game);
-  };
-  r.on('value',handler);
-  unsub=()=>r.off('value',handler);
-}
+  document.getElementById('espera-count').textContent = listos+' de '+total;
+  document.getElementById('espera-barra').style.width = (total ? Math.round(listos/total*100) : 0)+'%';
+  document.getElementById('espera-msg').textContent =
+    listos===total && total>=2 ? '¡Todos listos! Arrancando...' :
+    'Esperando que '+(total-listos)+' persona'+(total-listos!==1?'s':'')+(total-listos===1?' complete':' completen')+' su ficha';
 
-function renderWaitingList(game){
-  const parts=Object.values(game.participants||{}).filter(p=>p&&p.id&&p.name);
-  const ready=parts.filter(p=>p.tapaName).length;
-  const total=parts.length;
-  const countEl=document.getElementById('waiting-ready-count');
-  const barEl=document.getElementById('waiting-ready-bar');
-  const msgEl=document.getElementById('waiting-ready-msg');
-  if(countEl) countEl.textContent=ready+' de '+total+' listos';
-  if(barEl) barEl.style.width=(total?Math.round(ready/total*100):0)+'%';
-  if(msgEl){
-    if(ready===total&&total>=2) msgEl.textContent='¡Todos listos! Arrancando votación...';
-    else msgEl.textContent='Esperando que '+(total-ready)+' persona'+(total-ready!==1?'s':'')+(total-ready===1?' complete':' completen')+' su ficha...';
-  }
-  const wCount=document.getElementById('waiting-count');
-  const wList=document.getElementById('waiting-list');
-  if(wCount) wCount.textContent=total+' inscrito'+(total!==1?'s':'');
-  if(wList) wList.innerHTML=parts.map(p=>`
+  document.getElementById('espera-lista').innerHTML = ps.map(p=>`
     <li>
       <div class="inicial">${p.name[0].toUpperCase()}</div>
-      <div class="li-info"><div class="li-nombre">${p.name}</div>
-        ${p.tapaName?`<div class="li-tapa">🍽️ ${p.tapaName}</div>`:''}
-      </div>
-      ${p.tapaName?'<span class="etiqueta et-verde">Listo ✓</span>':'<span class="etiqueta et-dorado">Pendiente</span>'}
-    </li>`).join('')||'<li class="vacio">Nadie aún...</li>';
+      <div class="li-info"><div class="li-nombre">${p.name}</div>${p.tapaName?`<div class="li-tapa">🍽️ ${p.tapaName}</div>`:''}</div>
+      ${p.tapaName ? '<span class="etiqueta et-verde">Listo ✓</span>' : '<span class="etiqueta et-dorado">Pendiente</span>'}
+    </li>`).join('');
 }
 
-function renderVoteScreen(game){
-  if(game.votes&&game.votes[myId]){ showVotedScreen(game); return; }
-  const others = Object.values(game.participants||{}).filter(p=>p&&p.id&&p.id!==myId);
-  if(!others.length){ toast('No hay otras tapas para votar'); return; }
-  showScreen('screen-vote');
-  document.getElementById('vote-subtitle').textContent='Puntúa las '+others.length+' tapas';
-  document.getElementById('vote-cards').innerHTML = others.map((p,i)=>`
+// ══ PANTALLA 5: VOTACIÓN ════════════════════════════════
+function renderVotacion(game){
+  if(game.votes && game.votes[miId]){ mostrarVotado(game); return; }
+  const otros = partes(game).filter(p=>p.id!==miId);
+  if(!otros.length){ aviso('No hay otras tapas'); return; }
+  ir('s-voto');
+  document.getElementById('voto-subtitulo').textContent = 'Puntúa las '+otros.length+' tapas';
+  document.getElementById('voto-tarjetas').innerHTML = otros.map((p,i)=>`
     <div class="voto-tarjeta">
-      ${p.photo?`<img class="voto-img" src="${p.photo}" onclick="openLightbox('${p.photo}')" style="cursor:zoom-in;"/>`:`<div class="voto-sin-img">🍽️</div>`}
+      ${p.photo ? `<img class="voto-img" src="${p.photo}" onclick="openLightbox('${p.photo}')" style="cursor:zoom-in"/>` : '<div class="voto-sin-img">🍽️</div>'}
       <div class="voto-cuerpo">
         <div class="voto-nombre">${p.tapaName}</div>
-        <div class="nota-fila"><span class="nota-label">Tu nota</span><span class="nota-num" id="sv-${i}">5</span></div>
-        <input type="range" min="1" max="10" value="5" step="1" id="sc-${i}"
-               oninput="document.getElementById('sv-${i}').textContent=this.value;updateProgress(${others.length})"/>
+        <div class="nota-fila"><span class="nota-label">Tu nota</span><span class="nota-num" id="num-${i}">5</span></div>
+        <input type="range" min="1" max="10" value="5" step="1" id="rng-${i}"
+               oninput="document.getElementById('num-${i}').textContent=this.value"/>
         <div class="tics">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<span>${n}</span>`).join('')}</div>
         <div class="comentario-seccion">
           <span class="comentario-label cl-priv">🔒 Nota privada</span>
@@ -1564,592 +697,534 @@ function renderVoteScreen(game){
         </div>
         <div class="comentario-seccion" style="margin-top:10px">
           <span class="comentario-label cl-pub">💬 Comentario público</span>
-          <span class="cl-desc">Se publicará anónimamente</span>
+          <span class="cl-desc">Se publicará anónimamente al final</span>
           <textarea id="pub-${i}" rows="2" placeholder="Algo para el grupo..."></textarea>
         </div>
       </div>
     </div>`).join('');
-  window._others = others;
-  subscribeToGame();
+  _otros = otros;
+  suscribir();
 }
 
-async function submitVotes(){
-  const check=await db.ref('game/votes/'+myId).once('value');
-  if(check.exists()){ toast('Ya has votado 😊'); const s=await db.ref('game').once('value'); showVotedScreen(s.val()||{}); return; }
-  const others=window._others||[], myVotes={};
-  others.forEach((p,i)=>{
-    myVotes[p.id]={
-      candidateId:p.id,
-      score:parseInt(document.getElementById('sc-'+i).value),
-      privateNote:document.getElementById('priv-'+i).value.trim(),
-      publicComment:document.getElementById('pub-'+i).value.trim()
+async function enviarVotos(){
+  const check = await db.ref('game/votes/'+miId).once('value');
+  if(check.exists()){ aviso('Ya has votado 😊'); return; }
+  const votos = {};
+  _otros.forEach((p,i)=>{
+    votos[p.id]={
+      score: parseInt(document.getElementById('rng-'+i).value),
+      privateNote: document.getElementById('priv-'+i).value.trim(),
+      publicComment: document.getElementById('pub-'+i).value.trim()
     };
   });
-  showLoading('Enviando votos...');
+  cargando('Enviando votos...');
   try{
-    await db.ref('game/votes/'+myId).set(myVotes);
-    hideLoading(); toast('¡Votos enviados! 🎉');
-    const s=await db.ref('game').once('value'); showVotedScreen(s.val()||{});
-  }catch(e){ hideLoading(); toast('Error al enviar'); }
+    await db.ref('game/votes/'+miId).set(votos);
+    sinCarga(); aviso('¡Votos enviados! 🎉');
+    const snap = await db.ref('game').once('value');
+    mostrarVotado(snap.val()||{});
+  }catch(e){ sinCarga(); aviso('Error al enviar'); console.error(e); }
 }
 
-function showVotedScreen(game){ showScreen('screen-voted'); renderVotedStatus(game.participants||{},game.votes||{}); subscribeToGame(); }
-
-function renderVotedStatus(participants,votes){
-  document.getElementById('voted-status-list').innerHTML=Object.values(participants).map(p=>`
-    <li><div class="inicial">${p.name[0].toUpperCase()}</div><div class="li-info"><div class="li-nombre">${p.name}</div></div>
-    ${votes[p.id]?'<span class="etiqueta et-verde">Listo ✓</span>':'<span class="etiqueta et-dorado">Votando...</span>'}</li>`).join('');
-}
-
-function renderAdmin(game){
-  const parts=Object.values(game.participants||{}),votes=game.votes||{},phase=game.phase||'lobby';
-  document.getElementById('admin-empty').style.display=parts.length?'none':'block';
-  document.getElementById('admin-count').textContent=parts.length+' participante'+(parts.length!==1?'s':'');
-  document.getElementById('admin-participants').innerHTML=parts.map(p=>`
+// ══ PANTALLA 6: VOTADO ══════════════════════════════════
+function mostrarVotado(game){
+  ir('s-votado');
+  const ps    = partes(game);
+  const votes = game.votes||{};
+  const todosFin = ps.length>0 && ps.every(p=>votes[p.id]);
+  document.getElementById('votado-lista').innerHTML = ps.map(p=>`
     <li>
       <div class="inicial">${p.name[0].toUpperCase()}</div>
-      <div class="li-info">
-        <div class="li-nombre">${p.name}</div>
-        ${p.tapaName?`<div class="li-tapa">🍽️ ${p.tapaName}</div>`:'<div class="li-tapa" style="color:var(--tinta3);font-style:italic;">Sin completar</div>'}
-      </div>
-      ${phase==='lobby'?`<button onclick="removeParticipant('${p.id}')" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--tinta3);padding:0 4px;" title="Eliminar">✕</button>`:''}
+      <div class="li-info"><div class="li-nombre">${p.name}</div></div>
+      ${votes[p.id] ? '<span class="etiqueta et-verde">Listo ✓</span>' : '<span class="etiqueta et-dorado">Votando...</span>'}
     </li>`).join('');
-  const btnO=document.getElementById('btn-open-voting'),btnR=document.getElementById('btn-reveal'),
-        lbl=document.getElementById('admin-votes-label'),vs=document.getElementById('admin-vote-status');
-  if(phase==='lobby'){ btnO.style.display='block'; btnR.style.display='none'; lbl.style.display='none'; vs.innerHTML=''; }
-  else{
-    btnO.style.display='none'; btnR.style.display='block'; lbl.style.display='block';
-    vs.innerHTML=parts.map(p=>`<li><div class="inicial">${p.name[0].toUpperCase()}</div><div class="li-info"><div class="li-nombre">${p.name}</div></div>${votes[p.id]?'<span class="etiqueta et-verde">Votado ✓</span>':'<span class="etiqueta et-dorado">Pendiente</span>'}</li>`).join('');
-  }
+  document.getElementById('btn-revelar').style.display = todosFin ? 'block' : 'none';
+  suscribir();
 }
 
-async function openVoting(){
-  const s=await db.ref('game/participants').once('value');
-  if(Object.keys(s.val()||{}).length<2){ toast('Necesitas al menos 2 participantes'); return; }
-  await db.ref('game').update({phase:'voting'}); toast('¡Votación abierta! 🗳️');
-}
-
-async function revealResults(){
-  showLoading('Calculando...');
-  const s=await db.ref('game').once('value'); const game=s.val()||{};
-  await db.ref('game').update({phase:'results'});
-  hideLoading();
-  await saveToHistory(game);
-  showScreen('screen-results');
-  await animateReveal(game);
-}
-
+// ══ RESULTADOS ══════════════════════════════════════════
 function calcRanked(game){
-  const parts=Object.values(game.participants||{}),votes=game.votes||{};
-  const scores={},pubComments={};
-  parts.filter(p=>p&&p.id).forEach(p=>{ scores[p.id]=[]; pubComments[p.id]=[]; });
-  Object.values(votes).forEach(vo=>{
-    Object.entries(vo).forEach(([cid,d])=>{
+  const ps = partes(game);
+  const votes = game.votes||{};
+  const scores = {}, comments = {};
+  ps.forEach(p=>{ scores[p.id]=[]; comments[p.id]=[]; });
+  Object.values(votes).forEach(v=>{
+    Object.entries(v).forEach(([cid,d])=>{
       if(scores[cid]!==undefined){
         scores[cid].push(d.score);
-        if(d.publicComment) pubComments[cid].push(d.publicComment);
+        if(d.publicComment) comments[cid].push(d.publicComment);
       }
     });
   });
-  return parts.map(p=>({
+  return ps.map(p=>({
     ...p,
-    avg:scores[p.id].length?scores[p.id].reduce((a,b)=>a+b,0)/scores[p.id].length:0,
-    voteCount:scores[p.id].length,
-    comments:pubComments[p.id]
+    avg: scores[p.id].length ? scores[p.id].reduce((a,b)=>a+b,0)/scores[p.id].length : 0,
+    voteCount: scores[p.id].length,
+    comments: comments[p.id]
   })).sort((a,b)=>b.avg-a.avg);
 }
 
-window._ranked=[];
-
-/* ── Renderiza comentarios agrupados por tapa ── */
-function renderComments(ranked, containerId){
-  const el=document.getElementById(containerId);
-  const tapasConComentarios=ranked.filter(p=>p.comments&&p.comments.length>0);
-  if(!tapasConComentarios.length){ el.innerHTML='<p class="vacio">No hay comentarios públicos esta vez</p>'; return; }
-  el.innerHTML=tapasConComentarios.map(p=>`
-    <div class="comentario-grupo">
-      <div class="comentario-grupo-tapa">🍽️ ${p.tapaName}</div>
-      <div class="comentario-burbujas">
-        ${p.comments.map(c=>`<div class="comentario-burbuja">${c}</div>`).join('')}
-      </div>
-    </div>
-  `).join('');
+async function revelarResultados(){
+  cargando('Calculando...');
+  const snap = await db.ref('game').once('value');
+  const game = snap.val()||{};
+  await db.ref('game/phase').set('results');
+  sinCarga();
+  await guardarHistorial(game);
+  ir('s-resultados');
+  await animarRevelacion(game);
 }
 
-async function animateReveal(game){
-  const ranked=calcRanked(game); window._ranked=ranked;
-  const podiumEl=document.getElementById('podium');
-  const allResultsEl=document.getElementById('all-results');
-  const allCommentsEl=document.getElementById('all-comments');
-  podiumEl.innerHTML=''; allResultsEl.innerHTML=''; allCommentsEl.innerHTML='';
-  const medals=['🥇','🥈','🥉'],cls=['first','second','third'];
-  const top3=ranked.slice(0,3).slice().reverse();
-  for(let i=0;i<top3.length;i++){
-    const p=top3[i];
-    const position=ranked.indexOf(p);
-    await new Promise(r=>setTimeout(r,i===0?600:900));
-    const card=document.createElement('div');
-    card.className='podium-card '+cls[position];
-    card.style.cssText='opacity:0;transform:translateY(20px);transition:opacity 0.5s ease,transform 0.5s ease;';
-    card.innerHTML=`<div class="medalla">${medals[position]}</div>${p.photo?`<img class="podio-foto" src="${p.photo}" onclick="openLightbox('${p.photo}')" style="cursor:zoom-in;"/>`:`<div class="podio-sin-foto">🍽️</div>`}<div class="podio-info"><div class="podio-nombre">${p.tapaName}</div><div class="podio-autor">de ${p.name}</div><div class="podio-nota">${p.avg.toFixed(1)}</div></div>`;
-    if(position===0) podiumEl.prepend(card); else podiumEl.appendChild(card);
-    requestAnimationFrame(()=>{ card.style.opacity='1'; card.style.transform='translateY(0)'; });
-    if(position===0&&navigator.vibrate) navigator.vibrate([100,50,100,50,200]);
+function sleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+function lanzarConfetti(){
+  const c = document.getElementById('confetti');
+  const cols = ['#C8940A','#E8B020','#F5CC50','#B82018','#F5F0E8','#1E4020'];
+  for(let i=0;i<80;i++){
+    const el=document.createElement('div');
+    el.className='confetti-piece';
+    el.style.cssText=`left:${Math.random()*100}vw;background:${cols[Math.floor(Math.random()*cols.length)]};width:${6+Math.random()*6}px;height:${8+Math.random()*10}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${2.5+Math.random()*2}s;animation-delay:${Math.random()*.8}s;transform:rotate(${Math.random()*360}deg)`;
+    c.appendChild(el);
   }
-  await new Promise(r=>setTimeout(r,400));
-  allResultsEl.innerHTML=ranked.map((p,i)=>`<li><span class="rk-pos">#${i+1}</span><span style="flex:1;margin:0 10px"><span>${p.tapaName}</span><div class="rk-votos">de ${p.name} · ${p.voteCount} voto${p.voteCount!==1?'s':''}</div></span><span class="rk-nota">${p.avg.toFixed(1)}</span></li>`).join('');
-  renderComments(ranked, 'all-comments');
+  setTimeout(()=>c.innerHTML='', 5000);
 }
 
-function renderResults(game){
-  const ranked=calcRanked(game); window._ranked=ranked;
-  const medals=['🥇','🥈','🥉'],cls=['first','second','third'];
-  document.getElementById('podium').innerHTML=ranked.slice(0,3).map((p,i)=>`<div class="podium-card ${cls[i]}"><div class="medalla">${medals[i]}</div>${p.photo?`<img class="podio-foto" src="${p.photo}" onclick="openLightbox('${p.photo}')" style="cursor:zoom-in;"/>`:`<div class="podio-sin-foto">🍽️</div>`}<div class="podio-info"><div class="podio-nombre">${p.tapaName}</div><div class="podio-autor">de ${p.name}</div><div class="podio-nota">${p.avg.toFixed(1)}</div></div></div>`).join('');
-  document.getElementById('all-results').innerHTML=ranked.map((p,i)=>`<li><span class="rk-pos">#${i+1}</span><span style="flex:1;margin:0 10px"><span>${p.tapaName}</span><div class="rk-votos">de ${p.name} · ${p.voteCount} voto${p.voteCount!==1?'s':''}</div></span><span class="rk-nota">${p.avg.toFixed(1)}</span></li>`).join('');
-  const allC=ranked.flatMap(p=>p.comments.map(c=>({tapa:p.tapaName,text:c})));
-  document.getElementById('all-comments').innerHTML=allC.length?allC.map(c=>`<div class="comentario-pub"><div class="comentario-pub-tapa">sobre: ${c.tapa}</div>${c.text}</div>`).join(''):'<p class="vacio">No hay comentarios públicos esta vez</p>';
+async function animarRevelacion(game){
+  const ranked = calcRanked(game);
+  _ranked = ranked;
+  const overlay = document.getElementById('reveal-overlay');
+  const content = document.getElementById('reveal-content');
+  overlay.classList.add('activa');
+
+  // Revelar de último a primero
+  const orden = [...ranked].reverse();
+  for(let i=0;i<orden.length;i++){
+    const p = orden[i];
+    const pos = ranked.indexOf(p);
+    const esGanador = pos===0;
+
+    // Cuenta atrás antes del top 3
+    if(i>0 && pos<=2){
+      content.innerHTML='<div class="reveal-suspense">Y el siguiente es...</div>';
+      await sleep(800);
+      for(const n of [3,2,1]){
+        content.innerHTML=`<div class="reveal-countdown">${n}</div>`;
+        if(navigator.vibrate) navigator.vibrate(60);
+        await sleep(900);
+      }
+    } else if(i>0){
+      await sleep(600);
+    }
+
+    const posLabel = pos===0?'🏆 1er lugar':pos===1?'🥈 2º lugar':pos===2?'🥉 3er lugar':`#${pos+1}`;
+    content.innerHTML=`
+      <div class="reveal-pos">${posLabel}</div>
+      ${p.photo?`<img class="reveal-foto" src="${p.photo}"/>`:'<div style="font-size:80px;margin-bottom:16px">🍽️</div>'}
+      <div class="reveal-tapa">${p.tapaName}</div>
+      <div class="reveal-autor">de ${p.name}</div>
+      <div class="reveal-nota">${p.avg.toFixed(1)}</div>`;
+
+    if(esGanador){
+      if(navigator.vibrate) navigator.vibrate([100,50,100,50,300]);
+      lanzarConfetti();
+      await sleep(3500);
+    } else {
+      await sleep(2200);
+    }
+  }
+
+  overlay.classList.remove('activa');
+  renderResultados(ranked);
 }
 
-async function saveToHistory(game){
-  const ranked=calcRanked(game); if(!ranked.length) return;
+function renderResultados(ranked){
+  // Podio
+  const medals=['🥇','🥈','🥉'], cls=['first','second','third'];
+  const order=[1,0,2]; // 2º izq, 1º centro, 3º der
+  document.getElementById('podium').innerHTML = order.map(ri=>{
+    if(ri>=ranked.length) return '';
+    const p=ranked[ri];
+    return `<div class="podium-card ${cls[ri]}">
+      <div class="medalla">${medals[ri]}</div>
+      ${p.photo?`<img class="podio-foto" src="${p.photo}" onclick="openLightbox('${p.photo}')"/>`:`<div class="podio-sin-foto">🍽️</div>`}
+      <div class="podio-info">
+        <div class="podio-nombre">${p.tapaName}</div>
+        <div class="podio-autor">de ${p.name}</div>
+        <div class="podio-nota">${p.avg.toFixed(1)}</div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Ranking completo
+  document.getElementById('ranking-lista').innerHTML = ranked.map((p,i)=>`
+    <li>
+      <span class="rk-pos">#${i+1}</span>
+      <span style="flex:1;margin:0 10px">
+        <span>${p.tapaName}</span>
+        <div class="rk-votos">de ${p.name} · ${p.voteCount} voto${p.voteCount!==1?'s':''}</div>
+      </span>
+      <span class="rk-nota">${p.avg.toFixed(1)}</span>
+    </li>`).join('');
+
+  // Comentarios agrupados por tapa
+  const conComentarios = ranked.filter(p=>p.comments&&p.comments.length);
+  document.getElementById('comentarios-lista').innerHTML = conComentarios.length
+    ? conComentarios.map(p=>`
+        <div class="comentario-grupo">
+          <div class="comentario-grupo-tapa">🍽️ ${p.tapaName}</div>
+          <div class="comentario-burbujas">
+            ${p.comments.map(c=>`<div class="comentario-burbuja">${c}</div>`).join('')}
+          </div>
+        </div>`).join('')
+    : '<p class="vacio">No hay comentarios públicos esta vez</p>';
+}
+
+// ══ SUSCRIPCIÓN TIEMPO REAL ═════════════════════════════
+function suscribir(){
+  if(unsub) unsub();
+  const ref = db.ref('game');
+  const handler = snap=>{
+    const game = snap.val()||{};
+    const cur = document.querySelector('.screen.activa')?.id;
+
+    if(cur==='s-seleccion'){
+      renderSeleccion();
+      if(game.phase==='voting' && miId){
+        (game.votes&&game.votes[miId]) ? mostrarVotado(game) : renderVotacion(game);
+      }
+    }
+    if(cur==='s-espera'){
+      renderEspera(game);
+      if(game.phase==='voting' && miId){
+        (game.votes&&game.votes[miId]) ? mostrarVotado(game) : renderVotacion(game);
+      }
+      // Auto-arranque si todos completaron mientras esperaba
+      if(game.phase==='lobby'){
+        const ps=partes(game);
+        if(ps.length>=2 && ps.every(p=>p.tapaName)){
+          db.ref('game/phase').set('voting');
+        }
+      }
+    }
+    if(cur==='s-votado'){
+      mostrarVotado(game);
+      if(game.phase==='results'){ ir('s-resultados'); renderResultados(calcRanked(game)); }
+    }
+  };
+  ref.on('value', handler);
+  unsub = ()=>ref.off('value', handler);
+}
+
+// ══ NAVEGACIÓN POR FASE ═════════════════════════════════
+function navegarSegunFase(game){
+  if(!miId) return;
+  if(game.phase==='results'){ ir('s-resultados'); renderResultados(calcRanked(game)); return; }
+  if(game.phase==='voting'){
+    (game.votes&&game.votes[miId]) ? mostrarVotado(game) : renderVotacion(game);
+    return;
+  }
+  // Lobby: ¿ya completé mi perfil?
+  const yo = partes(game).find(p=>p.id===miId);
+  if(yo&&yo.tapaName){ ir('s-espera'); renderEspera(game); suscribir(); }
+  else { ir('s-seleccion'); renderSeleccion(); suscribir(); }
+}
+
+// ══ HISTORIAL ═══════════════════════════════════════════
+async function guardarHistorial(game){
+  const ranked = calcRanked(game);
+  if(!ranked.length) return;
   const entry={
     date:new Date().toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'}),
     timestamp:Date.now(),
     winner:ranked[0].tapaName,
     winnerName:ranked[0].name,
     winnerScore:ranked[0].avg.toFixed(1),
-    participants:ranked.length,
     ranking:ranked.map(p=>({name:p.name,tapaName:p.tapaName,avg:p.avg.toFixed(1)}))
   };
-  try{ await db.ref('history').push(entry); }catch(e){ console.log('History save failed',e); }
+  try{ await db.ref('history').push(entry); }catch(e){ console.log('Historial error:',e); }
 }
 
-async function showHistory(){
-  showScreen('screen-history');
-  showLoading('Cargando historial...');
+async function verHistorial(){
+  ir('s-historial');
+  cargando('Cargando...');
   try{
-    const snap=await db.ref('history').once('value'); hideLoading();
-    const entries=snap.val()?Object.values(snap.val()).reverse():[];
-    const container=document.getElementById('history-content');
-    if(!entries.length){ container.innerHTML='<p class="vacio" style="margin-top:2rem;">Todavía no hay concursos guardados</p>'; return; }
-    container.innerHTML=entries.map(e=>`
-      <div class="ccard" style="margin-bottom:12px;">
-        <div style="font-size:12px;color:var(--chalk3);letter-spacing:1px;margin-bottom:6px;">${e.date}</div>
-        <div style="font-family:'Pacifico',cursive;font-size:20px;color:var(--yellow);margin-bottom:4px;">🏆 ${e.winner}</div>
-        <div style="font-size:15px;color:var(--chalk2);margin-bottom:10px;">ganado por ${e.winnerName} · ${e.winnerScore} puntos</div>
+    const snap = await db.ref('history').once('value'); sinCarga();
+    const entries = snap.val() ? Object.values(snap.val()).reverse() : [];
+    const c = document.getElementById('historial-contenido');
+    if(!entries.length){ c.innerHTML='<p class="vacio" style="margin-top:2rem">Todavía no hay concursos guardados</p>'; return; }
+    c.innerHTML = entries.map(e=>`
+      <div class="tarjeta" style="margin-bottom:12px">
+        <div style="font-size:12px;color:var(--tinta2);margin-bottom:6px">${e.date}</div>
+        <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--dorado2);margin-bottom:4px">🏆 ${e.winner}</div>
+        <div style="font-size:15px;color:var(--tinta2);margin-bottom:10px">ganado por ${e.winnerName} · ${e.winnerScore} puntos</div>
         <details>
-          <summary style="font-size:14px;color:var(--chalk3);cursor:pointer;list-style:none;">Ver clasificación ▾</summary>
-          <ol style="margin-top:8px;padding-left:20px;">${e.ranking.map(r=>`<li style="font-size:15px;padding:3px 0;color:var(--chalk2);">${r.tapaName} <span style="color:var(--chalk3)">· ${r.name} · ${r.avg}</span></li>`).join('')}</ol>
+          <summary style="font-size:14px;color:var(--tinta2);cursor:pointer;list-style:none">Ver clasificación ▾</summary>
+          <ol style="margin-top:8px;padding-left:20px">${e.ranking.map(r=>`<li style="font-size:15px;padding:3px 0;color:var(--tinta2)">${r.tapaName} <span style="color:var(--tinta3)">· ${r.name} · ${r.avg}</span></li>`).join('')}</ol>
         </details>
       </div>`).join('');
-  }catch(err){ hideLoading(); toast('Error cargando historial'); }
+  }catch(e){ sinCarga(); aviso('Error al cargar historial'); }
 }
 
-function exportPDF(){
-  const ranked=window._ranked;
-  if(!ranked.length){ toast('No hay resultados para exportar'); return; }
+// ══ RESETEAR ════════════════════════════════════════════
+async function resetear(){
+  if(!confirm('¿Borrar la partida y empezar de nuevo?')) return;
+  cargando('Borrando...');
+  try{
+    await db.ref('game').remove();
+    sinCarga();
+    miId=null; miNombre=null; miFoto=null; _otros=[]; _ranked=[];
+    sessionStorage.removeItem('tf_id');
+    sessionStorage.removeItem('tf_nombre');
+    if(unsub){ unsub(); unsub=null; }
+    nombresReg=[];
+    renderReg();
+    ir('s-registro');
+  }catch(e){ sinCarga(); aviso('Error al borrar'); }
+}
+
+// ══ PDF ════════════════════════════════════════════════
+function exportarPDF(){
+  if(!_ranked.length){ aviso('No hay resultados'); return; }
   const {jsPDF}=window.jspdf;
   const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
-  const W=210, H=297;
+  const W=210,H=297;
 
-  // Paleta
-  const ROJO=[100,10,10], ROJO2=[150,20,20];
-  const ORO=[200,148,10], ORO2=[232,176,32], ORO3=[245,204,80];
-  const CREMA=[253,248,240], CREMA2=[240,232,213], CREMA3=[216,200,160];
-  const TINTA=[26,8,8], TINTA2=[90,58,32], TINTA3=[154,112,64];
-  const BLANCO=[255,255,255];
-  const PLATA=[185,185,185], PLATA2=[215,215,215];
-  const BRONCE=[195,115,35], BRONCE2=[220,148,60];
-  const MEDAL=[ORO2,PLATA,BRONCE];
-  const MEDAL_DK=[ORO,[130,130,130],[150,85,20]];
-  const MEDAL_LT=[ORO3,PLATA2,BRONCE2];
-
-  function sf(c){ doc.setFillColor(c[0],c[1],c[2]); }
-  function ss(c){ doc.setDrawColor(c[0],c[1],c[2]); }
-  function st(c){ doc.setTextColor(c[0],c[1],c[2]); }
-
-  // Degradado rojo simulado
-  function fondoRojo(y0,y1){
-    y0=y0||0; y1=y1||H;
-    const steps=20;
-    for(let i=0;i<steps;i++){
-      const t=i/steps;
-      doc.setFillColor(Math.round(78+t*62), Math.round(8+t*14), Math.round(8+t*10));
-      const yy=y0+i*(y1-y0)/steps;
-      doc.rect(0, yy, W, (y1-y0)/steps+0.5, 'F');
+  function fondoRojo(){
+    for(let i=0;i<24;i++){
+      const t=i/24;
+      doc.setFillColor(Math.round(80+t*65),Math.round(8+t*14),Math.round(8+t*10));
+      doc.rect(0,i*(H/24),W,H/24+.5,'F');
     }
   }
-
-  // Fondo crema
-  function fondoCrema(y0,y1){
-    y0=y0||0; y1=y1||H;
-    sf(CREMA); doc.rect(0,y0,W,y1-y0,'F');
-    ss(CREMA3); doc.setLineWidth(0.08);
-    for(let y=y0;y<y1;y+=4) doc.line(0,y,W,y);
-  }
-
-  // Tiras de pelicula
-  function tirasCine(){
+  function tiras(){
     const sw=7;
-    sf(TINTA); doc.rect(0,0,sw,H,'F'); doc.rect(W-sw,0,sw,H,'F');
-    ss(ORO2); doc.setLineWidth(0.45);
-    doc.line(sw,0,sw,H); doc.line(W-sw,0,W-sw,H);
-    for(let y=4;y<H;y+=11){
-      for(const sx of [2.2, W-sw+2.2]){
-        doc.setFillColor(10,0,0);
-        ss(ORO); doc.setLineWidth(0.2);
-        doc.roundedRect(sx,y,2.6,4,0.6,0.6,'FD');
-      }
+    doc.setFillColor(26,8,8); doc.rect(0,0,sw,H,'F'); doc.rect(W-sw,0,sw,H,'F');
+    doc.setDrawColor(200,148,10); doc.setLineWidth(.45); doc.line(sw,0,sw,H); doc.line(W-sw,0,W-sw,H);
+    for(let y=4;y<H;y+=11) for(const sx of [2.2,W-sw+2.2]){
+      doc.setFillColor(10,0,0); doc.setDrawColor(200,148,10); doc.setLineWidth(.2);
+      doc.roundedRect(sx,y,2.6,4,.6,.6,'FD');
     }
   }
-
-  // Linea dorada
   function lineaOro(x1,x2,y){
-    ss(ORO2); doc.setLineWidth(0.7); doc.line(x1,y,x2,y);
-    ss(ORO3); doc.setLineWidth(0.2);
+    doc.setDrawColor(232,176,32); doc.setLineWidth(.7); doc.line(x1,y,x2,y);
+    doc.setDrawColor(245,204,80); doc.setLineWidth(.2);
     doc.line(x1,y+1,x2,y+1); doc.line(x1,y-1,x2,y-1);
   }
-
-  // Separador con label
   function sepLabel(y,txt){
     const tw=doc.getTextWidth(txt);
-    ss(ORO); doc.setLineWidth(0.3);
-    doc.line(16,y, (W-tw)/2-3, y);
-    doc.line((W+tw)/2+3,y, W-16,y);
-    st(ORO2); doc.setFont('helvetica','bold'); doc.setFontSize(7.5);
-    doc.text(txt, W/2, y-2, {align:'center'});
+    doc.setDrawColor(200,148,10); doc.setLineWidth(.3);
+    doc.line(16,y,(W-tw)/2-3,y); doc.line((W+tw)/2+3,y,W-16,y);
+    doc.setTextColor(232,176,32); doc.setFont('helvetica','bold'); doc.setFontSize(7.5);
+    doc.text(txt,W/2,y-2,{align:'center'});
     return y-9;
   }
-
-  // Pie de pagina
-  function pie(txt){
-    lineaOro(16,W-16,14);
-    st(ORO); doc.setFont('helvetica','italic'); doc.setFontSize(7.5);
-    doc.text(txt, W/2, 8, {align:'center'});
+  function fotoMarco(x,y,w,h,img,rank){
+    const bc=[[232,176,32],[185,185,185],[195,115,35]][rank]||[200,148,10];
+    doc.setFillColor(26,8,8); doc.rect(x+2,y-2,w,h,'F');
+    doc.setFillColor(26,8,8); doc.setDrawColor(bc[0],bc[1],bc[2]); doc.setLineWidth(1.4);
+    doc.rect(x,y,w,h,'FD');
+    doc.setDrawColor(245,204,80); doc.setLineWidth(.3);
+    doc.rect(x+1.5,y+1.5,w-3,h-3,'S');
+    const b=3.5;
+    if(img){ try{ doc.addImage(img,'JPEG',x+b,y+b,w-2*b,h-2*b,'','FAST'); }catch(e){} }
+    else{ doc.setFillColor(150,20,20); doc.rect(x+b,y+b,w-2*b,h-2*b,'F'); }
   }
-
-  // Foto con marco elegante
-  function fotoMarco(x,y,w,h,imgData,rank){
-    const bc=MEDAL[rank]||ORO2, bd=MEDAL_DK[rank]||ORO;
-    // Sombra
-    sf(TINTA); doc.rect(x+2,y-2,w,h,'F');
-    // Marco
-    sf(TINTA); ss(bc); doc.setLineWidth(1.4); doc.rect(x,y,w,h,'FD');
-    ss(ORO3); doc.setLineWidth(0.3); doc.rect(x+1.5,y+1.5,w-3,h-3,'S');
-    // Foto
-    const bord=3.5;
-    if(imgData){
-      try{ doc.addImage(imgData,'JPEG',x+bord,y+bord,w-2*bord,h-2*bord,'','FAST'); }
-      catch(e){ sf(ROJO2); doc.rect(x+bord,y+bord,w-2*bord,h-2*bord,'F'); }
-    } else {
-      sf(ROJO2); doc.rect(x+bord,y+bord,w-2*bord,h-2*bord,'F');
-      st(ORO); doc.setFont('helvetica','italic'); doc.setFontSize(9);
-      doc.text('sin foto', x+w/2, y+h/2, {align:'center'});
-    }
-    // Ornamentos esquinas (cruces simples)
-    ss(bc); doc.setLineWidth(0.4);
-    for(const [cx,cy] of [[x+4,y+4],[x+w-4,y+4],[x+4,y+h-4],[x+w-4,y+h-4]]){
-      doc.line(cx-2,cy,cx+2,cy); doc.line(cx,cy-2,cx,cy+2);
-    }
-  }
-
-  // Estrellas como texto (usando guiones bajos para vacias)
-  function drawStarsText(avg,cx,cy,size){
-    size=size||3.5;
-    const filled=Math.round(avg/2);
-    const gap=size*2.6;
-    const sx=cx-(5*gap)/2+size;
-    doc.setLineWidth(0.4);
+  function estrellitas(avg,cx,cy,r){
+    r=r||2.2; const f=Math.round(avg/2), g=r*2.6;
+    const sx=cx-(5*g)/2+r;
+    doc.setLineWidth(.3);
     for(let i=0;i<5;i++){
-      const x=sx+i*gap, r=size*0.48;
-      if(i<filled){ sf(ORO2); ss(ORO); }
-      else { sf(ROJO2); ss(ORO); }
-      // Hexagono simple como estrella aproximada
-      const pts=[];
-      for(let a=0;a<6;a++){
-        const ang=a*Math.PI/3-Math.PI/6;
-        pts.push([x+r*Math.cos(ang), cy+r*Math.sin(ang)]);
-      }
-      doc.lines(pts.slice(1).map((p,i)=>[p[0]-pts[i][0],p[1]-pts[i][1]]),
-                pts[0][0],pts[0][1],null,null,true);
+      const x=sx+i*g;
+      if(i<f){ doc.setFillColor(232,176,32); doc.setDrawColor(200,148,10); }
+      else{ doc.setFillColor(40,12,12); doc.setDrawColor(200,148,10); }
+      doc.circle(x,cy,r*.8,'FD');
     }
   }
 
-  // ═══════════════════════════════════════════════════
-  //  PAGINA 1 — Portada + Podio + Clasificacion
-  // ═══════════════════════════════════════════════════
-  fondoRojo(0,H); tirasCine();
-
-  // Cabecera negra
+  // Pág 1: portada + podio + clasificación
+  fondoRojo(); tiras();
   const cabH=46;
-  sf(TINTA); doc.rect(0,H-cabH,W,cabH,'F');
+  doc.setFillColor(26,8,8); doc.rect(0,H-cabH,W,cabH,'F');
   lineaOro(0,W,H-cabH);
+  doc.setTextColor(245,204,80); doc.setFont('helvetica','bold'); doc.setFontSize(40);
+  doc.text('TAPA FEST',W/2,H-25,{align:'center'});
+  doc.setTextColor(232,176,32); doc.setFontSize(8);
+  doc.text('G  A  L  A   D  E   P  R  E  M  I  O  S',W/2,H-35,{align:'center'});
+  doc.setTextColor(253,232,160); doc.setFont('helvetica','italic'); doc.setFontSize(7.5);
+  doc.text(new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'}),W/2,H-43,{align:'center'});
 
-  // Titulo
-  st(ORO3); doc.setFont('helvetica','bold'); doc.setFontSize(40);
-  doc.text('TAPA FEST', W/2, H-25, {align:'center'});
-  st(ORO2); doc.setFont('helvetica','bold'); doc.setFontSize(8);
-  doc.text('G  A  L  A   D  E   P  R  E  M  I  O  S', W/2, H-35, {align:'center'});
-  st(ORO3); doc.setFont('helvetica','italic'); doc.setFontSize(7.5);
-  doc.text(new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'}), W/2, H-43, {align:'center'});
+  // Podio
+  const strip=7,iW=W-2*strip,gap=5;
+  const w1=iW*.40, w23=(iW-w1-2*gap)/2;
+  const cx1=strip+w23+gap+w1/2, cx2=strip+w23/2, cx3=strip+w23+gap+w1+gap+w23/2;
+  const h1=64, h23=50, pTop=H-cabH-22;
+  let bot1=pTop, bot23=pTop;
+  const MEDAL_C=[[232,176,32],[185,185,185],[195,115,35]];
 
-  // PODIO — fotos grandes escalonadas
-  const strip=7, innerW=W-2*strip, gap=5;
-  const w1=innerW*0.40, w23=(innerW-w1-2*gap)/2;
-  const cx1=strip+w23+gap+w1/2;
-  const cx2=strip+w23/2;
-  const cx3=strip+w23+gap+w1+gap+w23/2;
-  const h1=65, h23=50;
-  const photoTop=H-cabH-22;
-  let bottom1=photoTop, bottom23=photoTop;
-
-  // 1er lugar (centro, mas grande)
-  if(ranked.length>0){
-    const p=ranked[0], px=cx1-w1/2, py=photoTop-h1;
-    fotoMarco(px,py,w1,h1,p.photo,0);
-    // Numero watermark
+  if(_ranked[0]){
+    const p=_ranked[0]; fotoMarco(cx1-w1/2,pTop-h1,w1,h1,p.photo,0);
     doc.setFont('helvetica','bold'); doc.setFontSize(90);
-    st([232,176,32]);
-    doc.text('1', cx1, py+h1*0.65, {align:'center'});
-    // Badge nota debajo
-    const bcy=py-1;
-    sf(TINTA); doc.circle(cx1,bcy,9,'F');
-    ss(ORO3); doc.setLineWidth(1); doc.circle(cx1,bcy,9,'S');
-    st(ORO3); doc.setFont('helvetica','bold'); doc.setFontSize(11);
-    doc.text(String(p.avg), cx1, bcy+3, {align:'center'});
-    // Estrellitas corona
-    const starR=2; const starGap=starR*2.5;
-    const starSX=cx1-(5*starGap)/2+starR;
-    drawStarsText(p.avg, cx1, bcy-14, 2.2);
-    // Info
+    doc.setTextColor(232,176,32); doc.text('1',cx1,pTop-h1+h1*.65,{align:'center'});
+    const bcy=pTop-h1-1;
+    doc.setFillColor(26,8,8); doc.circle(cx1,bcy,9,'F');
+    doc.setDrawColor(245,204,80); doc.setLineWidth(1); doc.circle(cx1,bcy,9,'S');
+    doc.setTextColor(245,204,80); doc.setFont('helvetica','bold'); doc.setFontSize(11);
+    doc.text(String(p.avg),cx1,bcy+3,{align:'center'});
+    estrellitas(p.avg,cx1,bcy-14,2.2);
     const iy=bcy-20;
-    st(ORO3); doc.setFont('helvetica','bold'); doc.setFontSize(10);
-    let tapa=p.tapaName;
-    while(doc.getTextWidth(tapa)>w1-4 && tapa.length>3) tapa=tapa.slice(0,-1);
-    if(tapa!==p.tapaName) tapa+='...';
-    doc.text(tapa, cx1, iy, {align:'center'});
-    st(CREMA3); doc.setFont('helvetica','italic'); doc.setFontSize(8);
-    doc.text('de '+p.name, cx1, iy-5.5, {align:'center'});
-    bottom1=iy-9;
+    doc.setTextColor(245,204,80); doc.setFont('helvetica','bold'); doc.setFontSize(10);
+    let t=p.tapaName; while(doc.getTextWidth(t)>w1-4&&t.length>3) t=t.slice(0,-1);
+    if(t!==p.tapaName) t+='...'; doc.text(t,cx1,iy,{align:'center'});
+    doc.setTextColor(216,200,160); doc.setFont('helvetica','italic'); doc.setFontSize(8);
+    doc.text('de '+p.name,cx1,iy-5.5,{align:'center'}); bot1=iy-9;
   }
-
-  // 2do lugar (izquierda)
-  if(ranked.length>1){
-    const p=ranked[1], px=cx2-w23/2, py=photoTop-h23-14;
-    fotoMarco(px,py,w23,h23,p.photo,1);
-    doc.setFont('helvetica','bold'); doc.setFontSize(70); st(PLATA2);
-    doc.text('2', cx2, py+h23*0.65, {align:'center'});
-    const bcy=py-1;
-    sf(TINTA); doc.circle(cx2,bcy,7.5,'F');
-    sf(PLATA); ss(PLATA2); doc.setLineWidth(0.8); doc.circle(cx2,bcy,7.5,'S');
-    st(PLATA2); doc.setFont('helvetica','bold'); doc.setFontSize(9);
-    doc.text(String(p.avg), cx2, bcy+3, {align:'center'});
-    drawStarsText(p.avg, cx2, bcy-12, 1.9);
+  [[_ranked[1],cx2,w23,14,1],[_ranked[2],cx3,w23,24,2]].forEach(([p,cx,w,off,ri])=>{
+    if(!p) return;
+    fotoMarco(cx-w/2,pTop-h23-off,w,h23,p.photo,ri);
+    const mc=MEDAL_C[ri];
+    doc.setFont('helvetica','bold'); doc.setFontSize(70);
+    doc.setTextColor(mc[0],mc[1],mc[2]); doc.text(String(ri+1),cx,pTop-h23-off+h23*.65,{align:'center'});
+    const bcy=pTop-h23-off-1;
+    doc.setFillColor(26,8,8); doc.circle(cx,bcy,7.5,'F');
+    doc.setFillColor(mc[0],mc[1],mc[2]); doc.setDrawColor(mc[0]+30,mc[1]+30,mc[2]+30); doc.setLineWidth(.8); doc.circle(cx,bcy,7.5,'S');
+    doc.setTextColor(mc[0]+30,mc[1]+30,mc[2]+30); doc.setFont('helvetica','bold'); doc.setFontSize(9);
+    doc.text(String(p.avg),cx,bcy+3,{align:'center'});
+    estrellitas(p.avg,cx,bcy-12,1.9);
     const iy=bcy-18;
-    st(PLATA2); doc.setFont('helvetica','bold'); doc.setFontSize(8.5);
-    let tapa=p.tapaName;
-    while(doc.getTextWidth(tapa)>w23-2 && tapa.length>3) tapa=tapa.slice(0,-1);
-    if(tapa!==p.tapaName) tapa+='...';
-    doc.text(tapa, cx2, iy, {align:'center'});
-    st(CREMA3); doc.setFont('helvetica','italic'); doc.setFontSize(7.5);
-    doc.text('de '+p.name, cx2, iy-5, {align:'center'});
-    bottom23=Math.min(bottom23, iy-9);
-  }
-
-  // 3er lugar (derecha)
-  if(ranked.length>2){
-    const p=ranked[2], px=cx3-w23/2, py=photoTop-h23-24;
-    fotoMarco(px,py,w23,h23,p.photo,2);
-    doc.setFont('helvetica','bold'); doc.setFontSize(70); st(BRONCE2);
-    doc.text('3', cx3, py+h23*0.65, {align:'center'});
-    const bcy=py-1;
-    sf(TINTA); doc.circle(cx3,bcy,7.5,'F');
-    sf(BRONCE); ss(BRONCE2); doc.setLineWidth(0.8); doc.circle(cx3,bcy,7.5,'S');
-    st(BRONCE2); doc.setFont('helvetica','bold'); doc.setFontSize(9);
-    doc.text(String(p.avg), cx3, bcy+3, {align:'center'});
-    drawStarsText(p.avg, cx3, bcy-12, 1.9);
-    const iy=bcy-18;
-    st(BRONCE2); doc.setFont('helvetica','bold'); doc.setFontSize(8.5);
-    let tapa=p.tapaName;
-    while(doc.getTextWidth(tapa)>w23-2 && tapa.length>3) tapa=tapa.slice(0,-1);
-    if(tapa!==p.tapaName) tapa+='...';
-    doc.text(tapa, cx3, iy, {align:'center'});
-    st(CREMA3); doc.setFont('helvetica','italic'); doc.setFontSize(7.5);
-    doc.text('de '+p.name, cx3, iy-5, {align:'center'});
-    bottom23=Math.min(bottom23, iy-9);
-  }
-
-  let curY=Math.min(bottom1,bottom23)-4;
-
-  // Clasificacion completa
-  curY=sepLabel(curY, 'CLASIFICACION OFICIAL');
-  ranked.forEach((p,i)=>{
-    if(curY<22) return;
-    const rh=13, ry=curY-rh+3;
-    const bg=i%2===0?[55,12,12]:[40,8,8];
-    doc.setFillColor(bg[0],bg[1],bg[2]); doc.rect(8,ry,W-16,rh,'F');
-    const mf=MEDAL[i]||ORO;
-    sf(mf); doc.rect(8,ry,3.5,rh,'F');
-    st(mf); doc.setFont('helvetica','bold'); doc.setFontSize(10);
-    doc.text(`${i+1}.`, 26, curY-3.5, {align:'right'});
-    st(CREMA); doc.setFontSize(10);
-    doc.text(p.tapaName, 29, curY-3);
-    st(CREMA3); doc.setFont('helvetica','italic'); doc.setFontSize(8);
-    doc.text(`de ${p.name}  -  ${p.voteCount} voto${p.voteCount!==1?'s':''}`, 29, curY-8.5);
-    // Nota + estrellas en la misma fila
-    const rm=curY-rh/2+1.5;
-    const nx=W-11;
-    drawStarsText(p.avg, nx-20, rm, 1.9);
-    st(i===0?ORO3:mf); doc.setFont('helvetica','bold'); doc.setFontSize(i===0?11:9);
-    doc.text(String(p.avg), nx, rm+3, {align:'right'});
-    curY-=rh;
+    doc.setTextColor(mc[0]+20,mc[1]+20,mc[2]+20); doc.setFont('helvetica','bold'); doc.setFontSize(8.5);
+    let t=p.tapaName; while(doc.getTextWidth(t)>w-2&&t.length>3) t=t.slice(0,-1);
+    if(t!==p.tapaName) t+='...'; doc.text(t,cx,iy,{align:'center'});
+    doc.setTextColor(216,200,160); doc.setFont('helvetica','italic'); doc.setFontSize(7.5);
+    doc.text('de '+p.name,cx,iy-5,{align:'center'});
+    bot23=Math.min(bot23,iy-9);
   });
 
-  pie('TAPA FEST  -  Una noche de cine y tapas');
+  let curY=Math.min(bot1,bot23)-4;
+  curY=sepLabel(curY,'CLASIFICACION OFICIAL');
+  _ranked.forEach((p,i)=>{
+    if(curY<22) return;
+    const rh=13,ry=curY-rh+3;
+    doc.setFillColor(i%2===0?55:40,12,12); doc.rect(8,ry,W-16,rh,'F');
+    const mc=(MEDAL_C[i]||[200,148,10]);
+    doc.setFillColor(mc[0],mc[1],mc[2]); doc.rect(8,ry,3.5,rh,'F');
+    doc.setTextColor(mc[0],mc[1],mc[2]); doc.setFont('helvetica','bold'); doc.setFontSize(10);
+    doc.text(`${i+1}.`,26,curY-3.5,{align:'right'});
+    doc.setTextColor(253,248,240); doc.setFontSize(10);
+    doc.text(p.tapaName,29,curY-3);
+    doc.setTextColor(216,200,160); doc.setFont('helvetica','italic'); doc.setFontSize(8);
+    doc.text(`de ${p.name}  -  ${p.voteCount} voto${p.voteCount!==1?'s':''}`,29,curY-8.5);
+    const rm=curY-rh/2+1.5;
+    estrellitas(p.avg,W-11-20,rm,1.9);
+    doc.setTextColor(i===0?245:mc[0],i===0?204:mc[1],i===0?80:mc[2]);
+    doc.setFont('helvetica','bold'); doc.setFontSize(i===0?11:9);
+    doc.text(String(p.avg),W-11,rm+3,{align:'right'});
+    curY-=rh;
+  });
+  doc.setDrawColor(200,148,10); doc.setLineWidth(.4); doc.line(16,14,W-16,14);
+  doc.setTextColor(200,148,10); doc.setFont('helvetica','italic'); doc.setFontSize(7.5);
+  doc.text('TAPA FEST  -  Una noche de cine y tapas',W/2,8,{align:'center'});
 
-  // ═══════════════════════════════════════════════════
-  //  PAGINAS DE TAPA
-  // ═══════════════════════════════════════════════════
-  ranked.forEach((p,rank)=>{
+  // Páginas por tapa
+  _ranked.forEach((p,rank)=>{
     doc.addPage();
-    const mf=MEDAL[rank]||ORO2, md=MEDAL_DK[rank]||ORO;
-    const split=H*0.44;
+    const mc=(MEDAL_C[rank]||[200,148,10]);
+    const split=H*.44;
+    fondoRojo();
+    doc.setFillColor(253,248,240); doc.rect(0,0,W,split,'F');
+    doc.setDrawColor(216,200,160); doc.setLineWidth(.08);
+    for(let y=0;y<split;y+=4) doc.line(0,y,W,y);
+    tiras(); lineaOro(0,W,split);
 
-    // Zona superior roja
-    fondoRojo(split,H);
-    // Zona inferior crema
-    fondoCrema(0,split);
-    tirasCine();
-    lineaOro(0,W,split);
-
-    // Cabecera negra
     const ch=44;
-    sf(TINTA); doc.rect(0,H-ch,W,ch,'F');
+    doc.setFillColor(26,8,8); doc.rect(0,H-ch,W,ch,'F');
     lineaOro(0,W,H-ch);
-
-    // Premio y nombre
-    sf(mf); doc.setFont('helvetica','bold'); doc.setFontSize(8);
-    const puestos=['MEJOR TAPA','2o LUGAR','3er LUGAR'];
-    st(mf); doc.text(rank<3?puestos[rank]:`#${rank+1}`, W/2, H-11, {align:'center'});
-
-    let fs=21;
-    doc.setFont('helvetica','bold');
-    while(doc.setFontSize(fs)||doc.getTextWidth(p.tapaName)>W-44){ if(fs<=11)break; fs--; }
+    doc.setTextColor(mc[0],mc[1],mc[2]); doc.setFont('helvetica','bold'); doc.setFontSize(8);
+    doc.text(['MEJOR TAPA','2o LUGAR','3er LUGAR'][rank]||(rank<3?'':`#${rank+1}`)||`#${rank+1}`,W/2,H-11,{align:'center'});
+    let fs=21; doc.setFont('helvetica','bold');
+    while(doc.setFontSize(fs)||doc.getTextWidth(p.tapaName)>W-44){if(fs<=11)break;fs--;}
     doc.setFontSize(fs);
-    st(ORO3); doc.text(p.tapaName, W/2, H-24, {align:'center'});
+    doc.setTextColor(245,204,80); doc.text(p.tapaName,W/2,H-24,{align:'center'});
+    doc.setTextColor(216,200,160); doc.setFont('helvetica','italic'); doc.setFontSize(8.5);
+    doc.text(`de ${p.name}   -   ${p.avg} pts   -   ${p.voteCount} votos`,W/2,H-34,{align:'center'});
+    const ns=String(p.avg); doc.setFont('helvetica','bold'); doc.setFontSize(13);
+    const nw=doc.getTextWidth(ns);
+    const sw2=5*3.2*2.6; const tot=nw+6+sw2; const nsx=W/2-tot/2;
+    doc.setTextColor(mc[0],mc[1],mc[2]); doc.text(ns,nsx,H-42.5);
+    estrellitas(p.avg,nsx+nw+6+sw2/2,H-41,3.2);
 
-    st(CREMA3); doc.setFont('helvetica','italic'); doc.setFontSize(8.5);
-    doc.text(`de ${p.name}   -   ${p.avg} pts   -   ${p.voteCount} votos`, W/2, H-34, {align:'center'});
+    const pm=9,sw=7,fpw=W-2*sw-2*pm,fptop=H-ch-3,fpbot=split+4,fph=fptop-fpbot;
+    fotoMarco(sw+pm,fpbot,fpw,fph,p.photo,rank);
 
-    // Nota + estrellas en cabecera
-    const nstr=String(p.avg);
-    doc.setFont('helvetica','bold'); doc.setFontSize(13); st(mf);
-    const nw=doc.getTextWidth(nstr);
-    const starsW=5*3.2*2.6;
-    const totW=nw+6+starsW;
-    const nsx=W/2-totW/2;
-    doc.text(nstr, nsx, H-42.5);
-    drawStarsText(p.avg, nsx+nw+6+starsW/2, H-41, 3.2);
-
-    // Foto GRANDE en zona roja — de cabecera al split
-    const pm=9, sw=7;
-    const fpx=sw+pm, fpw=W-2*sw-2*pm;
-    const fptop=H-ch-3, fpbot=split+4, fph=fptop-fpbot;
-    fotoMarco(fpx,fpbot,fpw,fph,p.photo,rank);
-
-    // Comentarios en zona crema
     let cy=split-6;
-    const labelCom=p.comments&&p.comments.length
-      ?`COMENTARIOS (${p.comments.length})`:'COMENTARIOS';
-    cy=sepLabel(cy, labelCom);
-
+    cy=sepLabel(cy,p.comments&&p.comments.length?`COMENTARIOS (${p.comments.length})`:'COMENTARIOS');
     if(p.comments&&p.comments.length){
-      const cw=(W-40)/2, lx=16, rx=lx+cw+8;
-      let ly=cy, ry=cy;
-      p.comments.forEach((com,i)=>{
-        const isLeft=i%2===0, bx=isLeft?lx:rx, ref=isLeft?ly:ry;
-        const words=com.split(' ');
-        const lines2=[];
-        let line='';
-        doc.setFont('helvetica','italic'); doc.setFontSize(8.5);
-        words.forEach(w=>{
-          const test=line?line+' '+w:w;
-          if(doc.getTextWidth(test)<cw-12){ line=test; }
-          else { if(line) lines2.push(line); line=w; }
-        });
-        if(line) lines2.push(line);
-        const lh=5, pad=3.5, bh=lines2.length*lh+2*pad;
-        if(ref-bh<18) return;
+      const cw=(W-40)/2,lx=16,rx=lx+cw+8;
+      let ly=cy,ry=cy;
+      p.comments.forEach((com,ci)=>{
+        const il=ci%2===0,bx=il?lx:rx,ref=il?ly:ry;
+        const words=com.split(' ');const lines2=[];let line='';
+        doc.setFont('helvetica','italic');doc.setFontSize(8.5);
+        words.forEach(w=>{const test=line?line+' '+w:w;if(doc.getTextWidth(test)<cw-12){line=test;}else{if(line)lines2.push(line);line=w;}});
+        if(line)lines2.push(line);
+        const lh=5,pad=3.5,bh=lines2.length*lh+2*pad;
+        if(ref-bh<18)return;
         const by=ref-bh;
-        // Burbuja
-        sf(CREMA2);
-        doc.setDrawColor(isLeft?mf[0]:CREMA3[0], isLeft?mf[1]:CREMA3[1], isLeft?mf[2]:CREMA3[2]);
-        doc.setLineWidth(0.6);
-        doc.roundedRect(bx,by,cw,bh,2.5,2.5,'FD');
-        // Comilla
-        st(mf); doc.setFont('helvetica','bold'); doc.setFontSize(14);
-        doc.text('"', bx+2.5, by+bh-2);
-        // Texto
-        st(TINTA2); doc.setFont('helvetica','italic'); doc.setFontSize(8.5);
-        lines2.forEach((ln,j)=>doc.text(ln, bx+8, by+bh-pad-3-j*lh));
-        const adv=bh+4;
-        if(isLeft) ly-=adv; else ry-=adv;
+        doc.setFillColor(240,232,213);
+        doc.setDrawColor(il?mc[0]:216,il?mc[1]:200,il?mc[2]:160);
+        doc.setLineWidth(.6);doc.roundedRect(bx,by,cw,bh,2.5,2.5,'FD');
+        doc.setTextColor(mc[0],mc[1],mc[2]);doc.setFont('helvetica','bold');doc.setFontSize(14);
+        doc.text('"',bx+2.5,by+bh-2);
+        doc.setTextColor(90,58,32);doc.setFont('helvetica','italic');doc.setFontSize(8.5);
+        lines2.forEach((ln,j)=>doc.text(ln,bx+8,by+bh-pad-3-j*lh));
+        const adv=bh+4; if(il)ly-=adv;else ry-=adv;
       });
     } else {
-      sf(CREMA2); ss(CREMA3); doc.setLineWidth(0.5);
+      doc.setFillColor(240,232,213);doc.setDrawColor(216,200,160);doc.setLineWidth(.5);
       doc.roundedRect(40,cy-18,W-80,16,3,3,'FD');
-      st(TINTA3); doc.setFont('helvetica','italic'); doc.setFontSize(9);
-      doc.text('Nadie dejo comentarios esta vez', W/2, cy-12, {align:'center'});
+      doc.setTextColor(154,112,64);doc.setFont('helvetica','italic');doc.setFontSize(9);
+      doc.text('Nadie dejo comentarios esta vez',W/2,cy-12,{align:'center'});
     }
-
-    pie(`TAPA FEST  -  ${p.tapaName}`);
+    doc.setDrawColor(200,148,10);doc.setLineWidth(.4);doc.line(16,14,W-16,14);
+    doc.setTextColor(200,148,10);doc.setFont('helvetica','italic');doc.setFontSize(7.5);
+    doc.text(`TAPA FEST  -  ${p.tapaName}`,W/2,8,{align:'center'});
   });
 
   doc.save('tapa-fest-gala.pdf');
-  toast('PDF guardado!');
+  aviso('PDF guardado! 🏆');
 }
 
-
-async function resetGame(){
-  if(!confirm('¿Borrar la partida y empezar de nuevo?')) return;
-  showLoading('Borrando...');
-  await db.ref('game').remove(); hideLoading();
-  myId=null; myName=null; window._photo=null; window._others=null; window._ranked=[];
-  sessionStorage.removeItem('tapafest_id'); sessionStorage.removeItem('tapafest_name'); 
-  if(unsub){ unsub(); unsub=null; }
-  document.getElementById('profile-tapa-name').value='';
-  document.getElementById('profile-preview').style.display='none';
-  document.querySelector('.photo-upload').style.display='block';
-  showScreen('screen-join');
-  loadJoinList();
-}
-
-// Arranque: cargar la lista en la pantalla inicial y suscribirse a cambios
-// Arranque: comprobar estado de la partida
-document.addEventListener('DOMContentLoaded', function(){
-  window._regNames = window._regNames || [];
-});
+// ══ ARRANQUE ════════════════════════════════════════════
 (async function(){
   try{
-    const snap=await db.ref('game').once('value');
-    const game=snap.val()||{};
-    if(game.phase==='results'){ renderResults(game); showScreen('screen-results'); return; }
-    if(game.phase==='voting'){
-      // Hay votación activa — ir a selección para que la gente entre
-      loadJoinList(); showScreen('screen-join'); subscribeToGame(); return;
+    const snap = await db.ref('game').once('value');
+    const game = snap.val()||{};
+    const ps   = partes(game);
+
+    // Si hay partida activa y yo tengo sesión guardada
+    const savedId = sessionStorage.getItem('tf_id');
+    if(savedId && ps.find(p=>p.id===savedId)){
+      miId     = savedId;
+      miNombre = sessionStorage.getItem('tf_nombre');
+      navegarSegunFase(game);
+      suscribir();
+      return;
     }
-    // Hay participantes registrados → ir a selección
-    const parts=Object.values(game.participants||{}).filter(p=>p&&p.id&&p.name);
-    if(parts.length>0){
-      loadJoinList(); showScreen('screen-join'); subscribeToGame(); return;
+
+    // Si hay participantes registrados pero yo no tengo sesión → selección
+    if(ps.length > 0 && game.phase !== 'results'){
+      ir('s-seleccion');
+      renderSeleccion();
+      suscribir();
+      return;
     }
-    // Sin partida → pantalla de registro
-    showScreen('screen-registro');
+
+    // Sin partida → registro
+    ir('s-registro');
   }catch(e){
-    showScreen('screen-registro');
+    console.error('Arranque:', e);
+    ir('s-registro');
   }
 })();
 </script>
 </body>
 </html>
-</body></html>
