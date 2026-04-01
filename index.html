@@ -326,8 +326,18 @@ input[type=range]{width:100%;height:4px;accent-color:var(--rojo);cursor:pointer;
   </div>
 
   <div class="tarjeta" style="margin-top:14px">
+    <div class="tarjeta-titulo">Participantes</div>
     <ul class="lista" id="espera-lista"></ul>
   </div>
+
+  <!-- Acciones -->
+  <div class="boton-zona" style="margin-top:14px">
+    <button class="btn btn-contorno" onclick="ir('s-seleccion');renderSeleccion();suscribir()">← Volver a la lista</button>
+  </div>
+  <div class="boton-zona">
+    <button class="btn btn-peligro" onclick="resetear()">Borrar partida y empezar de nuevo</button>
+  </div>
+  <div class="esp"></div>
 </div>
 
 <!-- ══ PANTALLA 5: VOTACIÓN ══ -->
@@ -666,12 +676,21 @@ function renderEspera(game){
     listos===total && total>=2 ? '¡Todos listos! Arrancando...' :
     'Esperando que '+(total-listos)+' persona'+(total-listos!==1?'s':'')+(total-listos===1?' complete':' completen')+' su ficha';
 
-  document.getElementById('espera-lista').innerHTML = ps.map(p=>`
-    <li>
+  document.getElementById('espera-lista').innerHTML = ps.map(p=>{
+    const soyYo = p.id === miId;
+    const safe  = p.name.replace(/'/g, "\'");
+    return `<li style="cursor:pointer" onclick="seleccionar('${p.id}','${safe}',${!!p.tapaName})">
       <div class="inicial">${p.name[0].toUpperCase()}</div>
-      <div class="li-info"><div class="li-nombre">${p.name}</div>${p.tapaName?`<div class="li-tapa">🍽️ ${p.tapaName}</div>`:''}</div>
-      ${p.tapaName ? '<span class="etiqueta et-verde">Listo ✓</span>' : '<span class="etiqueta et-dorado">Pendiente</span>'}
-    </li>`).join('');
+      <div class="li-info" style="flex:1">
+        <div class="li-nombre">${p.name}</div>
+        ${p.tapaName ? `<div class="li-tapa">🍽️ ${p.tapaName}</div>` : '<div class="li-tapa" style="color:var(--dorado)">Toca para completar →</div>'}
+      </div>
+      <div style="display:flex;align-items:center;gap:6px">
+        ${soyYo ? '<span class="etiqueta et-verde">Tú</span>' : ''}
+        ${p.tapaName ? '<span class="etiqueta et-verde">✓</span>' : '<span class="etiqueta et-dorado">Pendiente</span>'}
+      </div>
+    </li>`;
+  }).join('');
 }
 
 // ══ PANTALLA 5: VOTACIÓN ════════════════════════════════
