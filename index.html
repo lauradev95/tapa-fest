@@ -309,9 +309,9 @@ input[type=range]{width:100%;height:4px;accent-color:var(--rojo);cursor:pointer;
   </div>
   <div id="voto-cards"></div>
   <div class="bz"><button class="btn btn-r" onclick="enviarVotos()">Enviar mis votos →</button></div>
+  <div class="bz"><button class="btn btn-o" onclick="volverASeleccion()">← Volver a la lista</button></div>
+  <div class="esp"></div>
 </div>
-
-<!-- VOTADO -->
 <div id="p-votado" class="screen">
   <div class="cab-int">
     <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
@@ -328,6 +328,16 @@ input[type=range]{width:100%;height:4px;accent-color:var(--rojo);cursor:pointer;
     <div style="height:10px"></div>
     <button class="btn btn-m" id="btn-revelar" style="display:none;margin-top:0" onclick="revelar()">Revelar resultados ★</button>
   </div>
+  <div class="bz" style="margin-top:8px">
+    <button class="btn btn-o" id="btn-forzar" style="display:none" onclick="forzarResultados()">⚡ Cerrar votación y ver resultados</button>
+  </div>
+  <div class="bz">
+    <button class="btn btn-o" onclick="volverASeleccion()">← Volver a la lista</button>
+  </div>
+  <div class="bz">
+    <button class="btn btn-p" onclick="resetear()">Borrar partida y empezar de nuevo</button>
+  </div>
+  <div class="esp"></div>
 </div>
 
 <!-- RESULTADOS -->
@@ -697,7 +707,8 @@ async function enviarVotos(){
 function mostrarVotado(game){
   ir('p-votado');
   const ps=pts(game);const votes=game.votes||{};
-  const todos=ps.length>0&&ps.every(p=>votes[p.id]);
+  const votados=ps.filter(p=>votes[p.id]).length;
+  const todos=votados===ps.length&&ps.length>0;
   document.getElementById('votado-lista').innerHTML=ps.map(p=>`
     <li>
       <div class="ini">${p.name[0].toUpperCase()}</div>
@@ -705,6 +716,17 @@ function mostrarVotado(game){
       ${votes[p.id]?'<span class="etq etq-v">✓</span>':'<span class="etq etq-d">Votando...</span>'}
     </li>`).join('');
   document.getElementById('btn-revelar').style.display=todos?'block':'none';
+  // Show force-reveal when some have voted but not all
+  document.getElementById('btn-forzar').style.display=(!todos&&votados>=1)?'block':'none';
+}
+
+async function forzarResultados(){
+  const snap=await db.ref('game').once('value');
+  const game=snap.val()||{};
+  const ps=pts(game);const votes=game.votes||{};
+  const votados=ps.filter(p=>votes[p.id]).length;
+  if(!confirm(`Solo han votado ${votados} de ${ps.length}. ¿Cerrar la votación y ver resultados con los votos que hay?`))return;
+  revelar();
 }
 
 // ── Resultados ────────────────────────────────────────────────────
