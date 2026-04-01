@@ -222,8 +222,7 @@ input[type=range]{width:100%;height:4px;accent-color:var(--rojo);cursor:pointer;
 
 <!-- PERFIL -->
 <div id="p-perfil" class="screen">
-  <button class="volver" onclick="ir('p-seleccion');cargarSeleccion()">← Volver</button>
-  <div class="cab-int" style="margin-top:8px">
+  <button class="volver" onclick="volverDePerfil()">← Volver</button>  <div class="cab-int" style="margin-top:8px">
     <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
     <div class="cab-flecos"></div>
     <div class="cab-texto">
@@ -275,11 +274,16 @@ input[type=range]{width:100%;height:4px;accent-color:var(--rojo);cursor:pointer;
     <div class="barra-w"><div class="barra-f" id="esp-barra"></div></div>
     <p style="font-size:13px;font-style:italic;color:var(--tinta2);margin-top:8px" id="esp-msg"></p>
   </div>
+  <div id="esp-mi-tapa" class="tarjeta" style="margin-top:14px;border-left-color:var(--verde);display:none">
+    <div class="t-titulo" style="color:var(--verde)">Tu tapa</div>
+    <div id="esp-mi-info" style="font-size:16px;font-style:italic;color:var(--tinta)"></div>
+    <button class="btn btn-o" style="margin-top:10px;font-size:15px" onclick="editarPerfil()">✏️ Editar mi tapa</button>
+  </div>
   <div class="tarjeta" style="margin-top:14px">
     <ul class="lista" id="esp-lista"></ul>
   </div>
   <div class="bz" style="margin-top:6px">
-    <button class="btn btn-o" onclick="ir('p-seleccion');cargarSeleccion()">← Volver a la lista</button>
+    <button class="btn btn-o" onclick="volverASeleccion()">← Volver a la lista</button>
   </div>
   <div class="bz">
     <button class="btn btn-p" onclick="resetear()">Borrar partida y empezar de nuevo</button>
@@ -376,7 +380,7 @@ firebase.initializeApp({
 const db=firebase.database();
 
 // Estado
-let miId=null, miNombre=null, miFoto=null, _otros=[], _ranked=[], unsub=null;
+let miId=null, miNombre=null, miFoto=null, _otros=[], _ranked=[], unsub=null, perfilOrigen='seleccion';
 
 // ── Helpers ──────────────────────────────────────────────────────
 function ir(id){
@@ -488,30 +492,81 @@ function renderSeleccion(game){
 }
 
 async function seleccionar(pid,pname,listo){
-  // Reconectar siempre — sea el que sea
   miId=pid;miNombre=pname;miFoto=null;
   sessionStorage.setItem('tf_id',miId);
   sessionStorage.setItem('tf_nombre',miNombre);
 
   if(listo){
-    // Ya tiene ficha — ir según la fase actual
+    // Already has profile — navigate to correct phase
     carga('Conectando...');
     try{
       const snap=await db.ref('game').once('value');
       const game=snap.val()||{};
       sinCarga();
+      // Load photo from DB
+      const yo=pts(game).find(p=>p.id===miId);
+      if(yo) miFoto=yo.photo||null;
       navegar(game);
       suscribir();
     }catch(e){sinCarga();aviso('Error: '+e.message);}
     return;
   }
 
-  // Sin ficha — ir a completar perfil
-  document.getElementById('perfil-titulo').textContent='¡Hola, '+pname+'!';
-  document.getElementById('perfil-tapa').value='';
-  document.getElementById('foto-prev').style.display='none';
-  document.getElementById('foto-zona').style.display='block';
+  // No profile yet — go to fill it
+  perfilOrigen='seleccion';
+  abrirPerfil(pname,'',null);
+}
+
+function abrirPerfil(nombre,tapaActual,fotoActual){
+  document.getElementById('perfil-titulo').textContent='¡Hola, '+nombre+'!';
+  document.getElementById('perfil-tapa').value=tapaActual||'';
+  const prev=document.getElementById('foto-prev');
+  const zona=document.getElementById('foto-zona');
+  if(fotoActual){
+    prev.src=fotoActual;prev.style.display='block';zona.style.display='none';
+    miFoto=fotoActual;
+  }else{
+    prev.style.display='none';zona.style.display='block';
+    miFoto=null;
+  }
   ir('p-perfil');
+}
+
+async function editarPerfil(){
+  if(!miId)return;
+  carga('Cargando...');
+  try{
+    const snap=await db.ref('game/participants/'+miId).once('value');
+    const p=snap.val()||{};
+    sinCarga();
+    perfilOrigen='espera';
+    miFoto=p.photo||null;
+    abrirPerfil(p.name||miNombre, p.tapaName||'', p.photo||null);
+  }catch(e){sinCarga();aviso('Error al cargar');}
+}
+
+function volverDePerfil(){
+  if(perfilOrigen==='espera'){
+    ir('p-espera');
+    cargarEspera();
+  }else{
+    ir('p-seleccion');
+    cargarSeleccion();
+  }
+}
+
+function volverASeleccion(){
+  ir('p-seleccion');
+  cargarSeleccion();
+}
+
+async function cargarEspera(){
+  try{
+    const snap=await db.ref('game').once('value');
+    const game=snap.val()||{};
+    if(!pts(game).length){ir('p-registro');return;}
+    renderEspera(game);
+  }catch(e){console.error('cargarEspera:',e);}
 }
 
 // ── Perfil ────────────────────────────────────────────────────────
@@ -537,15 +592,19 @@ async function guardarPerfil(){
     if(game.phase==='voting'){navegar(game);suscribir();return;}
     if(game.phase==='results'){navegar(game);return;}
 
-    // Ver si todos listos
+    // Check if all ready
     const ps=pts(game);
     if(ps.length>=2&&ps.every(p=>p.tapaName)){
-      await db.ref('game/phase').set('voting');
+      // Only set phase if not already set
+      if(!game.phase||game.phase==='lobby'){
+        await db.ref('game/phase').set('voting');
+      }
       const snap2=await db.ref('game').once('value');
       aviso('¡Todos listos! Empieza la votación 🗳️');
       renderVotacion(snap2.val()||{});
       suscribir();
     }else{
+      aviso(perfilOrigen==='espera'?'¡Tapa actualizada! ✓':'¡Ficha guardada! ✓');
       ir('p-espera');
       renderEspera(game);
       suscribir();
@@ -563,8 +622,19 @@ function renderEspera(game){
   document.getElementById('esp-msg').textContent=
     listos===total&&total>=2?'¡Todos listos! Arrancando...' :
     (total-listos===1?'Falta 1 persona':'Faltan '+(total-listos)+' personas')+' por completar su ficha';
+
+  // Show current user's tapa info with edit option
+  const miTapaCard=document.getElementById('esp-mi-tapa');
+  const yo=ps.find(p=>p.id===miId);
+  if(yo&&yo.tapaName){
+    miTapaCard.style.display='block';
+    document.getElementById('esp-mi-info').textContent='🍽️ '+yo.tapaName;
+  }else{
+    miTapaCard.style.display='none';
+  }
+
   document.getElementById('esp-lista').innerHTML=ps.map(p=>`
-    <li style="cursor:pointer" onclick="seleccionar('${p.id}','${p.name.replace(/'/g,"\\'")}',${!!p.tapaName})">
+    <li>
       <div class="ini">${p.name[0].toUpperCase()}</div>
       <div style="flex:1">
         <div class="li-nombre">${p.name}</div>
@@ -709,13 +779,57 @@ function suscribir(){
   const h=snap=>{
     const game=snap.val()||{};
     const cur=document.querySelector('.screen.on')?.id;
-    if(cur==='p-seleccion'){renderSeleccion(game);if(game.phase==='voting'&&miId){(game.votes&&game.votes[miId])?mostrarVotado(game):renderVotacion(game);}}
+    const ps=pts(game);
+
+    // Game was deleted while we're in it — go back to registration
+    if(!ps.length && cur!=='p-registro' && cur!=='p-historial'){
+      miId=null;miNombre=null;miFoto=null;
+      sessionStorage.removeItem('tf_id');sessionStorage.removeItem('tf_nombre');
+      regNombres=[];regRender();ir('p-registro');
+      aviso('La partida ha sido borrada');
+      return;
+    }
+
+    if(cur==='p-seleccion'){
+      renderSeleccion(game);
+      if(game.phase==='voting'&&miId){
+        (game.votes&&game.votes[miId])?mostrarVotado(game):renderVotacion(game);
+      }
+      if(game.phase==='results'&&miId){
+        ir('p-resultados');renderResultados(calcRanked(game));
+      }
+    }
     if(cur==='p-espera'){
       renderEspera(game);
-      if(game.phase==='voting'&&miId){(game.votes&&game.votes[miId])?mostrarVotado(game):renderVotacion(game);}
-      if(game.phase==='lobby'){const ps=pts(game);if(ps.length>=2&&ps.every(p=>p.tapaName))db.ref('game/phase').set('voting');}
+      if(game.phase==='voting'&&miId){
+        (game.votes&&game.votes[miId])?mostrarVotado(game):renderVotacion(game);
+      }
+      if(game.phase==='results'&&miId){
+        ir('p-resultados');renderResultados(calcRanked(game));
+      }
     }
-    if(cur==='p-votado'){mostrarVotado(game);if(game.phase==='results'){ir('p-resultados');renderResultados(calcRanked(game));}}
+    if(cur==='p-perfil'){
+      // If phase changed while editing profile, handle it
+      if(game.phase==='voting'&&miId){
+        const yo=ps.find(p=>p.id===miId);
+        if(yo&&yo.tapaName){
+          (game.votes&&game.votes[miId])?mostrarVotado(game):renderVotacion(game);
+        }
+      }
+      if(game.phase==='results'&&miId){
+        ir('p-resultados');renderResultados(calcRanked(game));
+      }
+    }
+    if(cur==='p-voto'){
+      // If phase changed to results while voting
+      if(game.phase==='results'){
+        ir('p-resultados');renderResultados(calcRanked(game));
+      }
+    }
+    if(cur==='p-votado'){
+      mostrarVotado(game);
+      if(game.phase==='results'){ir('p-resultados');renderResultados(calcRanked(game));}
+    }
   };
   ref.on('value',h);unsub=()=>ref.off('value',h);
 }
@@ -723,10 +837,17 @@ function suscribir(){
 // ── Navegación por fase ───────────────────────────────────────────
 function navegar(game){
   if(!miId)return;
-  if(game.phase==='results'){ir('p-resultados');renderResultados(calcRanked(game));return;}
-  if(game.phase==='voting'){(game.votes&&game.votes[miId])?mostrarVotado(game):renderVotacion(game);suscribir();return;}
-  const yo=pts(game).find(p=>p.id===miId);
+  const ps=pts(game);
+  if(!ps.length){ir('p-registro');return;}
+  if(game.phase==='results'){ir('p-resultados');_ranked=calcRanked(game);renderResultados(_ranked);return;}
+  if(game.phase==='voting'){
+    if(game.votes&&game.votes[miId]){mostrarVotado(game);}
+    else{renderVotacion(game);}
+    suscribir();return;
+  }
+  const yo=ps.find(p=>p.id===miId);
   if(yo&&yo.tapaName){ir('p-espera');renderEspera(game);suscribir();}
+  else if(yo){perfilOrigen='seleccion';abrirPerfil(yo.name,'',null);suscribir();}
   else{ir('p-seleccion');renderSeleccion(game);suscribir();}
 }
 
@@ -751,10 +872,10 @@ async function resetear(){
   if(!confirm('¿Borrar la partida y empezar de nuevo?'))return;
   carga('Borrando...');
   try{
-    await db.ref('game').remove();sinCarga();
-    miId=null;miNombre=null;miFoto=null;_otros=[];_ranked=[];
-    sessionStorage.removeItem('tf_id');sessionStorage.removeItem('tf_nombre');
     if(unsub){unsub();unsub=null;}
+    await db.ref('game').remove();sinCarga();
+    miId=null;miNombre=null;miFoto=null;_otros=[];_ranked=[];perfilOrigen='seleccion';
+    sessionStorage.removeItem('tf_id');sessionStorage.removeItem('tf_nombre');
     regNombres=[];regRender();ir('p-registro');
   }catch(e){sinCarga();aviso('Error al borrar');}
 }
