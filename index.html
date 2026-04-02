@@ -4,153 +4,145 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
 <title>Tapa Fest</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Oswald:wght@400;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Lora:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --crema:#f5f0e8;--crema2:#ede8de;--crema3:#e2dcd0;
-  --madera:#2c1a0e;--madera2:#4a2c14;--madera3:#7a4820;
-  --rojo:#b82018;--rojo2:#d42820;
-  --dorado:#c8940a;--dorado2:#e8b020;--dorado3:#f5cc50;
-  --verde:#1e4020;
-  --tinta:#1c1408;--tinta2:rgba(28,20,8,.55);--tinta3:rgba(28,20,8,.28);
+  --bl:#FFF8EE;--cr:#F5ECD8;--cr2:#EDE4CC;--cr3:#E0D6BE;
+  --az:#1B4B7A;--az2:#143A5E;
+  --te:#C84420;--te2:#A83818;
+  --or:#E8A830;--or2:#D49820;
+  --vd:#2A7A3A;--vd2:#1E5E2A;
+  --ti:#2A1A08;--ti2:#8A7A5A;--ti3:#C8B898;
 }
-html,body{background:var(--crema);min-height:100dvh;font-family:'EB Garamond',serif;color:var(--tinta);overflow-x:hidden}
-body{padding-bottom:4rem}
+html,body{background:var(--bl);min-height:100dvh;font-family:'Lora',Georgia,serif;color:var(--ti);overflow-x:hidden}
+body{padding-bottom:3rem}
 .screen{display:none;max-width:460px;margin:0 auto}
-.screen.on{display:block}
-#loading{position:fixed;inset:0;background:rgba(28,20,8,.95);display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:999}
-.spinner{width:34px;height:34px;border:2px solid rgba(200,148,10,.2);border-top-color:var(--dorado2);border-radius:50%;animation:spin .7s linear infinite}
+.screen.on{display:block;animation:fadeUp .3s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+#loading{position:fixed;inset:0;background:rgba(27,75,122,.92);display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;z-index:999}
+.spinner{width:34px;height:34px;border:2px solid rgba(232,168,48,.2);border-top-color:var(--or);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-#loading p{font-family:'Playfair Display',serif;font-size:18px;font-style:italic;color:var(--dorado2)}
-#toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--madera);border:1px solid var(--dorado);color:var(--dorado2);padding:10px 22px;font-family:'EB Garamond',serif;font-size:17px;font-style:italic;z-index:1000;transition:transform .3s;white-space:nowrap}
+#loading p{font-family:'Playfair Display',serif;font-size:18px;font-style:italic;color:var(--or)}
+#toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(100px);background:var(--az);color:var(--or);padding:10px 22px;border-radius:10px;font-size:16px;font-style:italic;z-index:1000;transition:transform .3s;white-space:nowrap}
 #toast.on{transform:translateX(-50%) translateY(0)}
-.cabecera{background:var(--madera)}
-.toldo{background:var(--rojo);padding:7px 0 0}
-.toldo-label{font-family:'Oswald',sans-serif;font-size:10px;font-weight:600;letter-spacing:5px;color:rgba(245,204,80,.65);text-align:center;text-transform:uppercase;padding-bottom:5px}
-.toldo-flecos{height:16px;background:var(--rojo);clip-path:polygon(0% 0%,4% 0%,6% 100%,8% 0%,12% 0%,14% 100%,16% 0%,20% 0%,22% 100%,24% 0%,28% 0%,30% 100%,32% 0%,36% 0%,38% 100%,40% 0%,44% 0%,46% 100%,48% 0%,52% 0%,54% 100%,56% 0%,60% 0%,62% 100%,64% 0%,68% 0%,70% 100%,72% 0%,76% 0%,78% 100%,80% 0%,84% 0%,86% 100%,88% 0%,92% 0%,94% 100%,96% 0%,100% 0%)}
-.cab-int-principal{padding:22px 20px 18px;text-align:center}
-.titulo-marco{border:1px solid var(--dorado);padding:14px 20px 12px;margin:12px 0;display:inline-block;width:100%;position:relative}
-.titulo-marco::before,.titulo-marco::after{content:'◆';position:absolute;font-size:9px;color:var(--dorado2);top:-6px}
-.titulo-marco::before{left:12px;background:var(--madera);padding:0 4px}
-.titulo-marco::after{right:12px;background:var(--madera);padding:0 4px}
-.titulo-principal{font-family:'Playfair Display',serif;font-size:52px;font-weight:900;letter-spacing:4px;color:var(--dorado2);display:block;line-height:1;text-shadow:2px 2px 0 rgba(0,0,0,.6)}
-.linea-oro{border-top:1px solid rgba(200,148,10,.4);border-bottom:1px solid rgba(200,148,10,.4);height:4px;margin:0 30px}
-.mostrador{height:8px;background:linear-gradient(180deg,var(--madera3) 0%,var(--madera2) 50%,var(--madera) 100%);box-shadow:0 3px 8px rgba(0,0,0,.4)}
-.azulejos{height:10px;background:repeating-linear-gradient(90deg,var(--rojo) 0,var(--rojo) 10px,var(--madera) 10px,var(--madera) 11px,var(--dorado) 11px,var(--dorado) 21px,var(--madera) 21px,var(--madera) 22px,#1e4020 22px,#1e4020 32px,var(--madera) 32px,var(--madera) 33px,#1a3a6a 33px,#1a3a6a 43px,var(--madera) 43px,var(--madera) 44px);opacity:.85}
-.cab-int{background:var(--madera);border-bottom:3px solid var(--rojo)}
-.cab-tira{background:var(--rojo);padding:4px 0 3px;font-family:'Oswald',sans-serif;font-size:9px;font-weight:600;letter-spacing:5px;color:rgba(245,204,80,.55);text-align:center;text-transform:uppercase}
-.cab-flecos{height:10px;background:var(--rojo);clip-path:polygon(0% 0%,5% 0%,7.5% 100%,10% 0%,15% 0%,17.5% 100%,20% 0%,25% 0%,27.5% 100%,30% 0%,35% 0%,37.5% 100%,40% 0%,45% 0%,47.5% 100%,50% 0%,55% 0%,57.5% 100%,60% 0%,65% 0%,67.5% 100%,70% 0%,75% 0%,77.5% 100%,80% 0%,85% 0%,87.5% 100%,90% 0%,95% 0%,97.5% 100%,100% 0%)}
-.cab-texto{padding:14px 16px 12px;text-align:center}
-.cab-titulo{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--dorado2);text-shadow:2px 2px 0 rgba(0,0,0,.5);line-height:1}
-.cab-sub{font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:rgba(232,176,32,.55);margin-top:4px}
-.volver{background:none;border:none;cursor:pointer;font-family:'EB Garamond',serif;font-size:16px;font-style:italic;color:var(--tinta2);padding:14px 14px 0;display:flex;align-items:center;gap:5px}
-.panel{background:var(--crema);border:2px solid var(--madera2);margin:14px 14px 0;position:relative;box-shadow:3px 3px 0 rgba(0,0,0,.12)}
-.panel::after{content:'';position:absolute;inset:4px;border:1px solid rgba(28,20,8,.12);pointer-events:none}
-.panel-c{padding:18px 16px 16px}
-.panel-titulo{font-family:'Playfair Display',serif;font-size:18px;font-style:italic;color:var(--rojo);text-align:center;padding-bottom:10px;margin-bottom:14px;border-bottom:1px solid rgba(184,32,24,.15)}
-.tarjeta{background:var(--crema);border:1px solid rgba(28,20,8,.12);border-left:4px solid var(--rojo);margin:14px 14px 0;padding:1rem;box-shadow:2px 2px 0 rgba(0,0,0,.06)}
-.t-titulo{font-family:'Playfair Display',serif;font-size:17px;font-style:italic;color:var(--rojo);margin-bottom:10px;padding-bottom:7px;border-bottom:1px solid rgba(28,20,8,.07)}
-.campo-label{font-family:'Oswald',sans-serif;font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--tinta2);display:block;margin-bottom:5px}
-input[type=text],textarea{width:100%;background:var(--crema2);border:1px solid var(--crema3);border-bottom:2px solid var(--madera2);color:var(--tinta);font-family:'EB Garamond',serif;font-size:18px;padding:9px 11px;outline:none;caret-color:var(--rojo)}
-input[type=text]:focus{background:var(--crema);border-bottom-color:var(--rojo)}
-input[type=text]::placeholder{color:var(--tinta3);font-style:italic}
-textarea{font-size:16px;resize:none;border:1px solid var(--crema3);border-left:3px solid var(--madera2);padding:8px 11px;margin-top:5px}
-textarea:focus{border-left-color:var(--dorado);outline:none}
-textarea::placeholder{color:var(--tinta3);font-style:italic}
-.sep{height:1px;background:rgba(28,20,8,.08);margin:10px 0}
-.foto-zona{border:2px dashed var(--crema3);padding:1.2rem;text-align:center;cursor:pointer;background:var(--crema2);margin-top:5px}
+.azulejos{height:6px;background:repeating-linear-gradient(90deg,var(--az) 0 8px,var(--te) 8px 16px,var(--or) 16px 24px,var(--vd) 24px 32px,var(--bl) 32px 34px);opacity:.75}
+.cab{text-align:center;padding:20px 20px 14px;position:relative}
+.cab-arco{width:88%;margin:0 auto;border:2px solid var(--az);border-radius:50% 50% 0 0/28px 28px 0 0;padding:16px 14px 14px;position:relative;background:linear-gradient(180deg,rgba(27,75,122,.04),transparent)}
+.cab-arco::after{content:'';position:absolute;inset:4px;border:1px solid rgba(27,75,122,.12);border-radius:50% 50% 0 0/24px 24px 0 0;pointer-events:none}
+.cab-titulo{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--az);line-height:1.1}
+.cab-sub{font-size:13px;font-style:italic;color:var(--ti2);margin-top:6px}
+.cab-label{font-size:10px;letter-spacing:4px;color:var(--az);text-transform:uppercase;font-weight:600;margin-bottom:10px;text-align:center}
+.sec{display:flex;align-items:center;gap:8px;margin:14px 14px 10px}
+.sec::before,.sec::after{content:'';flex:1;height:1px;background:var(--ti3)}
+.sec-txt{font-size:10px;letter-spacing:3px;color:var(--ti2);text-transform:uppercase;white-space:nowrap}
+.card{background:var(--bl);border:1px solid var(--cr2);border-radius:12px;margin:0 14px;padding:14px;border-left:4px solid var(--vd)}
+.card-or{border-left-color:var(--or)}
+.card-az{border-left-color:var(--az)}
+.card-titulo{font-family:'Playfair Display',serif;font-size:16px;font-style:italic;color:var(--az);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid rgba(27,75,122,.08)}
+.lista{list-style:none}
+.lista li{display:flex;align-items:center;gap:11px;padding:10px 12px;background:var(--bl);border-radius:10px;border:1px solid var(--cr2);margin-bottom:6px}
+.lista li:last-child{margin-bottom:0}
+.ini{width:40px;height:40px;border-radius:50%;background:var(--bl);border:2px solid var(--az);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--az);flex-shrink:0;position:relative}
+.ini-ok::after{content:'';position:absolute;bottom:-2px;right:-2px;width:14px;height:14px;border-radius:50%;background:var(--vd);border:2px solid var(--bl)}
+.li-nombre{font-weight:600;font-size:15px}
+.li-tapa{font-size:12px;font-style:italic;color:var(--ti2);margin-top:1px}
+.etq{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border-radius:20px;border:1px solid;white-space:nowrap}
+.etq-v{background:rgba(42,122,58,.08);border-color:rgba(42,122,58,.2);color:var(--vd)}
+.etq-d{background:rgba(232,168,48,.08);border-color:rgba(232,168,48,.2);color:var(--or2)}
+.bz{padding:0 14px;margin-top:10px}
+.btn{display:block;width:100%;padding:13px 18px;text-align:center;cursor:pointer;border:none;border-radius:10px;font-family:'Lora',Georgia,serif;font-weight:700;font-size:15px;letter-spacing:1px;margin-top:8px}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn-r{background:var(--te);color:var(--bl)}
+.btn-a{background:var(--az);color:var(--bl)}
+.btn-v{background:var(--vd);color:var(--bl)}
+.btn-o{background:var(--bl);border:1px solid var(--cr2);color:var(--ti2);font-weight:400;font-style:italic;letter-spacing:0}
+.btn-p{background:transparent;border:1px solid rgba(200,68,32,.15);color:rgba(200,68,32,.6);font-size:13px;font-style:italic;letter-spacing:0;font-weight:400}
+input[type=text],textarea{width:100%;background:var(--bl);border:1px solid var(--cr2);border-radius:8px;color:var(--ti);font-family:'Lora',Georgia,serif;font-size:16px;padding:10px 12px;outline:none;caret-color:var(--te)}
+input[type=text]:focus,textarea:focus{border-color:var(--az)}
+input[type=text]::placeholder,textarea::placeholder{color:var(--ti3);font-style:italic}
+textarea{font-size:14px;resize:none}
+.campo-label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--ti2);display:block;margin-bottom:5px}
+.foto-zona{border:2px dashed var(--cr2);padding:1.2rem;text-align:center;cursor:pointer;background:rgba(27,75,122,.04);border-radius:10px;margin-top:5px}
 .foto-zona input{display:none}
 .foto-icono{font-size:24px;display:block;margin-bottom:5px}
-.foto-texto{font-size:14px;font-style:italic;color:var(--tinta2)}
-.foto-preview{width:100%;height:180px;object-fit:cover;display:none;margin-top:10px;border:2px solid var(--madera2)}
-.bz{padding:0 14px;margin-top:12px}
-.btn{display:block;width:100%;padding:12px 18px;text-align:center;cursor:pointer;border:2px solid;font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:2px;text-transform:uppercase;font-size:15px;margin-top:8px}
-.btn:disabled{opacity:.4;cursor:not-allowed}
-.btn-r{background:var(--rojo);border-color:var(--madera);color:var(--crema);box-shadow:3px 3px 0 var(--madera)}
-.btn-r:hover:not(:disabled){background:var(--rojo2)}
-.btn-m{background:var(--madera);border-color:var(--dorado);color:var(--dorado2);box-shadow:3px 3px 0 rgba(0,0,0,.3)}
-.btn-o{background:var(--crema);border-color:rgba(28,20,8,.2);color:var(--tinta);font-family:'EB Garamond',serif;font-size:17px;font-style:italic;letter-spacing:0;text-transform:none}
-.btn-p{background:transparent;border-color:rgba(184,32,24,.2);color:rgba(184,32,24,.7);font-family:'EB Garamond',serif;font-size:15px;font-style:italic;letter-spacing:0;text-transform:none}
-.btn-pdf{background:var(--verde);border-color:var(--madera);color:var(--crema);box-shadow:3px 3px 0 var(--madera)}
-.lista{list-style:none}
-.lista li{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid rgba(28,20,8,.06);font-size:16px}
-.lista li:last-child{border-bottom:none}
-.ini{width:32px;height:32px;background:var(--madera);color:var(--dorado2);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;flex-shrink:0}
-.li-nombre{font-weight:600;font-size:16px}
-.li-tapa{font-size:13px;font-style:italic;color:var(--tinta2);margin-top:1px}
-.etq{font-family:'Oswald',sans-serif;font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:2px 7px;border:1px solid;display:inline-block;white-space:nowrap}
-.etq-v{background:rgba(30,64,32,.06);border-color:var(--verde);color:var(--verde)}
-.etq-d{background:rgba(200,148,10,.06);border-color:var(--dorado);color:var(--dorado)}
-.vacio{text-align:center;color:var(--tinta2);font-size:16px;font-style:italic;padding:1.5rem 0}
-.barra-w{height:4px;background:rgba(28,20,8,.08);border-radius:2px;margin-top:8px}
-.barra-f{height:100%;background:var(--dorado);border-radius:2px;width:0%;transition:width .5s}
-.voto-card{background:var(--crema);border:1px solid rgba(28,20,8,.12);border-top:4px solid var(--rojo);margin:0 14px 1.5rem;box-shadow:2px 2px 0 rgba(0,0,0,.07)}
+.foto-texto{font-size:13px;font-style:italic;color:var(--ti2)}
+.foto-preview{width:100%;height:180px;object-fit:cover;display:none;margin-top:10px;border-radius:10px;border:2px solid var(--az)}
+.barra-w{height:5px;background:var(--cr2);border-radius:3px;margin-top:8px}
+.barra-f{height:100%;background:var(--vd);border-radius:3px;width:0%;transition:width .5s}
+.voto-card{background:var(--bl);border:1px solid var(--cr2);border-radius:14px;margin:0 14px 16px;overflow:hidden;border-top:4px solid var(--az)}
 .voto-img{width:100%;height:200px;object-fit:cover;display:block}
-.voto-no-img{width:100%;height:160px;background:var(--crema2);display:flex;align-items:center;justify-content:center;font-size:44px}
-.voto-body{padding:1rem}
-.voto-nombre{font-family:'Playfair Display',serif;font-size:22px;font-style:italic;color:var(--tinta);margin-bottom:12px}
-.nota-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px}
-.nota-label{font-family:'Oswald',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--tinta2)}
-.nota-num{font-family:'Playfair Display',serif;font-size:48px;font-weight:700;line-height:1;color:var(--rojo)}
-input[type=range]{width:100%;height:4px;accent-color:var(--rojo);cursor:pointer;margin-bottom:4px}
+.voto-no-img{width:100%;height:140px;background:rgba(27,75,122,.04);display:flex;align-items:center;justify-content:center;font-size:44px}
+.voto-body{padding:16px}
+.voto-nombre{font-family:'Playfair Display',serif;font-size:20px;color:var(--ti);margin-bottom:4px}
+.nota-row{display:flex;justify-content:space-between;align-items:baseline;margin:14px 0 6px}
+.nota-label{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--ti2)}
+.nota-num{font-family:'Playfair Display',serif;font-size:40px;font-weight:700;line-height:1;color:var(--te)}
+input[type=range]{width:100%;height:6px;accent-color:var(--te);cursor:pointer;margin-bottom:4px}
 .tics{display:flex;justify-content:space-between}
-.tics span{font-family:'Oswald',sans-serif;font-size:10px;color:var(--tinta3)}
-.com-sec{margin-top:13px}
-.com-label{font-family:'Oswald',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;padding:2px 8px;border:1px solid;display:inline-block;margin-bottom:5px}
-.cl-priv{color:#1a3a6a;border-color:rgba(26,58,106,.3);background:rgba(26,58,106,.04)}
-.cl-pub{color:var(--dorado);border-color:rgba(200,148,10,.3);background:rgba(200,148,10,.04)}
-.cl-desc{font-size:12px;font-style:italic;color:var(--tinta2);display:block;margin-bottom:4px}
-.progreso{height:3px;background:rgba(28,20,8,.08);margin:0 14px 10px}
-.progreso-f{height:100%;background:var(--rojo);transition:width .3s}
-#podium{display:flex;justify-content:center;align-items:flex-end;gap:8px;padding:0 10px 8px}
+.tics span{font-size:10px;color:var(--ti3)}
+.com-sec{margin-top:14px}
+.com-label{font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;padding:3px 10px;border:1px solid;border-radius:6px;display:inline-block;margin-bottom:4px}
+.cl-priv{color:var(--az);border-color:rgba(27,75,122,.2);background:rgba(27,75,122,.04)}
+.cl-pub{color:var(--or2);border-color:rgba(232,168,48,.2);background:rgba(232,168,48,.04)}
+.cl-desc{font-size:11px;font-style:italic;color:var(--ti2);display:block;margin-bottom:4px}
+.progreso{height:4px;background:var(--cr2);margin:0 14px 10px;border-radius:2px}
+.progreso-f{height:100%;background:var(--te);transition:width .3s;border-radius:2px}
+#podium{display:flex;justify-content:center;align-items:flex-end;gap:6px;padding:20px 14px 0}
 .p-card{display:flex;flex-direction:column;align-items:center;text-align:center;flex:1;max-width:130px}
-.p-card::after{content:'';display:block;width:100%;border-radius:2px 2px 0 0;margin-top:6px}
-.p-card.first::after{height:54px;background:var(--dorado)}
-.p-card.second::after{height:36px;background:var(--madera3)}
-.p-card.third::after{height:24px;background:var(--madera2)}
-.medalla{font-size:28px;margin-bottom:4px}
-.p-foto{width:72px;height:72px;object-fit:cover;border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,.18);border-radius:2px;cursor:zoom-in}
-.p-card.first .p-foto{width:88px;height:88px;border-color:var(--dorado2)}
-.p-nofoto{width:72px;height:72px;background:var(--crema2);display:flex;align-items:center;justify-content:center;font-size:26px;border:3px solid white}
-.p-card.first .p-nofoto{width:88px;height:88px}
-.p-info{margin-top:6px;width:100%}
-.p-nombre{font-family:'Playfair Display',serif;font-size:13px;font-style:italic;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.2}
-.p-card.first .p-nombre{font-size:15px}
-.p-autor{font-size:11px;color:var(--tinta2);margin-top:2px;font-style:italic}
-.p-nota{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--rojo);margin-top:3px}
-.p-card.first .p-nota{font-size:28px;color:var(--dorado)}
-.p-card.second .p-nota,.p-card.third .p-nota{font-size:18px;color:var(--tinta2)}
+.p-foto{width:60px;height:60px;object-fit:cover;border-radius:50%;border:3px solid var(--bl);cursor:zoom-in}
+.p-card.first .p-foto{width:76px;height:76px;border-color:var(--or)}
+.p-nofoto{width:60px;height:60px;background:rgba(27,75,122,.06);border:2px solid var(--az);display:flex;align-items:center;justify-content:center;font-size:24px;border-radius:50%}
+.p-card.first .p-nofoto{width:76px;height:76px;border-color:var(--or)}
+.p-nombre{font-family:'Playfair Display',serif;font-size:13px;font-style:italic;line-height:1.2;margin-top:4px}
+.p-card.first .p-nombre{font-size:14px;color:var(--te)}
+.p-autor{font-size:11px;color:var(--ti2);font-style:italic}
+.p-nota{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-top:2px}
+.p-card.first .p-nota{font-size:22px;color:var(--or)}
+.p-card.second .p-nota{color:#8A8A8A}
+.p-card.third .p-nota{color:#B87333}
+.p-ped{width:100%;border-radius:6px 6px 0 0;margin-top:6px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.p-card.first .p-ped{height:74px;background:linear-gradient(180deg,#F0D060,#E8A830)}
+.p-card.second .p-ped{height:52px;background:linear-gradient(180deg,#D8D8D8,#A8A8A8)}
+.p-card.third .p-ped{height:36px;background:linear-gradient(180deg,#D4945A,#B87333)}
+.p-ped-l{font-size:9px;font-weight:600;letter-spacing:1px;opacity:.3}
+.p-ped-n{font-family:'Playfair Display',serif;font-weight:800;opacity:.15}
+.p-card.first .p-ped-n{font-size:26px}
+.p-card.second .p-ped-n,.p-card.third .p-ped-n{font-size:20px}
 .ranking{list-style:none}
-.ranking li{display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(28,20,8,.06);font-family:'EB Garamond',serif;font-size:16px}
+.ranking li{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--cr2);font-size:15px}
 .ranking li:last-child{border-bottom:none}
-.rk-pos{font-family:'Oswald',sans-serif;font-size:13px;font-weight:600;color:var(--tinta2);min-width:24px}
-.rk-nota{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--rojo)}
-.rk-votos{font-size:12px;font-style:italic;color:var(--tinta2);margin-top:1px}
-.sec-titulo{font-family:'Oswald',sans-serif;font-size:10px;font-weight:600;color:var(--tinta2);letter-spacing:5px;text-transform:uppercase;text-align:center;margin:20px 14px 10px;display:flex;align-items:center;gap:10px}
-.sec-titulo::before,.sec-titulo::after{content:'';flex:1;height:1px;background:rgba(28,20,8,.12)}
-.com-grupo{margin-bottom:18px}
-.com-tapa{font-family:'Oswald',sans-serif;font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--dorado);margin-bottom:8px;padding-bottom:4px;border-bottom:1px solid rgba(200,148,10,.2)}
-.com-burbujas{display:flex;flex-wrap:wrap;gap:7px}
-.com-burbuja{background:var(--crema2);border:1px solid var(--crema3);border-left:3px solid var(--dorado);padding:6px 12px;font-family:'EB Garamond',serif;font-size:16px;font-style:italic;line-height:1.3;border-radius:0 4px 4px 0}
-#lightbox{display:none;position:fixed;inset:0;background:rgba(28,20,8,.96);z-index:800;align-items:center;justify-content:center;cursor:zoom-out}
-#lightbox img{max-width:95vw;max-height:90vh;object-fit:contain;border:2px solid var(--dorado)}
-#reveal{position:fixed;inset:0;z-index:900;background:var(--madera);display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px}
+.rk-pos{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--bl);font-family:'Playfair Display',serif;flex-shrink:0}
+.rk-nota{font-family:'Playfair Display',serif;font-size:18px;font-weight:700}
+.rk-votos{font-size:11px;font-style:italic;color:var(--ti2)}
+.com-grupo{margin-bottom:14px}
+.com-tapa{font-size:10px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--or2);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid rgba(232,168,48,.15)}
+.com-burbujas{display:flex;flex-wrap:wrap;gap:6px}
+.com-burbuja{background:rgba(27,75,122,.04);border:1px solid rgba(27,75,122,.1);border-left:3px solid var(--az);padding:8px 12px;font-size:15px;font-style:italic;line-height:1.3;border-radius:0 8px 8px 0}
+#lightbox{display:none;position:fixed;inset:0;background:rgba(27,75,122,.95);z-index:800;align-items:center;justify-content:center;cursor:zoom-out}
+#lightbox img{max-width:95vw;max-height:90vh;object-fit:contain;border:3px solid var(--or);border-radius:8px}
+#reveal{position:fixed;inset:0;z-index:900;background:var(--az2);display:none;align-items:center;justify-content:center;flex-direction:column;text-align:center;padding:20px}
 #reveal.on{display:flex}
-.rv-pos{font-family:'Oswald',sans-serif;font-size:14px;font-weight:600;letter-spacing:8px;text-transform:uppercase;color:var(--tinta2);margin-bottom:8px}
-.rv-tapa{font-family:'Playfair Display',serif;font-size:36px;font-weight:900;color:var(--dorado2);padding:0 24px;text-shadow:3px 3px 0 rgba(0,0,0,.4);line-height:1.1;animation:pop .6s cubic-bezier(.34,1.56,.64,1)}
-.rv-autor{font-family:'EB Garamond',serif;font-size:20px;font-style:italic;color:var(--tinta2);margin-top:8px}
-.rv-nota{font-family:'Playfair Display',serif;font-size:72px;font-weight:900;color:var(--rojo);line-height:1;margin-top:12px;animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
-.rv-foto{width:160px;height:160px;object-fit:cover;border:4px solid var(--dorado);box-shadow:0 8px 32px rgba(0,0,0,.5);margin-bottom:16px;animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
-.rv-num{font-family:'Playfair Display',serif;font-size:120px;font-weight:900;color:var(--dorado2);text-shadow:4px 4px 0 rgba(0,0,0,.5);animation:pulse .8s ease}
-.rv-esp{font-family:'Oswald',sans-serif;font-size:16px;letter-spacing:6px;color:var(--tinta2);text-transform:uppercase}
+.rv-pos{font-size:12px;font-weight:600;letter-spacing:6px;text-transform:uppercase;color:var(--ti3);margin-bottom:8px}
+.rv-tapa{font-family:'Playfair Display',serif;font-size:34px;font-weight:900;color:var(--bl);padding:0 20px;line-height:1.1;animation:pop .6s cubic-bezier(.34,1.56,.64,1)}
+.rv-autor{font-size:18px;font-style:italic;color:var(--ti3);margin-top:8px}
+.rv-nota{font-family:'Playfair Display',serif;font-size:64px;font-weight:900;color:var(--or);line-height:1;margin-top:12px;animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
+.rv-foto{width:150px;height:150px;object-fit:cover;border:4px solid var(--or);border-radius:50%;margin-bottom:16px;animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
+.rv-num{font-family:'Playfair Display',serif;font-size:100px;font-weight:900;color:var(--or);animation:pulse .8s ease}
+.rv-esp{font-size:14px;letter-spacing:5px;color:var(--ti3);text-transform:uppercase}
 @keyframes pop{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:scale(1)}}
 @keyframes pulse{0%{transform:scale(1.4);opacity:0}50%{transform:scale(1);opacity:1}100%{transform:scale(.95);opacity:.8}}
 .confetti-c{position:fixed;inset:0;pointer-events:none;z-index:950;overflow:hidden}
 .confetti-p{position:absolute;top:-10px;animation:fall linear forwards}
 @keyframes fall{to{transform:translateY(110vh) rotate(720deg);opacity:0}}
+.deco{pointer-events:none;position:absolute}
+.vacio{text-align:center;color:var(--ti2);font-size:15px;font-style:italic;padding:1.2rem 0}
 .esp{height:14px}
+.sep{height:1px;background:var(--cr2);margin:12px 0}
+.flor-sep{display:flex;justify-content:center;align-items:center;gap:2px;padding:6px 0;opacity:.6}
+.flor-sep svg{display:block}
+.hist-card{border:1px solid var(--cr2);border-radius:12px;padding:14px;margin-bottom:10px;border-left:4px solid var(--or);background:var(--bl)}
 </style>
 </head>
 <body>
@@ -160,145 +152,135 @@ input[type=range]{width:100%;height:4px;accent-color:var(--rojo);cursor:pointer;
 <div id="reveal"><div id="reveal-c"></div></div>
 <div class="confetti-c" id="confetti"></div>
 
+<svg style="position:absolute;width:0;height:0"><defs>
+<g id="lemon"><ellipse cx="11" cy="11" rx="7" ry="6.5" fill="#F5D93A" stroke="#D4B820" stroke-width=".6"/><path d="M11 4.5c-.7-2-2-3-2.8-2.8s1 .8 1.4 2.3" fill="#5A8A2A" stroke="#3A6A1A" stroke-width=".4"/><path d="M11 4.5c.7-2 2.3-3.2 3-2.8s-1 .7-1.6 2.3" fill="#6A9A3A" stroke="#3A6A1A" stroke-width=".4"/><ellipse cx="10" cy="10" rx="1.5" ry="1" fill="rgba(255,255,255,.2)"/></g>
+<g id="geranium"><g transform="translate(13,13)"><circle cx="-4" cy="-5" r="3.2" fill="#E8354A" opacity=".9"/><circle cx="4" cy="-5" r="3.2" fill="#D42840" opacity=".85"/><circle cx="0" cy="-7" r="3" fill="#F04860" opacity=".9"/><circle cx="0" cy="-3" r="2" fill="#FF6A78" opacity=".7"/></g><path d="M13 13v9" stroke="#3A7A2A" stroke-width="1.4" fill="none"/><path d="M7 14c-.5-1 0-2.5 1-3s2 0 2 .8-.5 2-1.2 2.2" fill="#4A8A3A" opacity=".7"/><path d="M19 14c.5-1 0-2.5-1-3s-2 0-2 .8.5 2 1.2 2.2" fill="#5A9A4A" opacity=".7"/></g>
+<g id="leaf"><path d="M2 12Q4 4 10 2c4-1.5 8 0 8 2s-3 4-7 5-7 1-9 3z" fill="#5A9A3A" opacity=".6" stroke="#3A7A2A" stroke-width=".5"/><path d="M3 11Q5 6 10 4" stroke="#3A7A2A" stroke-width=".4" fill="none"/></g>
+</defs></svg>
+
 <!-- REGISTRO -->
 <div id="p-registro" class="screen on">
-  <div class="cabecera">
-    <div class="toldo"><div class="toldo-label">✦ &nbsp; Concurso Gastronómico &nbsp; ✦</div></div>
-    <div class="toldo-flecos"></div>
-    <div class="cab-int-principal">
-      <div class="linea-oro"></div>
-      <div class="titulo-marco"><span class="titulo-principal">TAPA FEST</span></div>
-      <div class="linea-oro"></div>
-    </div>
-    <div class="mostrador"></div>
-    <div class="azulejos"></div>
-  </div>
-  <div class="panel" style="margin-top:16px">
-    <div class="panel-c">
-      <div class="panel-titulo">Añadir participantes</div>
-      <p style="font-size:15px;font-style:italic;color:var(--tinta2);margin-bottom:14px">Escribe todos los nombres y pulsa "Empezar" cuando estén todos.</p>
-      <div style="display:flex;gap:8px">
-        <input type="text" id="reg-inp" placeholder="Nombre..." autocomplete="off" style="flex:1;margin-bottom:0"/>
-        <button class="btn btn-m" onclick="regAdd()" style="width:auto;padding:10px 14px;margin-top:0;white-space:nowrap">+ Añadir</button>
+  <div class="cab" style="padding-top:24px">
+    <svg class="deco" style="top:8px;left:6px;opacity:.7" width="26" height="24" viewBox="0 0 26 24"><use href="#geranium"/></svg>
+    <svg class="deco" style="top:8px;right:6px;opacity:.7;transform:scaleX(-1)" width="26" height="24" viewBox="0 0 26 24"><use href="#geranium"/></svg>
+    <svg class="deco" style="top:48px;left:28px;opacity:.5" width="20" height="14" viewBox="0 0 20 14"><use href="#leaf"/></svg>
+    <svg class="deco" style="top:50px;right:26px;opacity:.5;transform:scaleX(-1)" width="20" height="14" viewBox="0 0 20 14"><use href="#leaf"/></svg>
+    <div class="cab-label">✦ Festival de Tapas ✦</div>
+    <div class="cab-arco">
+      <p style="font-family:'Playfair Display',serif;font-size:40px;font-weight:900;color:var(--az);letter-spacing:2px;line-height:1">TAPA</p>
+      <p style="font-family:'Playfair Display',serif;font-size:40px;font-weight:900;color:var(--te);letter-spacing:2px;line-height:1">FEST</p>
+      <div style="display:flex;justify-content:center;align-items:center;gap:6px;margin-top:10px">
+        <svg width="18" height="16" viewBox="0 0 22 20"><use href="#lemon"/></svg>
+        <svg width="14" height="14" viewBox="0 0 16 16"><path d="M8 1l2.2 4.5L15 6.2l-3.5 3.4.8 4.9L8 12.3 3.7 14.5l.8-4.9L1 6.2l4.8-.7z" fill="#E8A830"/></svg>
+        <svg width="18" height="16" viewBox="0 0 22 20"><use href="#lemon"/></svg>
       </div>
-      <ul class="lista" id="reg-lista" style="margin-top:14px"></ul>
     </div>
+    <p style="font-size:13px;color:var(--ti2);font-style:italic;margin-top:10px">Compite, vota y corona al ganador</p>
   </div>
-  <div class="bz" style="margin-top:14px">
-    <button class="btn btn-r" id="reg-btn" onclick="regEmpezar()" disabled>Empezar →</button>
-  </div>
-  <div class="panel" style="margin-top:8px">
-    <div class="panel-c" style="padding:12px">
-      <button class="btn btn-o" style="margin-top:0" onclick="verHistorial()">Historial de concursos</button>
+  <div class="azulejos"></div>
+  <div class="sec"><span class="sec-txt">Participantes</span></div>
+  <div class="card card-az" style="margin-top:0">
+    <p style="font-size:14px;font-style:italic;color:var(--ti2);margin-bottom:12px">Escribe los nombres y pulsa "Empezar".</p>
+    <div style="display:flex;gap:8px">
+      <input type="text" id="reg-inp" placeholder="Nombre..." autocomplete="off" style="flex:1"/>
+      <button class="btn btn-a" onclick="regAdd()" style="width:auto;padding:10px 16px;margin-top:0;font-size:14px">+ Añadir</button>
     </div>
+    <ul class="lista" id="reg-lista" style="margin-top:12px"></ul>
   </div>
+  <div class="bz"><button class="btn btn-r" id="reg-btn" onclick="regEmpezar()" disabled>Empezar →</button></div>
+  <div class="bz"><button class="btn btn-o" onclick="verHistorial()">Historial de concursos</button></div>
   <div class="esp"></div>
 </div>
 
 <!-- SELECCIÓN -->
 <div id="p-seleccion" class="screen">
-  <div class="cab-int">
-    <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
-    <div class="cab-flecos"></div>
-    <div class="cab-texto">
+  <div class="cab">
+    <div class="cab-arco">
       <div class="cab-titulo">¿Cuál eres tú?</div>
-      <div class="cab-sub" id="sel-sub">Toca tu nombre para apuntarte</div>
+      <div class="cab-sub" id="sel-sub">Toca tu nombre</div>
     </div>
   </div>
   <div class="azulejos"></div>
-  <div class="tarjeta" style="margin-top:14px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-      <div class="t-titulo" style="margin-bottom:0">Participantes</div>
+  <div class="sec"><span class="sec-txt">Participantes</span></div>
+  <div class="card card-or" style="margin-top:0">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
       <span class="etq etq-d" id="sel-count">0 de 0</span>
     </div>
     <div class="barra-w"><div class="barra-f" id="sel-barra"></div></div>
     <ul class="lista" id="sel-lista" style="margin-top:10px"></ul>
   </div>
-  <div class="bz" style="margin-top:6px">
-    <button class="btn btn-p" onclick="resetear()">Borrar partida y empezar de nuevo</button>
-  </div>
+  <div class="bz"><button class="btn btn-p" onclick="resetear()">Borrar partida y empezar de nuevo</button></div>
   <div class="esp"></div>
 </div>
 
 <!-- PERFIL -->
 <div id="p-perfil" class="screen">
-  <button class="volver" onclick="volverDePerfil()">← Volver</button>  <div class="cab-int" style="margin-top:8px">
-    <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
-    <div class="cab-flecos"></div>
-    <div class="cab-texto">
+  <div class="bz"><button class="btn btn-o" style="margin-top:12px;width:auto;display:inline-block" onclick="volverDePerfil()">← Volver</button></div>
+  <div class="cab">
+    <div class="cab-arco">
       <div class="cab-titulo" id="perfil-titulo">¡Hola!</div>
       <div class="cab-sub">Completa tu ficha</div>
     </div>
   </div>
   <div class="azulejos"></div>
-  <div class="panel" style="margin-top:16px">
-    <div class="panel-c">
-      <div style="margin-bottom:14px">
-        <label class="campo-label">Nombre de tu tapa</label>
-        <input type="text" id="perfil-tapa" placeholder="Croquetas de jamón..." autocomplete="off"/>
+  <div class="card card-az" style="margin:14px 14px 0">
+    <div style="margin-bottom:14px">
+      <label class="campo-label">Nombre de tu tapa</label>
+      <input type="text" id="perfil-tapa" placeholder="Croquetas de jamón..." autocomplete="off"/>
+    </div>
+    <div class="sep"></div>
+    <div>
+      <label class="campo-label">Foto de tu tapa</label>
+      <div class="foto-zona" id="foto-zona" onclick="document.getElementById('foto-inp').click()">
+        <input type="file" id="foto-inp" accept="image/*"/>
+        <span class="foto-icono">📷</span>
+        <div class="foto-texto">Toca para añadir una foto</div>
       </div>
-      <div class="sep"></div>
-      <div>
-        <label class="campo-label">Foto de tu tapa</label>
-        <div class="foto-zona" id="foto-zona" onclick="document.getElementById('foto-inp').click()">
-          <input type="file" id="foto-inp" accept="image/*"/>
-          <span class="foto-icono">📷</span>
-          <div class="foto-texto">Toca para añadir una foto</div>
-        </div>
-        <img id="foto-prev" class="foto-preview"/>
-      </div>
+      <img id="foto-prev" class="foto-preview"/>
     </div>
   </div>
-  <div class="bz" style="margin-top:14px">
-    <button class="btn btn-r" onclick="guardarPerfil()">Listo, entrar →</button>
-  </div>
+  <div class="bz"><button class="btn btn-r" onclick="guardarPerfil()">Listo, entrar →</button></div>
   <div class="esp"></div>
 </div>
 
 <!-- ESPERA -->
 <div id="p-espera" class="screen">
-  <div class="cab-int">
-    <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
-    <div class="cab-flecos"></div>
-    <div class="cab-texto">
+  <div class="cab">
+    <svg class="deco" style="top:6px;left:8px;opacity:.5" width="22" height="20" viewBox="0 0 22 20"><use href="#lemon"/></svg>
+    <svg class="deco" style="top:6px;right:8px;opacity:.5" width="22" height="20" viewBox="0 0 22 20"><use href="#lemon"/></svg>
+    <div class="cab-arco">
       <div class="cab-titulo">Sala de Espera</div>
       <div class="cab-sub">Esperando a todos...</div>
     </div>
   </div>
   <div class="azulejos"></div>
-  <div class="tarjeta" style="margin-top:14px;border-left-color:var(--dorado)">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <div class="t-titulo" style="margin-bottom:0;color:var(--dorado)">Preparación</div>
+  <div class="card card-or" style="margin:14px 14px 0">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+      <span style="font-size:12px;font-weight:600;color:var(--or2)">Preparación</span>
       <span class="etq etq-d" id="esp-count">0 de 0</span>
     </div>
     <div class="barra-w"><div class="barra-f" id="esp-barra"></div></div>
-    <p style="font-size:13px;font-style:italic;color:var(--tinta2);margin-top:8px" id="esp-msg"></p>
+    <p style="font-size:13px;font-style:italic;color:var(--ti2);margin-top:8px" id="esp-msg"></p>
   </div>
-  <div id="esp-mi-tapa" class="tarjeta" style="margin-top:14px;border-left-color:var(--verde);display:none">
-    <div class="t-titulo" style="color:var(--verde)">Tu tapa</div>
-    <div id="esp-mi-info" style="font-size:16px;font-style:italic;color:var(--tinta)"></div>
-    <button class="btn btn-o" style="margin-top:10px;font-size:15px" onclick="editarPerfil()">✏️ Editar mi tapa</button>
+  <div id="esp-mi-tapa" class="card" style="margin:10px 14px 0;display:none">
+    <span style="font-size:12px;font-weight:600;color:var(--vd)">Tu tapa</span>
+    <div id="esp-mi-info" style="font-size:15px;font-style:italic;color:var(--ti);margin-top:4px"></div>
+    <button class="btn btn-o" style="margin-top:8px;font-size:14px" onclick="editarPerfil()">✏️ Editar mi tapa</button>
   </div>
-  <div class="tarjeta" style="margin-top:14px">
+  <div class="card" style="margin:10px 14px 0">
     <ul class="lista" id="esp-lista"></ul>
   </div>
-  <div class="bz" style="margin-top:6px">
-    <button class="btn btn-o" onclick="volverASeleccion()">← Volver a la lista</button>
-  </div>
-  <div class="bz">
-    <button class="btn btn-p" onclick="resetear()">Borrar partida y empezar de nuevo</button>
-  </div>
+  <div class="bz"><button class="btn btn-o" onclick="volverASeleccion()">← Volver a la lista</button></div>
+  <div class="bz"><button class="btn btn-p" onclick="resetear()">Borrar partida y empezar de nuevo</button></div>
   <div class="esp"></div>
 </div>
 
 <!-- VOTACIÓN -->
 <div id="p-voto" class="screen">
-  <div class="cab-int">
-    <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
-    <div class="cab-flecos"></div>
-    <div class="cab-texto">
+  <div class="cab">
+    <div class="cab-arco">
       <div class="cab-titulo">¡A Votar!</div>
-      <div class="cab-sub" id="voto-sub">puntúa todas las tapas</div>
+      <div class="cab-sub" id="voto-sub">Puntúa todas las tapas</div>
     </div>
   </div>
   <div class="azulejos"></div>
@@ -308,671 +290,227 @@ input[type=range]{width:100%;height:4px;accent-color:var(--rojo);cursor:pointer;
     <span class="com-label cl-pub">💬 Público anónimo</span>
   </div>
   <div id="voto-cards"></div>
-  <div class="bz"><button class="btn btn-r" onclick="enviarVotos()">Enviar mis votos →</button></div>
+  <div class="bz"><button class="btn btn-a" onclick="enviarVotos()">Enviar mis votos →</button></div>
   <div class="bz"><button class="btn btn-o" onclick="volverASeleccion()">← Volver a la lista</button></div>
   <div class="esp"></div>
 </div>
+
+<!-- VOTADO -->
 <div id="p-votado" class="screen">
-  <div class="cab-int">
-    <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
-    <div class="cab-flecos"></div>
-    <div class="cab-texto">
-      <div class="cab-titulo" style="color:var(--dorado3)">¡Enviado!</div>
-      <div class="cab-sub">esperando a los demás...</div>
+  <div class="cab">
+    <div class="cab-arco">
+      <div class="cab-titulo" style="color:var(--vd)">¡Enviado!</div>
+      <div class="cab-sub">Esperando a los demás...</div>
     </div>
   </div>
   <div class="azulejos"></div>
-  <div class="tarjeta" style="margin-top:14px">
-    <div class="t-titulo">Estado de votación</div>
+  <div class="card card-az" style="margin:14px 14px 0">
+    <div class="card-titulo">Estado de votación</div>
     <ul class="lista" id="votado-lista"></ul>
     <div style="height:10px"></div>
-    <button class="btn btn-m" id="btn-revelar" style="display:none;margin-top:0" onclick="revelar()">Revelar resultados ★</button>
+    <button class="btn btn-v" id="btn-revelar" style="display:none;margin-top:0" onclick="revelar()">★ Revelar resultados</button>
   </div>
-  <div class="bz" style="margin-top:8px">
-    <button class="btn btn-o" id="btn-forzar" style="display:none" onclick="forzarResultados()">⚡ Cerrar votación y ver resultados</button>
-  </div>
-  <div class="bz">
-    <button class="btn btn-o" onclick="volverASeleccion()">← Volver a la lista</button>
-  </div>
-  <div class="bz">
-    <button class="btn btn-p" onclick="resetear()">Borrar partida y empezar de nuevo</button>
-  </div>
+  <div class="bz"><button class="btn btn-o" id="btn-forzar" style="display:none" onclick="forzarResultados()">⚡ Cerrar votación y ver resultados</button></div>
+  <div class="bz"><button class="btn btn-o" onclick="volverASeleccion()">← Volver a la lista</button></div>
+  <div class="bz"><button class="btn btn-p" onclick="resetear()">Borrar partida y empezar de nuevo</button></div>
   <div class="esp"></div>
 </div>
 
 <!-- RESULTADOS -->
 <div id="p-resultados" class="screen">
-  <div class="cab-int">
-    <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
-    <div class="cab-flecos"></div>
-    <div class="cab-texto">
-      <div class="cab-titulo">Resultados</div>
-      <div class="cab-sub">¡y el ganador es...</div>
+  <div class="cab" style="background:linear-gradient(180deg,var(--az),var(--az2));border-radius:0 0 16px 16px;padding-bottom:4px">
+    <svg class="deco" style="top:6px;left:6px;opacity:.3" width="26" height="24" viewBox="0 0 26 24"><use href="#geranium"/></svg>
+    <svg class="deco" style="top:6px;right:6px;opacity:.3;transform:scaleX(-1)" width="26" height="24" viewBox="0 0 26 24"><use href="#geranium"/></svg>
+    <p style="font-size:10px;letter-spacing:5px;color:rgba(255,248,238,.4);text-transform:uppercase">Resultados</p>
+    <p style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--bl);margin-top:4px">Y el ganador es...</p>
+    <div style="display:flex;justify-content:center;gap:6px;margin-top:6px">
+      <svg width="14" height="14" viewBox="0 0 16 16"><path d="M8 1l2.2 4.5L15 6.2l-3.5 3.4.8 4.9L8 12.3 3.7 14.5l.8-4.9L1 6.2l4.8-.7z" fill="#E8A830"/></svg>
+      <svg width="10" height="10" viewBox="0 0 16 16" style="margin-top:2px"><path d="M8 1l2.2 4.5L15 6.2l-3.5 3.4.8 4.9L8 12.3 3.7 14.5l.8-4.9L1 6.2l4.8-.7z" fill="#C84420"/></svg>
+      <svg width="14" height="14" viewBox="0 0 16 16"><path d="M8 1l2.2 4.5L15 6.2l-3.5 3.4.8 4.9L8 12.3 3.7 14.5l.8-4.9L1 6.2l4.8-.7z" fill="#E8A830"/></svg>
     </div>
   </div>
-  <div class="azulejos"></div>
-  <div class="sec-titulo">Top 3</div>
   <div id="podium"></div>
-  <div class="sec-titulo">Clasificación</div>
-  <div class="tarjeta"><ul class="ranking" id="rank-lista"></ul></div>
-  <div class="sec-titulo">Comentarios</div>
+  <div class="flor-sep"><svg width="20" height="18" viewBox="0 0 26 24"><use href="#geranium"/></svg><svg width="16" height="14" viewBox="0 0 22 20"><use href="#lemon"/></svg><svg width="14" height="10" viewBox="0 0 20 14"><use href="#leaf"/></svg><svg width="16" height="14" viewBox="0 0 22 20"><use href="#lemon"/></svg><svg width="20" height="18" viewBox="0 0 26 24" style="transform:scaleX(-1)"><use href="#geranium"/></svg></div>
+  <div class="sec"><span class="sec-txt">Clasificación</span></div>
+  <div class="card card-or" style="margin-top:0"><ul class="ranking" id="rank-lista"></ul></div>
+  <div class="sec"><span class="sec-txt">Comentarios</span></div>
   <div style="margin:0 14px" id="com-lista"></div>
   <div class="esp"></div>
-  <div class="bz"><button class="btn btn-pdf" onclick="exportPDF()">Guardar en PDF</button></div>
+  <div class="bz"><button class="btn btn-v" onclick="exportPDF()">📄 Guardar en PDF</button></div>
   <div class="bz"><button class="btn btn-o" onclick="resetear()">Nueva partida</button></div>
+  <div class="esp"></div>
 </div>
 
 <!-- HISTORIAL -->
 <div id="p-historial" class="screen">
-  <button class="volver" onclick="ir('p-registro')">← Volver</button>
-  <div class="cab-int" style="margin-top:8px">
-    <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
-    <div class="cab-flecos"></div>
-    <div class="cab-texto">
+  <div class="bz"><button class="btn btn-o" style="margin-top:12px;width:auto;display:inline-block" onclick="ir('p-registro')">← Volver</button></div>
+  <div class="cab">
+    <div class="cab-arco">
       <div class="cab-titulo">Historial</div>
-      <div class="cab-sub">concursos anteriores</div>
+      <div class="cab-sub">Concursos anteriores</div>
     </div>
   </div>
   <div class="azulejos"></div>
   <div id="hist-c" style="margin:14px 14px 0"></div>
+  <div class="bz"><button class="btn btn-p" id="btn-borrar-hist" style="display:none" onclick="borrarHistorial()">🗑️ Borrar todo el historial</button></div>
+  <div class="esp"></div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 <script>
-firebase.initializeApp({
-  apiKey:"AIzaSyDcEJ62lYa9t0gcypzP6HO6yk0DitkRyFQ",
-  authDomain:"tapa-fest.firebaseapp.com",
-  databaseURL:"https://tapa-fest-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId:"tapa-fest",storageBucket:"tapa-fest.firebasestorage.app",
-  messagingSenderId:"996685690250",appId:"1:996685690250:web:ab33f016c1764792438473"
-});
+firebase.initializeApp({apiKey:"AIzaSyDcEJ62lYa9t0gcypzP6HO6yk0DitkRyFQ",authDomain:"tapa-fest.firebaseapp.com",databaseURL:"https://tapa-fest-default-rtdb.europe-west1.firebasedatabase.app",projectId:"tapa-fest",storageBucket:"tapa-fest.firebasestorage.app",messagingSenderId:"996685690250",appId:"1:996685690250:web:ab33f016c1764792438473"});
 const db=firebase.database();
+let miId=null,miNombre=null,miFoto=null,_otros=[],_ranked=[],unsub=null,perfilOrigen='seleccion';
 
-// Estado
-let miId=null, miNombre=null, miFoto=null, _otros=[], _ranked=[], unsub=null, perfilOrigen='seleccion';
+function ir(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));document.getElementById(id).classList.add('on');window.scrollTo(0,0)}
+function carga(msg){document.getElementById('loading-txt').textContent=msg||'Un momento...';document.getElementById('loading').style.display='flex'}
+function sinCarga(){document.getElementById('loading').style.display='none'}
+function aviso(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2500)}
+function pts(game){return Object.values(game.participants||{}).filter(p=>p&&p.id&&p.name)}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+function compImg(file){return new Promise(res=>{const r=new FileReader();r.onload=e=>{const img=new Image();img.onload=()=>{const M=600;let w=img.width,h=img.height;if(w>h&&w>M){h=Math.round(h*M/w);w=M}else if(h>M){w=Math.round(w*M/h);h=M}const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d').drawImage(img,0,0,w,h);res(c.toDataURL('image/jpeg',0.6))};img.src=e.target.result};r.readAsDataURL(file)})}
 
-// ── Helpers ──────────────────────────────────────────────────────
-function ir(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));
-  document.getElementById(id).classList.add('on');
-  window.scrollTo(0,0);
-}
-function carga(msg){document.getElementById('loading-txt').textContent=msg||'Un momento...';document.getElementById('loading').style.display='flex';}
-function sinCarga(){document.getElementById('loading').style.display='none';}
-function aviso(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),2500);}
-function pts(game){return Object.values(game.participants||{}).filter(p=>p&&p.id&&p.name);}
-function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-function compImg(file){
-  return new Promise(res=>{
-    const r=new FileReader();
-    r.onload=e=>{
-      const img=new Image();
-      img.onload=()=>{
-        const M=600;let w=img.width,h=img.height;
-        if(w>h&&w>M){h=Math.round(h*M/w);w=M;}else if(h>M){w=Math.round(w*M/h);h=M;}
-        const c=document.createElement('canvas');c.width=w;c.height=h;
-        c.getContext('2d').drawImage(img,0,0,w,h);
-        res(c.toDataURL('image/jpeg',0.6));
-      };img.src=e.target.result;
-    };r.readAsDataURL(file);
-  });
-}
-
-// ── Registro ─────────────────────────────────────────────────────
 let regNombres=[];
-document.getElementById('reg-inp').addEventListener('keydown',e=>{if(e.key==='Enter')regAdd();});
+document.getElementById('reg-inp').addEventListener('keydown',e=>{if(e.key==='Enter')regAdd()});
+function regAdd(){const inp=document.getElementById('reg-inp');const n=inp.value.trim();if(!n){aviso('Escribe un nombre');return}if(regNombres.find(x=>x.toLowerCase()===n.toLowerCase())){aviso('Ese nombre ya está');return}regNombres.push(n);inp.value='';inp.focus();regRender()}
+function regQuitar(i){regNombres.splice(i,1);regRender()}
+function regRender(){const ul=document.getElementById('reg-lista');const btn=document.getElementById('reg-btn');ul.innerHTML=regNombres.map((n,i)=>`<li><div class="ini">${n[0].toUpperCase()}</div><div style="flex:1"><div class="li-nombre">${n}</div></div><button onclick="regQuitar(${i})" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--ti3);padding:0 4px">✕</button></li>`).join('')||'<li><p class="vacio">Sin participantes</p></li>';btn.disabled=regNombres.length<2}
+async function regEmpezar(){if(regNombres.length<2){aviso('Necesitas al menos 2');return}carga('Creando partida...');try{await db.ref('game').remove();const u={};regNombres.forEach(n=>{const id='p_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);u['game/participants/'+id]={id,name:n,tapaName:null,photo:null}});await db.ref().update(u);sinCarga();miId=null;miNombre=null;miFoto=null;regNombres=[];regRender();ir('p-seleccion');cargarSeleccion();suscribir()}catch(e){sinCarga();console.error(e);aviso('Error: '+e.message)}}
 
-function regAdd(){
-  const inp=document.getElementById('reg-inp');
-  const n=inp.value.trim();
-  if(!n){aviso('Escribe un nombre');return;}
-  if(regNombres.find(x=>x.toLowerCase()===n.toLowerCase())){aviso('Ese nombre ya está');return;}
-  regNombres.push(n);inp.value='';inp.focus();regRender();
-}
-function regQuitar(i){regNombres.splice(i,1);regRender();}
-function regRender(){
-  const ul=document.getElementById('reg-lista');
-  const btn=document.getElementById('reg-btn');
-  ul.innerHTML=regNombres.map((n,i)=>`
-    <li>
-      <div class="ini">${n[0].toUpperCase()}</div>
-      <div style="flex:1"><div class="li-nombre">${n}</div></div>
-      <button onclick="regQuitar(${i})" style="background:none;border:none;cursor:pointer;font-size:18px;color:var(--tinta3);padding:0 4px">✕</button>
-    </li>`).join('')||'<li><p class="vacio" style="padding:.8rem 0">Sin participantes</p></li>';
-  btn.disabled=regNombres.length<2;
-}
+async function cargarSeleccion(){try{const snap=await db.ref('game').once('value');renderSeleccion(snap.val()||{})}catch(e){console.error(e)}}
+function renderSeleccion(game){const ps=pts(game),listos=ps.filter(p=>p.tapaName).length,total=ps.length,fase=game.phase||'lobby';document.getElementById('sel-count').textContent=listos+' de '+total;document.getElementById('sel-barra').style.width=(total?Math.round(listos/total*100):0)+'%';let sub='Toca tu nombre para apuntarte';if(fase==='voting')sub='Votación en curso — toca tu nombre';if(fase==='results')sub='Concurso finalizado — toca tu nombre';document.getElementById('sel-sub').textContent=sub;document.getElementById('sel-lista').innerHTML=ps.map(p=>{const listo=!!p.tapaName,soyYo=p.id===miId,safe=p.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");return`<li style="cursor:pointer${listo?';border-left:4px solid var(--vd)':''}" onclick="seleccionar('${p.id}','${safe}',${listo})"><div class="ini${listo?' ini-ok':''}">${p.name[0].toUpperCase()}</div><div style="flex:1"><div class="li-nombre">${p.name}</div>${listo?`<div class="li-tapa">🍽️ ${p.tapaName}</div>`:'<div class="li-tapa" style="color:var(--or)">Toca para apuntarte →</div>'}</div>${soyYo?'<span class="etq etq-v">Tú</span>':(listo?'<span class="etq etq-v">Listo</span>':'')}</li>`}).join('')||'<li class="vacio">Sin participantes</li>'}
 
-async function regEmpezar(){
-  if(regNombres.length<2){aviso('Necesitas al menos 2');return;}
-  carga('Creando partida...');
-  try{
-    await db.ref('game').remove();
-    const u={};
-    regNombres.forEach(n=>{
-      const id='p_'+Date.now()+'_'+Math.random().toString(36).slice(2,6);
-      u['game/participants/'+id]={id,name:n,tapaName:null,photo:null};
-    });
-    await db.ref().update(u);
-    sinCarga();
-    miId=null;miNombre=null;miFoto=null;
-    regNombres=[];regRender();
-    ir('p-seleccion');
-    cargarSeleccion();
-    suscribir();
-  }catch(e){sinCarga();console.error(e);aviso('Error: '+e.message);}
-}
+async function seleccionar(pid,pname,listo){miId=pid;miNombre=pname;miFoto=null;sessionStorage.setItem('tf_id',miId);sessionStorage.setItem('tf_nombre',miNombre);if(listo){carga('Conectando...');try{const snap=await db.ref('game').once('value');const game=snap.val()||{};sinCarga();const yo=pts(game).find(p=>p.id===miId);if(yo)miFoto=yo.photo||null;navegar(game);suscribir()}catch(e){sinCarga();aviso('Error: '+e.message)}return}perfilOrigen='seleccion';abrirPerfil(pname,'',null)}
+function abrirPerfil(nombre,tapaActual,fotoActual){document.getElementById('perfil-titulo').textContent='¡Hola, '+nombre+'!';document.getElementById('perfil-tapa').value=tapaActual||'';const prev=document.getElementById('foto-prev'),zona=document.getElementById('foto-zona');if(fotoActual){prev.src=fotoActual;prev.style.display='block';zona.style.display='none';miFoto=fotoActual}else{prev.style.display='none';zona.style.display='block';miFoto=null}ir('p-perfil')}
+async function editarPerfil(){if(!miId)return;carga('Cargando...');try{const snap=await db.ref('game/participants/'+miId).once('value');const p=snap.val()||{};sinCarga();perfilOrigen='espera';miFoto=p.photo||null;abrirPerfil(p.name||miNombre,p.tapaName||'',p.photo||null)}catch(e){sinCarga();aviso('Error al cargar')}}
+function volverDePerfil(){if(perfilOrigen==='espera'){ir('p-espera');cargarEspera()}else{ir('p-seleccion');cargarSeleccion()}}
+function volverASeleccion(){ir('p-seleccion');cargarSeleccion()}
+async function cargarEspera(){try{const snap=await db.ref('game').once('value');const game=snap.val()||{};if(!pts(game).length){ir('p-registro');return}renderEspera(game)}catch(e){console.error(e)}}
 
-// ── Selección ─────────────────────────────────────────────────────
-async function cargarSeleccion(){
-  try{
-    const snap=await db.ref('game').once('value');
-    const game=snap.val()||{};
-    renderSeleccion(game);
-  }catch(e){console.error('cargarSeleccion:',e);}
-}
+document.getElementById('foto-inp').addEventListener('change',async function(){const f=this.files[0];if(!f)return;carga('Comprimiendo...');miFoto=await compImg(f);sinCarga();const p=document.getElementById('foto-prev');p.src=miFoto;p.style.display='block';document.getElementById('foto-zona').style.display='none'});
 
-function renderSeleccion(game){
-  const ps=pts(game);
-  const listos=ps.filter(p=>p.tapaName).length;
-  const total=ps.length;
-  const fase=game.phase||'lobby';
+async function guardarPerfil(){const tapa=document.getElementById('perfil-tapa').value.trim();if(!tapa){aviso('🍽️ Escribe el nombre de tu tapa');return}carga('Guardando...');try{await db.ref('game/participants/'+miId).update({tapaName:tapa,photo:miFoto||null});const snap=await db.ref('game').once('value');const game=snap.val()||{};sinCarga();if(game.phase==='voting'){navegar(game);suscribir();return}if(game.phase==='results'){navegar(game);return}const ps=pts(game);if(ps.length>=2&&ps.every(p=>p.tapaName)){if(!game.phase||game.phase==='lobby')await db.ref('game/phase').set('voting');const snap2=await db.ref('game').once('value');aviso('¡Todos listos! Empieza la votación 🗳️');renderVotacion(snap2.val()||{});suscribir()}else{aviso(perfilOrigen==='espera'?'¡Tapa actualizada! ✓':'¡Ficha guardada! ✓');ir('p-espera');renderEspera(game);suscribir()}}catch(e){sinCarga();console.error(e);aviso('Error: '+(e.message||e))}}
 
-  document.getElementById('sel-count').textContent=listos+' de '+total;
-  document.getElementById('sel-barra').style.width=(total?Math.round(listos/total*100):0)+'%';
+function renderEspera(game){const ps=pts(game),listos=ps.filter(p=>p.tapaName).length,total=ps.length;document.getElementById('esp-count').textContent=listos+' de '+total;document.getElementById('esp-barra').style.width=(total?Math.round(listos/total*100):0)+'%';document.getElementById('esp-msg').textContent=listos===total&&total>=2?'¡Todos listos! Arrancando...':(total-listos===1?'Falta 1 persona':'Faltan '+(total-listos)+' personas')+' por completar su ficha';const miTapaCard=document.getElementById('esp-mi-tapa'),yo=ps.find(p=>p.id===miId);if(yo&&yo.tapaName){miTapaCard.style.display='block';document.getElementById('esp-mi-info').textContent='🍽️ '+yo.tapaName}else{miTapaCard.style.display='none'}document.getElementById('esp-lista').innerHTML=ps.map(p=>`<li${p.tapaName?' style="border-left:4px solid var(--vd)"':''}><div class="ini${p.tapaName?' ini-ok':''}">${p.name[0].toUpperCase()}</div><div style="flex:1"><div class="li-nombre">${p.name}</div>${p.tapaName?`<div class="li-tapa">🍽️ ${p.tapaName}</div>`:'<div class="li-tapa" style="color:var(--or)">Pendiente</div>'}</div>${p.id===miId?'<span class="etq etq-v">Tú</span>':(p.tapaName?'<span class="etq etq-v">✓</span>':'<span class="etq etq-d">·</span>')}</li>`).join('')}
 
-  let sub='Toca tu nombre para apuntarte';
-  if(fase==='voting') sub='Votación en curso — toca tu nombre para entrar';
-  if(fase==='results') sub='Concurso finalizado — toca tu nombre para ver los resultados';
-  document.getElementById('sel-sub').textContent=sub;
+function renderVotacion(game){if(game.votes&&game.votes[miId]){mostrarVotado(game);return}const otros=pts(game).filter(p=>p.id!==miId);if(!otros.length){aviso('No hay otras tapas');return}ir('p-voto');document.getElementById('voto-sub').textContent='Puntúa las '+otros.length+' tapas';document.getElementById('voto-cards').innerHTML=otros.map((p,i)=>`<div class="voto-card">${p.photo?`<img class="voto-img" src="${p.photo}" onclick="document.getElementById('lb-img').src='${p.photo}';document.getElementById('lightbox').style.display='flex'" style="cursor:zoom-in"/>`:'<div class="voto-no-img">🍽️</div>'}<div class="voto-body"><div class="voto-nombre">${p.tapaName}</div><p style="font-size:13px;color:var(--ti2);font-style:italic">de ${p.name}</p><div class="nota-row"><span class="nota-label">Tu puntuación</span><span class="nota-num" id="n${i}">5</span></div><input type="range" min="1" max="10" value="5" step="1" id="r${i}" oninput="document.getElementById('n${i}').textContent=this.value"/><div class="tics">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<span>${n}</span>`).join('')}</div><div class="com-sec"><span class="com-label cl-priv">🔒 Nota privada</span><span class="cl-desc">Solo la ves tú</span><textarea id="priv${i}" rows="2" placeholder="Tu opinión personal..."></textarea></div><div class="com-sec" style="margin-top:10px"><span class="com-label cl-pub">💬 Comentario público</span><span class="cl-desc">Se publica anónimamente</span><textarea id="pub${i}" rows="2" placeholder="Algo para el grupo..."></textarea></div></div></div>`).join('');_otros=otros}
 
-  document.getElementById('sel-lista').innerHTML=ps.map(p=>{
-    const listo=!!p.tapaName;
-    const soyYo=p.id===miId;
-    const safe=p.name.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
-    return `<li style="cursor:pointer" onclick="seleccionar('${p.id}','${safe}',${listo})">
-      <div class="ini">${p.name[0].toUpperCase()}</div>
-      <div style="flex:1">
-        <div class="li-nombre">${p.name}</div>
-        ${listo?`<div class="li-tapa">🍽️ ${p.tapaName}</div>`:'<div class="li-tapa" style="color:var(--dorado)">Toca para apuntarte →</div>'}
-      </div>
-      ${soyYo?'<span class="etq etq-v">Tú ✓</span>':(listo?'<span class="etq etq-d">Listo</span>':'')}
-    </li>`;
-  }).join('')||'<li class="vacio">Sin participantes</li>';
-}
+async function enviarVotos(){const chk=await db.ref('game/votes/'+miId).once('value');if(chk.exists()){aviso('Ya has votado 😊');return}const v={};_otros.forEach((p,i)=>{v[p.id]={score:parseInt(document.getElementById('r'+i).value),privateNote:document.getElementById('priv'+i).value.trim(),publicComment:document.getElementById('pub'+i).value.trim()}});carga('Enviando...');try{await db.ref('game/votes/'+miId).set(v);sinCarga();aviso('¡Votos enviados! 🎉');const snap=await db.ref('game').once('value');mostrarVotado(snap.val()||{})}catch(e){sinCarga();aviso('Error al enviar');console.error(e)}}
 
-async function seleccionar(pid,pname,listo){
-  miId=pid;miNombre=pname;miFoto=null;
-  sessionStorage.setItem('tf_id',miId);
-  sessionStorage.setItem('tf_nombre',miNombre);
+function mostrarVotado(game){ir('p-votado');const ps=pts(game),votes=game.votes||{},votados=ps.filter(p=>votes[p.id]).length,todos=votados===ps.length&&ps.length>0;document.getElementById('votado-lista').innerHTML=ps.map(p=>`<li><div class="ini">${p.name[0].toUpperCase()}</div><div style="flex:1"><div class="li-nombre">${p.name}</div></div>${votes[p.id]?'<span class="etq etq-v">✓</span>':'<span class="etq etq-d">Votando...</span>'}</li>`).join('');document.getElementById('btn-revelar').style.display=todos?'block':'none';document.getElementById('btn-forzar').style.display=(!todos&&votados>=1)?'block':'none'}
+async function forzarResultados(){const snap=await db.ref('game').once('value');const game=snap.val()||{};const ps=pts(game),votes=game.votes||{},votados=ps.filter(p=>votes[p.id]).length;if(!confirm(`Solo han votado ${votados} de ${ps.length}. ¿Cerrar la votación y ver resultados?`))return;revelar()}
 
-  if(listo){
-    // Already has profile — navigate to correct phase
-    carga('Conectando...');
-    try{
-      const snap=await db.ref('game').once('value');
-      const game=snap.val()||{};
-      sinCarga();
-      // Load photo from DB
-      const yo=pts(game).find(p=>p.id===miId);
-      if(yo) miFoto=yo.photo||null;
-      navegar(game);
-      suscribir();
-    }catch(e){sinCarga();aviso('Error: '+e.message);}
-    return;
-  }
+function calcRanked(game){const ps=pts(game),votes=game.votes||{},sc={},cm={};ps.forEach(p=>{sc[p.id]=[];cm[p.id]=[]});Object.values(votes).forEach(v=>{Object.entries(v).forEach(([cid,d])=>{if(sc[cid]){sc[cid].push(d.score);if(d.publicComment)cm[cid].push(d.publicComment)}})});return ps.map(p=>({...p,avg:sc[p.id].length?Math.round(sc[p.id].reduce((a,b)=>a+b,0)/sc[p.id].length*10)/10:0,voteCount:sc[p.id].length,comments:cm[p.id]})).sort((a,b)=>b.avg-a.avg)}
 
-  // No profile yet — go to fill it
-  perfilOrigen='seleccion';
-  abrirPerfil(pname,'',null);
-}
+async function revelar(){carga('Calculando...');const snap=await db.ref('game').once('value');const game=snap.val()||{};await db.ref('game/phase').set('results');sinCarga();await guardarHistorial(game);ir('p-resultados');await animarRevelacion(game)}
 
-function abrirPerfil(nombre,tapaActual,fotoActual){
-  document.getElementById('perfil-titulo').textContent='¡Hola, '+nombre+'!';
-  document.getElementById('perfil-tapa').value=tapaActual||'';
-  const prev=document.getElementById('foto-prev');
-  const zona=document.getElementById('foto-zona');
-  if(fotoActual){
-    prev.src=fotoActual;prev.style.display='block';zona.style.display='none';
-    miFoto=fotoActual;
-  }else{
-    prev.style.display='none';zona.style.display='block';
-    miFoto=null;
-  }
-  ir('p-perfil');
-}
+function confetti(){const c=document.getElementById('confetti');const cols=['#1B4B7A','#E8A830','#C84420','#2A7A3A','#F5D93A','#E8354A'];for(let i=0;i<80;i++){const el=document.createElement('div');el.className='confetti-p';el.style.cssText=`left:${Math.random()*100}vw;background:${cols[i%cols.length]};width:${6+Math.random()*6}px;height:${8+Math.random()*10}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${2.5+Math.random()*2}s;animation-delay:${Math.random()*.8}s`;c.appendChild(el)}setTimeout(()=>c.innerHTML='',5000)}
 
-async function editarPerfil(){
-  if(!miId)return;
-  carga('Cargando...');
-  try{
-    const snap=await db.ref('game/participants/'+miId).once('value');
-    const p=snap.val()||{};
-    sinCarga();
-    perfilOrigen='espera';
-    miFoto=p.photo||null;
-    abrirPerfil(p.name||miNombre, p.tapaName||'', p.photo||null);
-  }catch(e){sinCarga();aviso('Error al cargar');}
-}
+async function animarRevelacion(game){const ranked=calcRanked(game);_ranked=ranked;const ov=document.getElementById('reveal'),rc=document.getElementById('reveal-c');ov.classList.add('on');const orden=[...ranked].reverse();for(let i=0;i<orden.length;i++){const p=orden[i],pos=ranked.indexOf(p);if(i>0&&pos<=2){rc.innerHTML='<div class="rv-esp">Y el siguiente es...</div>';await sleep(800);for(const n of[3,2,1]){rc.innerHTML=`<div class="rv-num">${n}</div>`;if(navigator.vibrate)navigator.vibrate(60);await sleep(900)}}else if(i>0){await sleep(600)}const lab=pos===0?'🏆 1er lugar':pos===1?'🥈 2º lugar':pos===2?'🥉 3er lugar':`#${pos+1}`;rc.innerHTML=`<div class="rv-pos">${lab}</div>${p.photo?`<img class="rv-foto" src="${p.photo}"/>`:'<div style="font-size:80px;margin-bottom:16px">🍽️</div>'}<div class="rv-tapa">${p.tapaName}</div><div class="rv-autor">de ${p.name}</div><div class="rv-nota">${p.avg.toFixed(1)}</div>`;if(pos===0){if(navigator.vibrate)navigator.vibrate([100,50,100,50,300]);confetti();await sleep(3500)}else{await sleep(2200)}}ov.classList.remove('on');renderResultados(ranked)}
 
-function volverDePerfil(){
-  if(perfilOrigen==='espera'){
-    ir('p-espera');
-    cargarEspera();
-  }else{
-    ir('p-seleccion');
-    cargarSeleccion();
-  }
-}
+function renderResultados(ranked){const cls=['first','second','third'],med=['🏆','🥈','🥉'],ord=[1,0,2],pedL=['PLATA','ORO','BRONCE'];document.getElementById('podium').innerHTML=ord.map(ri=>{if(ri>=ranked.length)return'';const p=ranked[ri];return`<div class="p-card ${cls[ri]}"><div style="font-size:${ri===0?18:14}px">${med[ri]}</div>${p.photo?`<img class="p-foto" src="${p.photo}" onclick="document.getElementById('lb-img').src='${p.photo}';document.getElementById('lightbox').style.display='flex'"/>`:'<div class="p-nofoto">🍽️</div>'}<div class="p-nombre">${p.tapaName}</div><div class="p-autor">de ${p.name}</div><div class="p-nota">${p.avg.toFixed(1)}</div><div class="p-ped"><span class="p-ped-l">${pedL[ri]}</span><span class="p-ped-n">${ri+1}</span></div></div>`}).join('');const rkColors=['#E8A830','#A8A8A8','#B87333'];document.getElementById('rank-lista').innerHTML=ranked.map((p,i)=>`<li><span class="rk-pos" style="background:${rkColors[i]||'var(--ti2)'}">${i+1}</span><span style="flex:1;margin:0 10px"><span style="font-weight:600">${p.tapaName}</span><div class="rk-votos">de ${p.name} · ${p.voteCount} voto${p.voteCount!==1?'s':''}</div></span><span class="rk-nota" style="color:${rkColors[i]||'var(--ti2)'}">${p.avg.toFixed(1)}</span></li>`).join('');const conCom=ranked.filter(p=>p.comments&&p.comments.length);document.getElementById('com-lista').innerHTML=conCom.length?conCom.map(p=>`<div class="com-grupo"><div class="com-tapa">🍽️ ${p.tapaName}</div><div class="com-burbujas">${p.comments.map(c=>`<div class="com-burbuja">${c}</div>`).join('')}</div></div>`).join(''):'<p class="vacio">No hay comentarios públicos</p>'}
 
-function volverASeleccion(){
-  ir('p-seleccion');
-  cargarSeleccion();
-}
+function suscribir(){if(unsub)unsub();const ref=db.ref('game');const h=snap=>{const game=snap.val()||{},cur=document.querySelector('.screen.on')?.id,ps=pts(game);if(!ps.length&&cur!=='p-registro'&&cur!=='p-historial'){miId=null;miNombre=null;miFoto=null;sessionStorage.removeItem('tf_id');sessionStorage.removeItem('tf_nombre');regNombres=[];regRender();ir('p-registro');aviso('La partida ha sido borrada');return}if(cur==='p-seleccion'){renderSeleccion(game);if(game.phase==='voting'&&miId){(game.votes&&game.votes[miId])?mostrarVotado(game):renderVotacion(game)}if(game.phase==='results'&&miId){ir('p-resultados');renderResultados(calcRanked(game))}}if(cur==='p-espera'){renderEspera(game);if(game.phase==='voting'&&miId){(game.votes&&game.votes[miId])?mostrarVotado(game):renderVotacion(game)}if(game.phase==='results'&&miId){ir('p-resultados');renderResultados(calcRanked(game))}}if(cur==='p-perfil'){if(game.phase==='voting'&&miId){const yo=ps.find(p=>p.id===miId);if(yo&&yo.tapaName){(game.votes&&game.votes[miId])?mostrarVotado(game):renderVotacion(game)}}if(game.phase==='results'&&miId){ir('p-resultados');renderResultados(calcRanked(game))}}if(cur==='p-voto'&&game.phase==='results'){ir('p-resultados');renderResultados(calcRanked(game))}if(cur==='p-votado'){mostrarVotado(game);if(game.phase==='results'){ir('p-resultados');renderResultados(calcRanked(game))}}};ref.on('value',h);unsub=()=>ref.off('value',h)}
 
-async function cargarEspera(){
-  try{
-    const snap=await db.ref('game').once('value');
-    const game=snap.val()||{};
-    if(!pts(game).length){ir('p-registro');return;}
-    renderEspera(game);
-  }catch(e){console.error('cargarEspera:',e);}
-}
+function navegar(game){if(!miId)return;const ps=pts(game);if(!ps.length){ir('p-registro');return}if(game.phase==='results'){ir('p-resultados');_ranked=calcRanked(game);renderResultados(_ranked);return}if(game.phase==='voting'){if(game.votes&&game.votes[miId])mostrarVotado(game);else renderVotacion(game);suscribir();return}const yo=ps.find(p=>p.id===miId);if(yo&&yo.tapaName){ir('p-espera');renderEspera(game);suscribir()}else if(yo){perfilOrigen='seleccion';abrirPerfil(yo.name,'',null);suscribir()}else{ir('p-seleccion');renderSeleccion(game);suscribir()}}
 
-// ── Perfil ────────────────────────────────────────────────────────
-document.getElementById('foto-inp').addEventListener('change',async function(){
-  const f=this.files[0];if(!f)return;
-  carga('Comprimiendo...');
-  miFoto=await compImg(f);sinCarga();
-  const p=document.getElementById('foto-prev');
-  p.src=miFoto;p.style.display='block';
-  document.getElementById('foto-zona').style.display='none';
-});
+async function guardarHistorial(game){const ranked=calcRanked(game);if(!ranked.length)return;try{await db.ref('history').push({date:new Date().toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'}),timestamp:Date.now(),winner:ranked[0].tapaName,winnerName:ranked[0].name,winnerScore:ranked[0].avg.toFixed(1),ranking:ranked.map(p=>({name:p.name,tapaName:p.tapaName,avg:p.avg.toFixed(1)}))})}catch(e){console.log(e)}}
+async function verHistorial(){ir('p-historial');carga('Cargando...');try{const snap=await db.ref('history').once('value');sinCarga();const entries=snap.val()?Object.values(snap.val()).reverse():[];const c=document.getElementById('hist-c');document.getElementById('btn-borrar-hist').style.display=entries.length?'block':'none';if(!entries.length){c.innerHTML='<p class="vacio" style="margin-top:2rem">Sin concursos guardados</p>';return}c.innerHTML=entries.map(e=>`<div class="hist-card"><div style="font-size:12px;color:var(--ti2);margin-bottom:6px">${e.date}</div><div style="font-family:'Playfair Display',serif;font-size:18px;color:var(--or);margin-bottom:4px">🏆 ${e.winner}</div><div style="font-size:14px;color:var(--ti2);margin-bottom:10px">por ${e.winnerName} · ${e.winnerScore} pts</div><details><summary style="font-size:13px;color:var(--ti2);cursor:pointer">Ver clasificación ▾</summary><ol style="margin-top:8px;padding-left:20px">${e.ranking.map(r=>`<li style="font-size:14px;padding:3px 0;color:var(--ti2)">${r.tapaName} · ${r.name} · ${r.avg}</li>`).join('')}</ol></details></div>`).join('')}catch(e){sinCarga();aviso('Error al cargar')}}
+async function borrarHistorial(){if(!confirm('¿Borrar TODO el historial de concursos? Esta acción no se puede deshacer.'))return;carga('Borrando...');try{await db.ref('history').remove();sinCarga();aviso('Historial borrado');document.getElementById('hist-c').innerHTML='<p class="vacio" style="margin-top:2rem">Sin concursos guardados</p>';document.getElementById('btn-borrar-hist').style.display='none'}catch(e){sinCarga();aviso('Error al borrar')}}
 
-async function guardarPerfil(){
-  const tapa=document.getElementById('perfil-tapa').value.trim();
-  if(!tapa){aviso('🍽️ Escribe el nombre de tu tapa');return;}
-  carga('Guardando...');
-  try{
-    await db.ref('game/participants/'+miId).update({tapaName:tapa,photo:miFoto||null});
-    const snap=await db.ref('game').once('value');
-    const game=snap.val()||{};
-    sinCarga();
+async function resetear(){if(!confirm('¿Borrar la partida y empezar de nuevo?'))return;carga('Borrando...');try{if(unsub){unsub();unsub=null}await db.ref('game').remove();sinCarga();miId=null;miNombre=null;miFoto=null;_otros=[];_ranked=[];perfilOrigen='seleccion';sessionStorage.removeItem('tf_id');sessionStorage.removeItem('tf_nombre');regNombres=[];regRender();ir('p-registro')}catch(e){sinCarga();aviso('Error al borrar')}}
 
-    if(game.phase==='voting'){navegar(game);suscribir();return;}
-    if(game.phase==='results'){navegar(game);return;}
-
-    // Check if all ready
-    const ps=pts(game);
-    if(ps.length>=2&&ps.every(p=>p.tapaName)){
-      // Only set phase if not already set
-      if(!game.phase||game.phase==='lobby'){
-        await db.ref('game/phase').set('voting');
-      }
-      const snap2=await db.ref('game').once('value');
-      aviso('¡Todos listos! Empieza la votación 🗳️');
-      renderVotacion(snap2.val()||{});
-      suscribir();
-    }else{
-      aviso(perfilOrigen==='espera'?'¡Tapa actualizada! ✓':'¡Ficha guardada! ✓');
-      ir('p-espera');
-      renderEspera(game);
-      suscribir();
-    }
-  }catch(e){sinCarga();console.error('guardarPerfil:',e);aviso('Error: '+(e.message||e));}
-}
-
-// ── Espera ────────────────────────────────────────────────────────
-function renderEspera(game){
-  const ps=pts(game);
-  const listos=ps.filter(p=>p.tapaName).length;
-  const total=ps.length;
-  document.getElementById('esp-count').textContent=listos+' de '+total;
-  document.getElementById('esp-barra').style.width=(total?Math.round(listos/total*100):0)+'%';
-  document.getElementById('esp-msg').textContent=
-    listos===total&&total>=2?'¡Todos listos! Arrancando...' :
-    (total-listos===1?'Falta 1 persona':'Faltan '+(total-listos)+' personas')+' por completar su ficha';
-
-  // Show current user's tapa info with edit option
-  const miTapaCard=document.getElementById('esp-mi-tapa');
-  const yo=ps.find(p=>p.id===miId);
-  if(yo&&yo.tapaName){
-    miTapaCard.style.display='block';
-    document.getElementById('esp-mi-info').textContent='🍽️ '+yo.tapaName;
-  }else{
-    miTapaCard.style.display='none';
-  }
-
-  document.getElementById('esp-lista').innerHTML=ps.map(p=>`
-    <li>
-      <div class="ini">${p.name[0].toUpperCase()}</div>
-      <div style="flex:1">
-        <div class="li-nombre">${p.name}</div>
-        ${p.tapaName?`<div class="li-tapa">🍽️ ${p.tapaName}</div>`:'<div class="li-tapa" style="color:var(--dorado)">Pendiente</div>'}
-      </div>
-      ${p.id===miId?'<span class="etq etq-v">Tú</span>':(p.tapaName?'<span class="etq etq-v">✓</span>':'<span class="etq etq-d">·</span>')}
-    </li>`).join('');
-}
-
-// ── Votación ──────────────────────────────────────────────────────
-function renderVotacion(game){
-  if(game.votes&&game.votes[miId]){mostrarVotado(game);return;}
-  const otros=pts(game).filter(p=>p.id!==miId);
-  if(!otros.length){aviso('No hay otras tapas');return;}
-  ir('p-voto');
-  document.getElementById('voto-sub').textContent='Puntúa las '+otros.length+' tapas';
-  document.getElementById('voto-cards').innerHTML=otros.map((p,i)=>`
-    <div class="voto-card">
-      ${p.photo?`<img class="voto-img" src="${p.photo}" onclick="document.getElementById('lb-img').src='${p.photo}';document.getElementById('lightbox').style.display='flex'" style="cursor:zoom-in"/>`:'<div class="voto-no-img">🍽️</div>'}
-      <div class="voto-body">
-        <div class="voto-nombre">${p.tapaName}</div>
-        <div class="nota-row"><span class="nota-label">Tu nota</span><span class="nota-num" id="n${i}">5</span></div>
-        <input type="range" min="1" max="10" value="5" step="1" id="r${i}" oninput="document.getElementById('n${i}').textContent=this.value"/>
-        <div class="tics">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<span>${n}</span>`).join('')}</div>
-        <div class="com-sec">
-          <span class="com-label cl-priv">🔒 Nota privada</span>
-          <span class="cl-desc">Solo la ves tú</span>
-          <textarea id="priv${i}" rows="2" placeholder="Tu opinión personal..."></textarea>
-        </div>
-        <div class="com-sec" style="margin-top:10px">
-          <span class="com-label cl-pub">💬 Comentario público</span>
-          <span class="cl-desc">Se publica anónimamente</span>
-          <textarea id="pub${i}" rows="2" placeholder="Algo para el grupo..."></textarea>
-        </div>
-      </div>
-    </div>`).join('');
-  _otros=otros;
-}
-
-async function enviarVotos(){
-  const chk=await db.ref('game/votes/'+miId).once('value');
-  if(chk.exists()){aviso('Ya has votado 😊');return;}
-  const v={};
-  _otros.forEach((p,i)=>{
-    v[p.id]={
-      score:parseInt(document.getElementById('r'+i).value),
-      privateNote:document.getElementById('priv'+i).value.trim(),
-      publicComment:document.getElementById('pub'+i).value.trim()
-    };
-  });
-  carga('Enviando...');
-  try{
-    await db.ref('game/votes/'+miId).set(v);
-    sinCarga();aviso('¡Votos enviados! 🎉');
-    const snap=await db.ref('game').once('value');
-    mostrarVotado(snap.val()||{});
-  }catch(e){sinCarga();aviso('Error al enviar');console.error(e);}
-}
-
-function mostrarVotado(game){
-  ir('p-votado');
-  const ps=pts(game);const votes=game.votes||{};
-  const votados=ps.filter(p=>votes[p.id]).length;
-  const todos=votados===ps.length&&ps.length>0;
-  document.getElementById('votado-lista').innerHTML=ps.map(p=>`
-    <li>
-      <div class="ini">${p.name[0].toUpperCase()}</div>
-      <div style="flex:1"><div class="li-nombre">${p.name}</div></div>
-      ${votes[p.id]?'<span class="etq etq-v">✓</span>':'<span class="etq etq-d">Votando...</span>'}
-    </li>`).join('');
-  document.getElementById('btn-revelar').style.display=todos?'block':'none';
-  // Show force-reveal when some have voted but not all
-  document.getElementById('btn-forzar').style.display=(!todos&&votados>=1)?'block':'none';
-}
-
-async function forzarResultados(){
-  const snap=await db.ref('game').once('value');
-  const game=snap.val()||{};
-  const ps=pts(game);const votes=game.votes||{};
-  const votados=ps.filter(p=>votes[p.id]).length;
-  if(!confirm(`Solo han votado ${votados} de ${ps.length}. ¿Cerrar la votación y ver resultados con los votos que hay?`))return;
-  revelar();
-}
-
-// ── Resultados ────────────────────────────────────────────────────
-function calcRanked(game){
-  const ps=pts(game);const votes=game.votes||{};
-  const sc={},cm={};
-  ps.forEach(p=>{sc[p.id]=[];cm[p.id]=[];});
-  Object.values(votes).forEach(v=>{
-    Object.entries(v).forEach(([cid,d])=>{
-      if(sc[cid]){sc[cid].push(d.score);if(d.publicComment)cm[cid].push(d.publicComment);}
-    });
-  });
-  return ps.map(p=>({...p,avg:sc[p.id].length?sc[p.id].reduce((a,b)=>a+b,0)/sc[p.id].length:0,voteCount:sc[p.id].length,comments:cm[p.id]})).sort((a,b)=>b.avg-a.avg);
-}
-
-async function revelar(){
-  carga('Calculando...');
-  const snap=await db.ref('game').once('value');
-  const game=snap.val()||{};
-  await db.ref('game/phase').set('results');
-  sinCarga();
-  await guardarHistorial(game);
-  ir('p-resultados');
-  await animarRevelacion(game);
-}
-
-function confetti(){
-  const c=document.getElementById('confetti');
-  const cols=['#C8940A','#E8B020','#F5CC50','#B82018','#F5F0E8'];
-  for(let i=0;i<80;i++){
-    const el=document.createElement('div');el.className='confetti-p';
-    el.style.cssText=`left:${Math.random()*100}vw;background:${cols[i%cols.length]};width:${6+Math.random()*6}px;height:${8+Math.random()*10}px;border-radius:${Math.random()>.5?'50%':'2px'};animation-duration:${2.5+Math.random()*2}s;animation-delay:${Math.random()*.8}s`;
-    c.appendChild(el);
-  }
-  setTimeout(()=>c.innerHTML='',5000);
-}
-
-async function animarRevelacion(game){
-  const ranked=calcRanked(game);_ranked=ranked;
-  const ov=document.getElementById('reveal');const rc=document.getElementById('reveal-c');
-  ov.classList.add('on');
-  const orden=[...ranked].reverse();
-  for(let i=0;i<orden.length;i++){
-    const p=orden[i];const pos=ranked.indexOf(p);
-    if(i>0&&pos<=2){
-      rc.innerHTML='<div class="rv-esp">Y el siguiente es...</div>';await sleep(800);
-      for(const n of[3,2,1]){rc.innerHTML=`<div class="rv-num">${n}</div>`;if(navigator.vibrate)navigator.vibrate(60);await sleep(900);}
-    }else if(i>0){await sleep(600);}
-    const lab=pos===0?'🏆 1er lugar':pos===1?'🥈 2º lugar':pos===2?'🥉 3er lugar':`#${pos+1}`;
-    rc.innerHTML=`<div class="rv-pos">${lab}</div>${p.photo?`<img class="rv-foto" src="${p.photo}"/>`:'<div style="font-size:80px;margin-bottom:16px">🍽️</div>'}<div class="rv-tapa">${p.tapaName}</div><div class="rv-autor">de ${p.name}</div><div class="rv-nota">${p.avg.toFixed(1)}</div>`;
-    if(pos===0){if(navigator.vibrate)navigator.vibrate([100,50,100,50,300]);confetti();await sleep(3500);}else{await sleep(2200);}
-  }
-  ov.classList.remove('on');
-  renderResultados(ranked);
-}
-
-function renderResultados(ranked){
-  const cls=['first','second','third'],med=['🥇','🥈','🥉'],ord=[1,0,2];
-  document.getElementById('podium').innerHTML=ord.map(ri=>{
-    if(ri>=ranked.length)return'';const p=ranked[ri];
-    return `<div class="p-card ${cls[ri]}"><div class="medalla">${med[ri]}</div>${p.photo?`<img class="p-foto" src="${p.photo}" onclick="document.getElementById('lb-img').src='${p.photo}';document.getElementById('lightbox').style.display='flex'"/>`:'<div class="p-nofoto">🍽️</div>'}<div class="p-info"><div class="p-nombre">${p.tapaName}</div><div class="p-autor">de ${p.name}</div><div class="p-nota">${p.avg.toFixed(1)}</div></div></div>`;
-  }).join('');
-  document.getElementById('rank-lista').innerHTML=ranked.map((p,i)=>`<li><span class="rk-pos">#${i+1}</span><span style="flex:1;margin:0 10px"><span>${p.tapaName}</span><div class="rk-votos">de ${p.name} · ${p.voteCount} voto${p.voteCount!==1?'s':''}</div></span><span class="rk-nota">${p.avg.toFixed(1)}</span></li>`).join('');
-  const conCom=ranked.filter(p=>p.comments&&p.comments.length);
-  document.getElementById('com-lista').innerHTML=conCom.length?conCom.map(p=>`<div class="com-grupo"><div class="com-tapa">🍽️ ${p.tapaName}</div><div class="com-burbujas">${p.comments.map(c=>`<div class="com-burbuja">${c}</div>`).join('')}</div></div>`).join(''):'<p class="vacio">No hay comentarios públicos</p>';
-}
-
-// ── Suscripción tiempo real ───────────────────────────────────────
-function suscribir(){
-  if(unsub)unsub();
-  const ref=db.ref('game');
-  const h=snap=>{
-    const game=snap.val()||{};
-    const cur=document.querySelector('.screen.on')?.id;
-    const ps=pts(game);
-
-    // Game was deleted while we're in it — go back to registration
-    if(!ps.length && cur!=='p-registro' && cur!=='p-historial'){
-      miId=null;miNombre=null;miFoto=null;
-      sessionStorage.removeItem('tf_id');sessionStorage.removeItem('tf_nombre');
-      regNombres=[];regRender();ir('p-registro');
-      aviso('La partida ha sido borrada');
-      return;
-    }
-
-    if(cur==='p-seleccion'){
-      renderSeleccion(game);
-      if(game.phase==='voting'&&miId){
-        (game.votes&&game.votes[miId])?mostrarVotado(game):renderVotacion(game);
-      }
-      if(game.phase==='results'&&miId){
-        ir('p-resultados');renderResultados(calcRanked(game));
-      }
-    }
-    if(cur==='p-espera'){
-      renderEspera(game);
-      if(game.phase==='voting'&&miId){
-        (game.votes&&game.votes[miId])?mostrarVotado(game):renderVotacion(game);
-      }
-      if(game.phase==='results'&&miId){
-        ir('p-resultados');renderResultados(calcRanked(game));
-      }
-    }
-    if(cur==='p-perfil'){
-      // If phase changed while editing profile, handle it
-      if(game.phase==='voting'&&miId){
-        const yo=ps.find(p=>p.id===miId);
-        if(yo&&yo.tapaName){
-          (game.votes&&game.votes[miId])?mostrarVotado(game):renderVotacion(game);
-        }
-      }
-      if(game.phase==='results'&&miId){
-        ir('p-resultados');renderResultados(calcRanked(game));
-      }
-    }
-    if(cur==='p-voto'){
-      // If phase changed to results while voting
-      if(game.phase==='results'){
-        ir('p-resultados');renderResultados(calcRanked(game));
-      }
-    }
-    if(cur==='p-votado'){
-      mostrarVotado(game);
-      if(game.phase==='results'){ir('p-resultados');renderResultados(calcRanked(game));}
-    }
-  };
-  ref.on('value',h);unsub=()=>ref.off('value',h);
-}
-
-// ── Navegación por fase ───────────────────────────────────────────
-function navegar(game){
-  if(!miId)return;
-  const ps=pts(game);
-  if(!ps.length){ir('p-registro');return;}
-  if(game.phase==='results'){ir('p-resultados');_ranked=calcRanked(game);renderResultados(_ranked);return;}
-  if(game.phase==='voting'){
-    if(game.votes&&game.votes[miId]){mostrarVotado(game);}
-    else{renderVotacion(game);}
-    suscribir();return;
-  }
-  const yo=ps.find(p=>p.id===miId);
-  if(yo&&yo.tapaName){ir('p-espera');renderEspera(game);suscribir();}
-  else if(yo){perfilOrigen='seleccion';abrirPerfil(yo.name,'',null);suscribir();}
-  else{ir('p-seleccion');renderSeleccion(game);suscribir();}
-}
-
-// ── Historial ─────────────────────────────────────────────────────
-async function guardarHistorial(game){
-  const ranked=calcRanked(game);if(!ranked.length)return;
-  try{await db.ref('history').push({date:new Date().toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'}),timestamp:Date.now(),winner:ranked[0].tapaName,winnerName:ranked[0].name,winnerScore:ranked[0].avg.toFixed(1),ranking:ranked.map(p=>({name:p.name,tapaName:p.tapaName,avg:p.avg.toFixed(1)}))});}catch(e){console.log(e);}
-}
-async function verHistorial(){
-  ir('p-historial');carga('Cargando...');
-  try{
-    const snap=await db.ref('history').once('value');sinCarga();
-    const entries=snap.val()?Object.values(snap.val()).reverse():[];
-    const c=document.getElementById('hist-c');
-    if(!entries.length){c.innerHTML='<p class="vacio" style="margin-top:2rem">Sin concursos guardados</p>';return;}
-    c.innerHTML=entries.map(e=>`<div class="tarjeta" style="margin-bottom:12px"><div style="font-size:12px;color:var(--tinta2);margin-bottom:6px">${e.date}</div><div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--dorado2);margin-bottom:4px">🏆 ${e.winner}</div><div style="font-size:15px;color:var(--tinta2);margin-bottom:10px">ganado por ${e.winnerName} · ${e.winnerScore} pts</div><details><summary style="font-size:14px;color:var(--tinta2);cursor:pointer;list-style:none">Ver clasificación ▾</summary><ol style="margin-top:8px;padding-left:20px">${e.ranking.map(r=>`<li style="font-size:15px;padding:3px 0;color:var(--tinta2)">${r.tapaName} · ${r.name} · ${r.avg}</li>`).join('')}</ol></details></div>`).join('');
-  }catch(e){sinCarga();aviso('Error al cargar');}
-}
-
-// ── Resetear ──────────────────────────────────────────────────────
-async function resetear(){
-  if(!confirm('¿Borrar la partida y empezar de nuevo?'))return;
-  carga('Borrando...');
-  try{
-    if(unsub){unsub();unsub=null;}
-    await db.ref('game').remove();sinCarga();
-    miId=null;miNombre=null;miFoto=null;_otros=[];_ranked=[];perfilOrigen='seleccion';
-    sessionStorage.removeItem('tf_id');sessionStorage.removeItem('tf_nombre');
-    regNombres=[];regRender();ir('p-registro');
-  }catch(e){sinCarga();aviso('Error al borrar');}
-}
-
-// ── PDF ───────────────────────────────────────────────────────────
 function exportPDF(){
-  if(!_ranked.length){aviso('No hay resultados');return;}
+  if(!_ranked.length){aviso('No hay resultados');return}
   const{jsPDF}=window.jspdf;
   const doc=new jsPDF({orientation:'portrait',unit:'mm',format:'a4'});
   const W=210,H=297;
-  function gr(){for(let i=0;i<24;i++){const t=i/24;doc.setFillColor(Math.round(80+t*65),Math.round(8+t*14),Math.round(8+t*10));doc.rect(0,i*(H/24),W,H/24+.5,'F');}}
-  function tr(){const sw=7;doc.setFillColor(26,8,8);doc.rect(0,0,sw,H,'F');doc.rect(W-sw,0,sw,H,'F');doc.setDrawColor(200,148,10);doc.setLineWidth(.45);doc.line(sw,0,sw,H);doc.line(W-sw,0,W-sw,H);for(let y=4;y<H;y+=11)for(const sx of[2.2,W-sw+2.2]){doc.setFillColor(10,0,0);doc.setDrawColor(200,148,10);doc.setLineWidth(.2);doc.roundedRect(sx,y,2.6,4,.6,.6,'FD');}}
-  function lo(x1,x2,y){doc.setDrawColor(232,176,32);doc.setLineWidth(.7);doc.line(x1,y,x2,y);doc.setDrawColor(245,204,80);doc.setLineWidth(.2);doc.line(x1,y+1,x2,y+1);doc.line(x1,y-1,x2,y-1);}
-  function sl(y,t){const tw=doc.getTextWidth(t);doc.setDrawColor(200,148,10);doc.setLineWidth(.3);doc.line(16,y,(W-tw)/2-3,y);doc.line((W+tw)/2+3,y,W-16,y);doc.setTextColor(232,176,32);doc.setFont('helvetica','bold');doc.setFontSize(7.5);doc.text(t,W/2,y-2,{align:'center'});return y-9;}
-  function fm(x,y,w,h,img,rk){const bc=[[232,176,32],[185,185,185],[195,115,35]][rk]||[200,148,10];doc.setFillColor(26,8,8);doc.rect(x+2,y-2,w,h,'F');doc.setFillColor(26,8,8);doc.setDrawColor(bc[0],bc[1],bc[2]);doc.setLineWidth(1.4);doc.rect(x,y,w,h,'FD');doc.setDrawColor(245,204,80);doc.setLineWidth(.3);doc.rect(x+1.5,y+1.5,w-3,h-3,'S');const b=3.5;if(img){try{doc.addImage(img,'JPEG',x+b,y+b,w-2*b,h-2*b,'','FAST');}catch(e){}}else{doc.setFillColor(150,20,20);doc.rect(x+b,y+b,w-2*b,h-2*b,'F');}}
-  function es(avg,cx,cy,r){r=r||2.2;const f=Math.round(avg/2),g=r*2.6,sx=cx-(5*g)/2+r;doc.setLineWidth(.3);for(let i=0;i<5;i++){if(i<f){doc.setFillColor(232,176,32);doc.setDrawColor(200,148,10);}else{doc.setFillColor(40,12,12);doc.setDrawColor(200,148,10);}doc.circle(sx+i*g,cy,r*.8,'FD');}}
-  // Pag 1
-  gr();tr();
-  const cH=46;doc.setFillColor(26,8,8);doc.rect(0,H-cH,W,cH,'F');lo(0,W,H-cH);
-  doc.setTextColor(245,204,80);doc.setFont('helvetica','bold');doc.setFontSize(40);doc.text('TAPA FEST',W/2,H-25,{align:'center'});
-  doc.setTextColor(232,176,32);doc.setFontSize(8);doc.text('G  A  L  A   D  E   P  R  E  M  I  O  S',W/2,H-35,{align:'center'});
-  doc.setTextColor(253,232,160);doc.setFont('helvetica','italic');doc.setFontSize(7.5);doc.text(new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'}),W/2,H-43,{align:'center'});
-  const sw=7,iW=W-2*sw,gap=5,w1=iW*.40,w23=(iW-w1-2*gap)/2;
-  const cx1=sw+w23+gap+w1/2,cx2=sw+w23/2,cx3=sw+w23+gap+w1+gap+w23/2;
-  const h1=64,h23=50,pT=H-cH-22;
-  let b1=pT,b23=pT;
-  const MC=[[232,176,32],[185,185,185],[195,115,35]];
-  if(_ranked[0]){const p=_ranked[0];fm(cx1-w1/2,pT-h1,w1,h1,p.photo,0);doc.setFont('helvetica','bold');doc.setFontSize(90);doc.setTextColor(232,176,32);doc.text('1',cx1,pT-h1+h1*.65,{align:'center'});const bcy=pT-h1-1;doc.setFillColor(26,8,8);doc.circle(cx1,bcy,9,'F');doc.setDrawColor(245,204,80);doc.setLineWidth(1);doc.circle(cx1,bcy,9,'S');doc.setTextColor(245,204,80);doc.setFont('helvetica','bold');doc.setFontSize(11);doc.text(String(p.avg),cx1,bcy+3,{align:'center'});es(p.avg,cx1,bcy-14,2.2);const iy=bcy-20;doc.setTextColor(245,204,80);doc.setFont('helvetica','bold');doc.setFontSize(10);let t=p.tapaName;while(doc.getTextWidth(t)>w1-4&&t.length>3)t=t.slice(0,-1);if(t!==p.tapaName)t+='...';doc.text(t,cx1,iy,{align:'center'});doc.setTextColor(216,200,160);doc.setFont('helvetica','italic');doc.setFontSize(8);doc.text('de '+p.name,cx1,iy-5.5,{align:'center'});b1=iy-9;}
-  [[_ranked[1],cx2,w23,14,1],[_ranked[2],cx3,w23,24,2]].forEach(([p,cx,w,off,ri])=>{if(!p)return;fm(cx-w/2,pT-h23-off,w,h23,p.photo,ri);const mc=MC[ri];doc.setFont('helvetica','bold');doc.setFontSize(70);doc.setTextColor(mc[0],mc[1],mc[2]);doc.text(String(ri+1),cx,pT-h23-off+h23*.65,{align:'center'});const bcy=pT-h23-off-1;doc.setFillColor(26,8,8);doc.circle(cx,bcy,7.5,'F');doc.setFillColor(mc[0],mc[1],mc[2]);doc.setDrawColor(mc[0],mc[1],mc[2]);doc.setLineWidth(.8);doc.circle(cx,bcy,7.5,'S');doc.setTextColor(mc[0],mc[1],mc[2]);doc.setFont('helvetica','bold');doc.setFontSize(9);doc.text(String(p.avg),cx,bcy+3,{align:'center'});es(p.avg,cx,bcy-12,1.9);const iy=bcy-18;doc.setTextColor(mc[0],mc[1],mc[2]);doc.setFont('helvetica','bold');doc.setFontSize(8.5);let t=p.tapaName;while(doc.getTextWidth(t)>w-2&&t.length>3)t=t.slice(0,-1);if(t!==p.tapaName)t+='...';doc.text(t,cx,iy,{align:'center'});doc.setTextColor(216,200,160);doc.setFont('helvetica','italic');doc.setFontSize(7.5);doc.text('de '+p.name,cx,iy-5,{align:'center'});b23=Math.min(b23,iy-9);});
-  let cy=Math.min(b1,b23)-4;cy=sl(cy,'CLASIFICACION OFICIAL');
-  _ranked.forEach((p,i)=>{if(cy<22)return;const rh=13,ry=cy-rh+3;doc.setFillColor(i%2===0?55:40,12,12);doc.rect(8,ry,W-16,rh,'F');const mc=MC[i]||[200,148,10];doc.setFillColor(mc[0],mc[1],mc[2]);doc.rect(8,ry,3.5,rh,'F');doc.setTextColor(mc[0],mc[1],mc[2]);doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text(`${i+1}.`,26,cy-3.5,{align:'right'});doc.setTextColor(253,248,240);doc.setFontSize(10);doc.text(p.tapaName,29,cy-3);doc.setTextColor(216,200,160);doc.setFont('helvetica','italic');doc.setFontSize(8);doc.text(`de ${p.name}  -  ${p.voteCount} voto${p.voteCount!==1?'s':''}`,29,cy-8.5);const rm=cy-rh/2+1.5;es(p.avg,W-11-20,rm,1.9);doc.setTextColor(i===0?245:mc[0],i===0?204:mc[1],i===0?80:mc[2]);doc.setFont('helvetica','bold');doc.setFontSize(i===0?11:9);doc.text(String(p.avg),W-11,rm+3,{align:'right'});cy-=rh;});
-  lo(16,W-16,14);doc.setTextColor(200,148,10);doc.setFont('helvetica','italic');doc.setFontSize(7.5);doc.text('TAPA FEST  -  Una noche de cine y tapas',W/2,8,{align:'center'});
-  // Págs tapa
+  const AZ=[27,75,122],TE=[200,68,32],OR=[232,168,48],VD=[42,122,58],BL=[255,248,238],CR=[245,236,216];
+
+  function bg(){doc.setFillColor(...BL);doc.rect(0,0,W,H,'F')}
+  function azul(y,h){for(let x=0;x<W;x+=4.25){const cols=[AZ,TE,OR,VD];doc.setFillColor(...cols[Math.floor(x/4.25)%4]);doc.rect(x,y,3.5,h||2,'F')}}
+  function linea(y){doc.setDrawColor(...OR);doc.setLineWidth(.3);doc.line(16,y,W-16,y)}
+  function estrellas(avg,cx,cy,r){r=r||2;const f=Math.round(avg/2),g=r*2.6,sx=cx-(5*g)/2+r;for(let i=0;i<5;i++){doc.setFillColor(i<f?232:220,i<f?168:210,i<f?48:190);doc.circle(sx+i*g,cy,r*.8,'F')}}
+
+  // PAGE 1 - Cover + Ranking
+  bg();
+  azul(0,3);azul(H-3,3);
+  // Header
+  doc.setFillColor(...AZ);doc.rect(0,8,W,50,'F');
+  azul(8,2);azul(56,2);
+  doc.setTextColor(...BL);doc.setFont('helvetica','bold');doc.setFontSize(36);doc.text('TAPA FEST',W/2,38,{align:'center'});
+  doc.setTextColor(...OR);doc.setFontSize(8);doc.text('G A L A   D E   P R E M I O S',W/2,22,{align:'center'});
+  doc.setTextColor(...CR);doc.setFont('helvetica','italic');doc.setFontSize(8);doc.text(new Date().toLocaleDateString('es-ES',{day:'numeric',month:'long',year:'numeric'}),W/2,48,{align:'center'});
+
+  // Podium area
+  const py=72;
+  if(_ranked[0]){const p=_ranked[0],cx=W/2,bw=60,bh=70;
+    if(p.photo){try{doc.addImage(p.photo,'JPEG',cx-bw/2,py,bw,bh,'','FAST')}catch(e){}}
+    doc.setDrawColor(...OR);doc.setLineWidth(1.5);doc.rect(cx-bw/2,py,bw,bh,'S');
+    doc.setFont('helvetica','bold');doc.setFontSize(14);doc.setTextColor(...TE);doc.text(p.tapaName,cx,py+bh+8,{align:'center'});
+    doc.setFont('helvetica','italic');doc.setFontSize(9);doc.setTextColor(...AZ);doc.text('de '+p.name,cx,py+bh+14,{align:'center'});
+    doc.setFont('helvetica','bold');doc.setFontSize(28);doc.setTextColor(...OR);doc.text(p.avg.toFixed(1),cx,py+bh+28,{align:'center'});
+    estrellas(p.avg,cx,py+bh+33,2.5);
+    doc.setFillColor(...OR);doc.roundedRect(cx-12,py-6,24,10,2,2,'F');doc.setTextColor(...BL);doc.setFont('helvetica','bold');doc.setFontSize(10);doc.text('1er',cx,py-1,{align:'center'});
+  }
+  [[_ranked[1],W/2-55,1],[_ranked[2],W/2+55,2]].forEach(([p,cx,ri])=>{if(!p)return;const bw=44,bh=52;
+    if(p.photo){try{doc.addImage(p.photo,'JPEG',cx-bw/2,py+18,bw,bh,'','FAST')}catch(e){}}
+    const bc=ri===1?[168,168,168]:[184,115,51];doc.setDrawColor(...bc);doc.setLineWidth(1);doc.rect(cx-bw/2,py+18,bw,bh,'S');
+    doc.setFont('helvetica','bold');doc.setFontSize(11);doc.setTextColor(...(ri===1?[100,100,100]:[140,90,40]));doc.text(p.tapaName,cx,py+18+bh+7,{align:'center'});
+    doc.setFont('helvetica','italic');doc.setFontSize(8);doc.setTextColor(...AZ);doc.text('de '+p.name,cx,py+18+bh+13,{align:'center'});
+    doc.setFont('helvetica','bold');doc.setFontSize(18);doc.setTextColor(...bc);doc.text(p.avg.toFixed(1),cx,py+18+bh+24,{align:'center'});
+    estrellas(p.avg,cx,py+18+bh+28,2);
+    doc.setFillColor(...bc);doc.roundedRect(cx-10,py+12,20,9,2,2,'F');doc.setTextColor(...BL);doc.setFont('helvetica','bold');doc.setFontSize(9);doc.text(ri===1?'2o':'3o',cx,py+18,{align:'center'});
+  });
+
+  // Ranking table
+  let ty=190;linea(ty-4);
+  doc.setTextColor(...AZ);doc.setFont('helvetica','bold');doc.setFontSize(8);doc.text('CLASIFICACION OFICIAL',W/2,ty+2,{align:'center'});
+  ty+=10;
+  const rkC=[[232,168,48],[168,168,168],[184,115,51]];
+  _ranked.forEach((p,i)=>{if(ty>H-20)return;
+    doc.setFillColor(i%2===0?250:245,i%2===0?244:238,i%2===0?230:215);doc.rect(16,ty-4,W-32,14,'F');
+    const c=rkC[i]||AZ;doc.setFillColor(...c);doc.rect(16,ty-4,3,14,'F');
+    doc.setTextColor(...c);doc.setFont('helvetica','bold');doc.setFontSize(11);doc.text(`${i+1}.`,30,ty+4,{align:'right'});
+    doc.setTextColor(...AZ);doc.setFontSize(11);doc.text(p.tapaName,34,ty+4);
+    doc.setTextColor(...[138,122,90]);doc.setFont('helvetica','italic');doc.setFontSize(8);doc.text(`de ${p.name} · ${p.voteCount} voto${p.voteCount!==1?'s':''}`,34,ty-1);
+    estrellas(p.avg,W-40,ty+1,1.8);
+    doc.setTextColor(...c);doc.setFont('helvetica','bold');doc.setFontSize(12);doc.text(p.avg.toFixed(1),W-18,ty+4,{align:'right'});
+    ty+=14;
+  });
+  linea(ty);
+  doc.setTextColor(...[138,122,90]);doc.setFont('helvetica','italic');doc.setFontSize(7);doc.text('TAPA FEST - Patio Andaluz',W/2,H-6,{align:'center'});
+
+  // Individual pages
   _ranked.forEach((p,rk)=>{
-    doc.addPage();const mc=MC[rk]||[200,148,10];const sp=H*.44;
-    gr();doc.setFillColor(253,248,240);doc.rect(0,0,W,sp,'F');
-    doc.setDrawColor(216,200,160);doc.setLineWidth(.08);for(let y=0;y<sp;y+=4)doc.line(0,y,W,y);
-    tr();lo(0,W,sp);
-    const ch=44;doc.setFillColor(26,8,8);doc.rect(0,H-ch,W,ch,'F');lo(0,W,H-ch);
-    doc.setTextColor(mc[0],mc[1],mc[2]);doc.setFont('helvetica','bold');doc.setFontSize(8);doc.text(['MEJOR TAPA','2o LUGAR','3er LUGAR'][rk]||`#${rk+1}`,W/2,H-11,{align:'center'});
-    let fs=21;doc.setFont('helvetica','bold');while(doc.setFontSize(fs)||doc.getTextWidth(p.tapaName)>W-44){if(fs<=11)break;fs--;}doc.setFontSize(fs);
-    doc.setTextColor(245,204,80);doc.text(p.tapaName,W/2,H-24,{align:'center'});
-    doc.setTextColor(216,200,160);doc.setFont('helvetica','italic');doc.setFontSize(8.5);doc.text(`de ${p.name}   -   ${p.avg} pts   -   ${p.voteCount} votos`,W/2,H-34,{align:'center'});
-    const ns=String(p.avg);doc.setFont('helvetica','bold');doc.setFontSize(13);const nw=doc.getTextWidth(ns);const sw2=5*3.2*2.6;const tot=nw+6+sw2;const nsx=W/2-tot/2;doc.setTextColor(mc[0],mc[1],mc[2]);doc.text(ns,nsx,H-42.5);es(p.avg,nsx+nw+6+sw2/2,H-41,3.2);
-    const pm=9,fpw=W-2*sw-2*pm,fpt=H-ch-3,fpb=sp+4,fph=fpt-fpb;fm(sw+pm,fpb,fpw,fph,p.photo,rk);
-    let yc=sp-6;yc=sl(yc,p.comments&&p.comments.length?`COMENTARIOS (${p.comments.length})`:'COMENTARIOS');
-    if(p.comments&&p.comments.length){const cw=(W-40)/2,lx=16,rx=lx+cw+8;let ly=yc,ry=yc;p.comments.forEach((cm,ci)=>{const il=ci%2===0,bx=il?lx:rx,ref=il?ly:ry;const words=cm.split(' ');const lines2=[];let line='';doc.setFont('helvetica','italic');doc.setFontSize(8.5);words.forEach(ww=>{const test=line?line+' '+ww:ww;if(doc.getTextWidth(test)<cw-12){line=test;}else{if(line)lines2.push(line);line=ww;}});if(line)lines2.push(line);const lh=5,pad=3.5,bh=lines2.length*lh+2*pad;if(ref-bh<18)return;const by=ref-bh;doc.setFillColor(240,232,213);doc.setDrawColor(il?mc[0]:216,il?mc[1]:200,il?mc[2]:160);doc.setLineWidth(.6);doc.roundedRect(bx,by,cw,bh,2.5,2.5,'FD');doc.setTextColor(mc[0],mc[1],mc[2]);doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text('"',bx+2.5,by+bh-2);doc.setTextColor(90,58,32);doc.setFont('helvetica','italic');doc.setFontSize(8.5);lines2.forEach((ln,j)=>doc.text(ln,bx+8,by+bh-pad-3-j*lh));const adv=bh+4;if(il)ly-=adv;else ry-=adv;});}else{doc.setFillColor(240,232,213);doc.setDrawColor(216,200,160);doc.setLineWidth(.5);doc.roundedRect(40,yc-18,W-80,16,3,3,'FD');doc.setTextColor(154,112,64);doc.setFont('helvetica','italic');doc.setFontSize(9);doc.text('Sin comentarios',W/2,yc-12,{align:'center'});}
-    lo(16,W-16,14);doc.setTextColor(200,148,10);doc.setFont('helvetica','italic');doc.setFontSize(7.5);doc.text(`TAPA FEST  -  ${p.tapaName}`,W/2,8,{align:'center'});
+    doc.addPage();bg();azul(0,3);azul(H-3,3);
+    const lab=['MEJOR TAPA','2o LUGAR','3er LUGAR'][rk]||`#${rk+1}`;
+    const bc=rkC[rk]||AZ;
+    // Header
+    doc.setFillColor(...AZ);doc.rect(0,8,W,36,'F');azul(8,2);azul(42,2);
+    doc.setTextColor(...bc);doc.setFont('helvetica','bold');doc.setFontSize(9);doc.text(lab,W/2,20,{align:'center'});
+    let fs=22;doc.setFont('helvetica','bold');while(doc.setFontSize(fs)||doc.getTextWidth(p.tapaName)>W-50){if(fs<=12)break;fs--}doc.setFontSize(fs);
+    doc.setTextColor(...BL);doc.text(p.tapaName,W/2,32,{align:'center'});
+    doc.setTextColor(...CR);doc.setFont('helvetica','italic');doc.setFontSize(8);doc.text(`de ${p.name}  ·  ${p.avg.toFixed(1)} pts  ·  ${p.voteCount} votos`,W/2,39,{align:'center'});
+    // Score
+    doc.setFont('helvetica','bold');doc.setFontSize(32);doc.setTextColor(...OR);doc.text(p.avg.toFixed(1),W/2,62,{align:'center'});
+    estrellas(p.avg,W/2,68,3);
+    // Photo
+    const ph=50,pw=W-50;
+    if(p.photo){try{doc.addImage(p.photo,'JPEG',25,80,pw,pw*0.65,'','FAST')}catch(e){}}
+    doc.setDrawColor(...bc);doc.setLineWidth(1.2);doc.rect(25,80,pw,pw*0.65,'S');
+    // Comments
+    const cy=80+pw*0.65+14;
+    linea(cy-4);
+    doc.setTextColor(...AZ);doc.setFont('helvetica','bold');doc.setFontSize(8);doc.text(p.comments&&p.comments.length?`COMENTARIOS (${p.comments.length})`:'COMENTARIOS',W/2,cy+2,{align:'center'});
+    if(p.comments&&p.comments.length){let yy=cy+10;p.comments.forEach(cm=>{if(yy>H-20)return;doc.setFillColor(...CR);doc.setDrawColor(...OR);doc.setLineWidth(.4);const lines=doc.splitTextToSize(cm,W-60);const bh=lines.length*5+8;doc.roundedRect(24,yy,W-48,bh,2,2,'FD');doc.setTextColor(90,58,32);doc.setFont('helvetica','italic');doc.setFontSize(9);doc.text(lines,28,yy+6);yy+=bh+4})}else{doc.setFillColor(...CR);doc.setDrawColor(200,190,170);doc.setLineWidth(.4);doc.roundedRect(40,cy+8,W-80,14,2,2,'FD');doc.setTextColor(154,112,64);doc.setFont('helvetica','italic');doc.setFontSize(9);doc.text('Sin comentarios',W/2,cy+17,{align:'center'})}
+    doc.setTextColor(...[138,122,90]);doc.setFont('helvetica','italic');doc.setFontSize(7);doc.text(`TAPA FEST - ${p.tapaName}`,W/2,H-6,{align:'center'});
   });
   doc.save('tapa-fest-gala.pdf');aviso('PDF guardado! 🏆');
 }
 
-// ── Arranque ──────────────────────────────────────────────────────
-(async function(){
-  try{
-    const snap=await db.ref('game').once('value');
-    const game=snap.val()||{};
-    const ps=pts(game);
-
-    // Recuperar sesión guardada
-    const sid=sessionStorage.getItem('tf_id');
-    if(sid&&ps.find(p=>p.id===sid)){
-      miId=sid;miNombre=sessionStorage.getItem('tf_nombre');
-      navegar(game);suscribir();return;
-    }
-
-    // Si hay partida en curso → selección (para que toquen su nombre)
-    if(ps.length>0){
-      ir('p-seleccion');renderSeleccion(game);suscribir();return;
-    }
-
-    // Sin partida → registro
-    ir('p-registro');
-  }catch(e){console.error('Arranque:',e);ir('p-registro');}
-})();
+(async function(){try{const snap=await db.ref('game').once('value');const game=snap.val()||{};const ps=pts(game);const sid=sessionStorage.getItem('tf_id');if(sid&&ps.find(p=>p.id===sid)){miId=sid;miNombre=sessionStorage.getItem('tf_nombre');navegar(game);suscribir();return}if(ps.length>0){ir('p-seleccion');renderSeleccion(game);suscribir();return}ir('p-registro')}catch(e){console.error('Arranque:',e);ir('p-registro')}})();
 </script>
 </body>
 </html>
