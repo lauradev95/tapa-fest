@@ -193,11 +193,6 @@ input[type=range]{width:100%;height:4px;accent-color:var(--rojo);cursor:pointer;
   <div class="bz" style="margin-top:14px">
     <button class="btn btn-r" id="reg-btn" onclick="regEmpezar()" disabled>Empezar →</button>
   </div>
-  <div class="panel" style="margin-top:8px">
-    <div class="panel-c" style="padding:12px">
-      <button class="btn btn-o" style="margin-top:0" onclick="verHistorial()">Historial de concursos</button>
-    </div>
-  </div>
   <div class="esp"></div>
 </div>
 
@@ -368,20 +363,6 @@ input[type=range]{width:100%;height:4px;accent-color:var(--rojo);cursor:pointer;
   <div class="bz"><button class="btn btn-o" onclick="resetear()">Nueva partida</button></div>
 </div>
 
-<!-- HISTORIAL -->
-<div id="p-historial" class="screen">
-  <button class="volver" onclick="ir('p-registro')">← Volver</button>
-  <div class="cab-int" style="margin-top:8px">
-    <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
-    <div class="cab-flecos"></div>
-    <div class="cab-texto">
-      <div class="cab-titulo">Historial</div>
-      <div class="cab-sub">concursos anteriores</div>
-    </div>
-  </div>
-  <div class="azulejos"></div>
-  <div id="hist-c" style="margin:14px 14px 0"></div>
-</div>
 
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -756,7 +737,6 @@ async function revelar(){
   const game=snap.val()||{};
   await db.ref('game/phase').set('results');
   sinCarga();
-  await guardarHistorial(game);
   ir('p-resultados');
   await animarRevelacion(game);
 }
@@ -812,7 +792,7 @@ function suscribir(){
     const ps=pts(game);
 
     // Game was deleted while we're in it — go back to registration
-    if(!ps.length && cur!=='p-registro' && cur!=='p-historial'){
+    if(!ps.length && cur!=='p-registro'){
       miId=null;miNombre=null;miFoto=null;
       sessionStorage.removeItem('tf_id');sessionStorage.removeItem('tf_nombre');
       regNombres=[];regRender();ir('p-registro');
@@ -881,22 +861,6 @@ function navegar(game){
   else{ir('p-seleccion');renderSeleccion(game);suscribir();}
 }
 
-// ── Historial ─────────────────────────────────────────────────────
-async function guardarHistorial(game){
-  const ranked=calcRanked(game);if(!ranked.length)return;
-  const edicion=game.edicion||'';
-  try{await db.ref('history').push({date:new Date().toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'}),timestamp:Date.now(),edicion:edicion,winner:ranked[0].tapaName,winnerName:ranked[0].name,winnerScore:ranked[0].avg.toFixed(1),ranking:ranked.map(p=>({name:p.name,tapaName:p.tapaName,avg:p.avg.toFixed(1)}))});}catch(e){console.log(e);}
-}
-async function verHistorial(){
-  ir('p-historial');carga('Cargando...');
-  try{
-    const snap=await db.ref('history').once('value');sinCarga();
-    const entries=snap.val()?Object.values(snap.val()).reverse():[];
-    const c=document.getElementById('hist-c');
-    if(!entries.length){c.innerHTML='<p class="vacio" style="margin-top:2rem">Sin concursos guardados</p>';return;}
-    c.innerHTML=entries.map(e=>`<div class="tarjeta" style="margin-bottom:12px"><div style="font-size:12px;color:var(--tinta2);margin-bottom:6px">${e.date}</div>${e.edicion?`<div style="font-size:13px;font-style:italic;color:var(--dorado);margin-bottom:4px">${e.edicion}</div>`:''}<div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--dorado2);margin-bottom:4px">🏆 ${e.winner}</div><div style="font-size:15px;color:var(--tinta2);margin-bottom:10px">ganado por ${e.winnerName} · ${e.winnerScore} pts</div><details><summary style="font-size:14px;color:var(--tinta2);cursor:pointer;list-style:none">Ver clasificación ▾</summary><ol style="margin-top:8px;padding-left:20px">${e.ranking.map(r=>`<li style="font-size:15px;padding:3px 0;color:var(--tinta2)">${r.tapaName} · ${r.name} · ${r.avg}</li>`).join('')}</ol></details></div>`).join('');
-  }catch(e){sinCarga();aviso('Error al cargar');}
-}
 
 // ── Resetear ──────────────────────────────────────────────────────
 async function resetear(){
