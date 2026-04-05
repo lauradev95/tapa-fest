@@ -224,7 +224,31 @@ input[type=range]{width:100%;height:4px;accent-color:var(--rojo);cursor:pointer;
     <svg viewBox="0 0 22 20" width="12" height="10"><ellipse cx="11" cy="11" rx="7" ry="6.5" fill="#F5D93A" stroke="#D4B820" stroke-width=".6"/><path d="M11 4.5c-.7-2-2-3-2.8-2.8s1 .8 1.4 2.3" fill="#5A8A2A" stroke="#3A6A1A" stroke-width=".4"/><path d="M11 4.5c.7-2 2.3-3.2 3-2.8s-1 .7-1.6 2.3" fill="#6A9A3A" stroke="#3A6A1A" stroke-width=".4"/></svg>
     <svg viewBox="0 0 26 24" width="14" height="12" style="transform:scaleX(-1)"><g transform="translate(13,13)"><circle cx="-4" cy="-5" r="3.2" fill="#E8354A" opacity=".9"/><circle cx="4" cy="-5" r="3.2" fill="#D42840" opacity=".85"/><circle cx="0" cy="-7" r="3" fill="#F04860" opacity=".9"/><circle cx="0" cy="-3" r="2" fill="#FF6A78" opacity=".7"/></g><path d="M13 13v9" stroke="#3A7A2A" stroke-width="1.4" fill="none"/></svg>
   </div>
+  <div class="panel" style="margin-top:8px">
+    <div class="panel-c" style="padding:12px">
+      <button class="btn btn-o" style="margin-top:0" onclick="verHistorial()">Historial de concursos</button>
+    </div>
+  </div>
   <div class="azulejos"></div>
+  <div class="esp"></div>
+</div>
+
+<!-- HISTORIAL -->
+<div id="p-historial" class="screen">
+  <button class="volver" onclick="ir('p-registro')">← Volver</button>
+  <div class="cab-int" style="margin-top:8px">
+    <div class="cab-tira">✦ &nbsp; Tapa Fest &nbsp; ✦</div>
+    <div class="cab-flecos"></div>
+    <div class="cab-texto">
+      <div class="cab-titulo">Historial</div>
+      <div class="cab-sub">concursos anteriores</div>
+    </div>
+  </div>
+  <div class="azulejos"></div>
+  <div id="hist-c" style="margin:14px 14px 0"></div>
+  <div class="bz" style="margin-top:14px">
+    <button class="btn btn-p" onclick="borrarHistorial()">Borrar todo el historial</button>
+  </div>
   <div class="esp"></div>
 </div>
 
@@ -777,6 +801,7 @@ async function revelar(){
   const game=snap.val()||{};
   await db.ref('game/phase').set('results');
   sinCarga();
+  await guardarHistorial(game);
   ir('p-resultados');
   await animarRevelacion(game);
 }
@@ -832,7 +857,7 @@ function suscribir(){
     const ps=pts(game);
 
     // Game was deleted while we're in it — go back to registration
-    if(!ps.length && cur!=='p-registro'){
+    if(!ps.length && cur!=='p-registro' && cur!=='p-historial'){
       miId=null;miNombre=null;miFoto=null;
       sessionStorage.removeItem('tf_id');sessionStorage.removeItem('tf_nombre');
       regNombres=[];regRender();ir('p-registro');
@@ -901,6 +926,28 @@ function navegar(game){
   else{ir('p-seleccion');renderSeleccion(game);suscribir();}
 }
 
+
+// ── Historial ─────────────────────────────────────────────────────
+async function guardarHistorial(game){
+  const ranked=calcRanked(game);if(!ranked.length)return;
+  const edicion=game.edicion||'';
+  try{await db.ref('history').push({date:new Date().toLocaleDateString('es-ES',{weekday:'long',year:'numeric',month:'long',day:'numeric'}),timestamp:Date.now(),edicion:edicion,winner:ranked[0].tapaName,winnerName:ranked[0].name,winnerScore:ranked[0].avg.toFixed(1),ranking:ranked.map(p=>({name:p.name,tapaName:p.tapaName,avg:p.avg.toFixed(1)}))});}catch(e){console.log(e);}
+}
+async function verHistorial(){
+  ir('p-historial');carga('Cargando...');
+  try{
+    const snap=await db.ref('history').once('value');sinCarga();
+    const entries=snap.val()?Object.values(snap.val()).reverse():[];
+    const c=document.getElementById('hist-c');
+    if(!entries.length){c.innerHTML='<p class="vacio" style="margin-top:2rem">Sin concursos guardados</p>';return;}
+    c.innerHTML=entries.map(e=>`<div class="tarjeta" style="margin-bottom:12px"><div style="font-size:12px;color:var(--tinta2);margin-bottom:6px">${e.date}</div>${e.edicion?`<div style="font-size:13px;font-style:italic;color:var(--dorado);margin-bottom:4px">${e.edicion}</div>`:''}<div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--dorado2);margin-bottom:4px">🏆 ${e.winner}</div><div style="font-size:15px;color:var(--tinta2);margin-bottom:10px">ganado por ${e.winnerName} · ${e.winnerScore} pts</div><details><summary style="font-size:14px;color:var(--tinta2);cursor:pointer;list-style:none">Ver clasificación ▾</summary><ol style="margin-top:8px;padding-left:20px">${e.ranking.map(r=>`<li style="font-size:15px;padding:3px 0;color:var(--tinta2)">${r.tapaName} · ${r.name} · ${r.avg}</li>`).join('')}</ol></details></div>`).join('');
+  }catch(e){sinCarga();aviso('Error al cargar');}
+}
+async function borrarHistorial(){
+  if(!confirm('¿Borrar todo el historial de concursos?'))return;
+  carga('Borrando...');
+  try{await db.ref('history').remove();sinCarga();aviso('Historial borrado');verHistorial();}catch(e){sinCarga();aviso('Error al borrar');}
+}
 
 // ── Resetear ──────────────────────────────────────────────────────
 async function resetear(){
@@ -982,9 +1029,9 @@ async function exportPDF(){
   // Podium
   cy+=4;
   const hasPhotos=_ranked.some(p=>p.photo);
-  if(_ranked.length>=3){
+  if(_ranked.length>=2){
     const pw1=55,ph1=hasPhotos?65:30,pw23=42,ph23=hasPhotos?50:25;
-    const cx1=W/2,cx2=W/2-55,cx3=W/2+55;
+    const cx1=W/2,cx2=_ranked.length>=3?W/2-55:W/2-50,cx3=W/2+55;
     // Position 2 (left)
     const p2=_ranked[1];if(p2){
       const y2=cy+15;
@@ -999,17 +1046,18 @@ async function exportPDF(){
     }
     // Position 1 (center, bigger)
     const p1=_ranked[0];if(p1){
-      photoFrame(cx1-pw1/2,cy,pw1,ph1,p1.photo,0);
-      doc.setTextColor(232,168,48);doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text('1',cx1,cy+ph1+8,{align:'center'});
+      const cx1r=_ranked.length>=3?cx1:W/2+50;
+      photoFrame(cx1r-pw1/2,cy,pw1,ph1,p1.photo,0);
+      doc.setTextColor(232,168,48);doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text('1',cx1r,cy+ph1+8,{align:'center'});
       doc.setTextColor(42,26,8);doc.setFont('helvetica','bold');doc.setFontSize(11);
       let t1=p1.tapaName;while(doc.getTextWidth(t1)>pw1+10&&t1.length>3)t1=t1.slice(0,-1);if(t1!==p1.tapaName)t1+='...';
-      doc.text(t1,cx1,cy+ph1+14,{align:'center'});
-      doc.setTextColor(120,100,70);doc.setFont('helvetica','italic');doc.setFontSize(8);doc.text('de '+p1.name,cx1,cy+ph1+19,{align:'center'});
-      doc.setTextColor(232,168,48);doc.setFont('helvetica','bold');doc.setFontSize(20);doc.text(String(p1.avg),cx1,cy+ph1+28,{align:'center'});
-      stars(p1.avg,cx1,cy+ph1+33,2);
+      doc.text(t1,cx1r,cy+ph1+14,{align:'center'});
+      doc.setTextColor(120,100,70);doc.setFont('helvetica','italic');doc.setFontSize(8);doc.text('de '+p1.name,cx1r,cy+ph1+19,{align:'center'});
+      doc.setTextColor(232,168,48);doc.setFont('helvetica','bold');doc.setFontSize(20);doc.text(String(p1.avg),cx1r,cy+ph1+28,{align:'center'});
+      stars(p1.avg,cx1r,cy+ph1+33,2);
     }
-    // Position 3 (right)
-    const p3=_ranked[2];if(p3){
+    // Position 3 (right) — only if 3+
+    if(_ranked[2]){const p3=_ranked[2];
       const y3=cy+20;
       photoFrame(cx3-pw23/2,y3,pw23,ph23,p3.photo,2);
       doc.setTextColor(195,115,35);doc.setFont('helvetica','bold');doc.setFontSize(12);doc.text('3',cx3,y3+ph23+8,{align:'center'});
@@ -1020,6 +1068,16 @@ async function exportPDF(){
       doc.setTextColor(195,115,35);doc.setFont('helvetica','bold');doc.setFontSize(16);doc.text(String(p3.avg),cx3,y3+ph23+27,{align:'center'});
       stars(p3.avg,cx3,y3+ph23+31,1.6);
     }
+    cy+=ph1+40;
+  }else if(_ranked.length===1){
+    // Solo 1 participante
+    const p1=_ranked[0];const pw1=55,ph1=hasPhotos?65:30;
+    photoFrame(W/2-pw1/2,cy,pw1,ph1,p1.photo,0);
+    doc.setTextColor(232,168,48);doc.setFont('helvetica','bold');doc.setFontSize(14);doc.text('1',W/2,cy+ph1+8,{align:'center'});
+    doc.setTextColor(42,26,8);doc.setFont('helvetica','bold');doc.setFontSize(11);doc.text(p1.tapaName,W/2,cy+ph1+14,{align:'center'});
+    doc.setTextColor(120,100,70);doc.setFont('helvetica','italic');doc.setFontSize(8);doc.text('de '+p1.name,W/2,cy+ph1+19,{align:'center'});
+    doc.setTextColor(232,168,48);doc.setFont('helvetica','bold');doc.setFontSize(20);doc.text(String(p1.avg),W/2,cy+ph1+28,{align:'center'});
+    stars(p1.avg,W/2,cy+ph1+33,2);
     cy+=ph1+40;
   }else{cy+=6;}
 
